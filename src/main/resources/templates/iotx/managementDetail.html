@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro"
+	xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+    layout:decorator="base">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>iotx节点管理-详情</title>
+	
+	<link rel="stylesheet" type="text/css" href="/webResources/plugins/jquery-UI/jquery-ui-1.12.1.custom/jquery-ui.theme.css" />
+	<link rel="stylesheet" type="text/css" href="/webResources/plugins/jqgrid/css/ui.jqgrid.css" />
+	<link rel="stylesheet" type="text/css" href="/webResources/plugins/pageJquery/css/zxf_page.css"/>
+	
+	<script type="text/javascript" src="/webResources/plugins/jqgrid/js/jquery.jqGrid.min.js"></script>
+	<script type="text/javascript" src="/webResources/plugins/jqgrid/src/i18n/grid.locale-cn.js"></script>
+	<script type="text/javascript" src="/webResources/plugins/pageJquery/js/zxf_page.js" ></script>
+	<script type="text/javascript" src="/webResources/js/custom/page/createPage.js"></script>
+	<script type="text/javascript" src="/webResources/js/custom/sensor/sensorManagementTable.js"></script>
+	
+</head>
+
+<body>
+	<div layout:fragment="content">
+		<input type="hidden" th:value="${iotx.id}" id="iotxId"/>
+	  	<div class="col-md-6" style="width:100%">
+			<div class="row">
+				<div  style="padding-top:30px;padding-left:30px;">
+					<ul class="nav nav-tabs">
+						<li>
+							<a id="workOrder_city_info_link1" href='#' style="color:#3795FF;font-size:24px;border:none;" th:text="#{iotxManagement}"></a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-lg-12" style="text-align:right;padding-right:30px;padding-top:10px;">
+			<div style="width:1620px;height:530px;background:#2F3543;margin-left:15px;position:relative;">
+				<div style="margin-left:40px;height:150px;width:550px;background:#2E3C51;text-align:center;margin-top:40px;position:absolute;">
+					<img src="/webResources/img/other/Goaland水机.png" style="height:150px;width:550px"/>
+				</div>
+				<div style="margin-left:40px;height:260px;width:550px;background:white;text-align:center;margin-top:220px;position:absolute;">
+					<div style="background:#3A4050;height:86.6px;width:550px;position:absolute;margin-top:0px;text-align:left;line-height:63px;font-size:18px;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{iotx.installLocation}+' : '+${iotx.installLocation}"></span></div>
+					<div style="background:#363C4C;height:86.6px;width:550px;position:absolute;margin-top:86.6px;text-align:left;line-height:63px;font-size:18px;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{iotx.company}+' : '+${iotx.company.name}"></span></div>
+					<div style="background:#3A4050;height:86.6px;width:550px;position:absolute;margin-top:173.3px;text-align:left;line-height:63px;font-size:18px;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{iotx.location}+' : '+${iotx.district.city.province.name}+' '+${iotx.district.city.name}+' '+${iotx.district.name}"></span></div>
+				</div>
+				<div style="left:650px;height:440px;width:550px;float:right;margin-top:0px;position:absolute;">
+					<div style="background:#3A4050;height:40px;width:550px;position:absolute;margin-top:40px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.iotxCategory}+' : '+${iotx.iotxCategory}"></span></div>
+					<div style="background:#363C4C;height:40px;width:550px;position:absolute;margin-top:80px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.iotxModel}+' : '+${iotx.iotxModel}"></span></div>
+					<div style="background:#3A4050;height:40px;width:550px;position:absolute;margin-top:120px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.longitude}+' : '+${iotx.longitude}"></span></div>
+					<div style="background:#363C4C;height:40px;width:550px;position:absolute;margin-top:160px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.latitude}+' : '+${iotx.latitude}"></span></div>
+					<div style="background:#3A4050;height:40px;width:550px;position:absolute;margin-top:200px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.cpu}+' : '+${iotx.cpu}"></span></div>
+					<div style="background:#363C4C;height:40px;width:550px;position:absolute;margin-top:240px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.memory}+' : '+${iotx.memory}"></span></div>
+					<div style="background:#3A4050;height:40px;width:550px;position:absolute;margin-top:280px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.hardDisk}+' : '+${iotx.hardDisk}"></span></div>
+					<div style="background:#363C4C;height:40px;width:550px;position:absolute;margin-top:320px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.mac}+' : '+${iotx.mac}"></span></div>
+					<div style="background:#3A4050;height:40px;width:550px;position:absolute;margin-top:360px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.version}+' : '+${iotx.version}"></span></div>
+					<div style="background:#363C4C;height:40px;width:550px;position:absolute;margin-top:400px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.url}+' : '+${iotx.url}"></span></div>
+					<div style="background:#3A4050;height:40px;width:550px;position:absolute;margin-top:440px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="40px" width="40px"/><span style="margin-left: 10px" th:text="#{iotx.wifiSsid}+' : '+${iotx.wifiSsid}"></span></div>
+				</div>
+				<div style="left:1250px;height:90px;width:320px;float:right;margin-top:40px;position:absolute;background:#3A4050;text-align:left;color:#D8D9DC">
+					<img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="90px" width="90px"/><span style="margin-left: 30px" th:text="#{iotx.serialNo}"></span>&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;<font color="#0385E4" size="5px" th:text="${iotx.serialNo}"></font>
+				</div>
+				<div style="left:1250px;height:90px;width:320px;float:right;margin-top:156.666px;position:absolute;background:#3A4050;text-align:left;color:#D8D9DC">
+					<img src="/webResources/img/icon/category.png" class="sider-icon" height="90px" width="90px"/><span style="margin-left: 30px" th:text="#{iotx.networkCategory}"></span>&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;<font color="#8062DD" size="5px" th:text="${iotx.networkCategory}"></font>
+				</div>
+				<div style="left:1250px;height:90px;width:320px;float:right;margin-top:273.333333px;position:absolute;background:#3A4050;text-align:left;color:#D8D9DC">
+					<img src="/webResources/img/icon/sensors.png" class="sider-icon" height="90px" width="90px"/><span style="margin-left: 30px" th:text="#{iotx.sensorQuantity}"></span>&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;<font color="#8062DD" size="5px" th:text="${iotx.sensorQuantity}"></font>
+				</div>
+				<div style="left:1250px;height:90px;width:320px;float:right;margin-top:390px;position:absolute;background:#3A4050;text-align:left;color:#D8D9DC">
+					<img src="/webResources/img/icon/alarms.png" class="sider-icon" height="90px" width="90px"/><span style="margin-left: 30px" th:text="#{iotx.alarmQuantity}"></span>&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;&nbsp;<font color="#E28734" size="5px" th:text="${iotx.alarmQuantity}"></font>
+				</div>
+			</div>
+		</div>
+		
+		<div class="col-lg-12" style="text-align:right;padding-right:30px;padding-top:10px;">
+           	<!-- 引入sensor -->
+			<div th:include="sensor/managementTable::sensor"></div>
+  		</div>
+				
+	</div>
+	
+</body>
+
+</html>
+

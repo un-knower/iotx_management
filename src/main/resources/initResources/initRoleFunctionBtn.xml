@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RoleFunctionBtns>
+	<!-- iotx节点管理 -->
+	<!-- 添加 -->
+	<RoleFunctionBtn btnId="add" roleFunctionPageId="iotxManagement"></RoleFunctionBtn>
+	<!-- 修改 -->
+	<RoleFunctionBtn btnId="edit" roleFunctionPageId="iotxManagement"></RoleFunctionBtn>
+	<!-- 删除 -->
+	<RoleFunctionBtn btnId="delete" roleFunctionPageId="iotxManagement"></RoleFunctionBtn>
+	<!-- 批量配置 -->
+	<RoleFunctionBtn btnId="batadd" roleFunctionPageId="iotxManagement"></RoleFunctionBtn>
+	
+	<!-- 传感器管理 -->
+	<!-- 添加 -->
+	<RoleFunctionBtn btnId="add" roleFunctionPageId="sensorManagement"></RoleFunctionBtn>
+	<!-- 修改 -->
+	<RoleFunctionBtn btnId="edit" roleFunctionPageId="sensorManagement"></RoleFunctionBtn>
+	<!-- 删除 -->
+	<RoleFunctionBtn btnId="delete" roleFunctionPageId="sensorManagement"></RoleFunctionBtn>
+	<!-- 批量配置 -->
+	<RoleFunctionBtn btnId="batadd" roleFunctionPageId="sensorManagement"></RoleFunctionBtn>
+	
+</RoleFunctionBtns>
