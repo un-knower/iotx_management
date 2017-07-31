@@ -82,7 +82,10 @@ class GroovyTest_xml {
 	@Test
 	public void testXmlSlurperFile(){
 		def roleFunctions = new XmlSlurper().parse("src/main/resources/initResources/initRoleFunction.xml")
-		roleFunctions.RoleFunction.each{println it.@roleFunctionPageId}
+		roleFunctions.RoleFunction.each{
+			println it.@roleFunctionPageId
+			assert it.RoleFunction==""
+		}
 	}
 	
 	
@@ -97,6 +100,7 @@ class GroovyTest_xml {
 		
 		roleFunctions.roleFunction.each{
 			def roleFunction=new RoleFunction(roleFunctionPageId:it.@roleFunctionPageId)
+			println it.class
 			it.roleFunctionBtn.each{
 				new RoleFunctionBtn(roleFunction:roleFunction,btnId:it.@btnId)
 			}

@@ -186,6 +186,7 @@ public class InitData {
 					if(roleFunctionService.findByRoleFunctionPageId(roleFunctionPageId)==null){
 						RoleFunction roleFunction=new RoleFunction();
 						roleFunction.setRoleFunctionPageId(roleFunctionPageId);
+						roleFunction.setName(element.attributeValue("name"));
 						
 						/*-----------start:检查是否有父级的roleFunction-------------*/
 						String parentRoleFunctionPageId = element.attributeValue("parentRoleFunctionPageId");
@@ -245,6 +246,7 @@ public class InitData {
 						}else{
 							RoleFunctionBtn roleFunctionBtn = new RoleFunctionBtn();
 							roleFunctionBtn.setBtnId(btnId);
+							roleFunctionBtn.setName(element.attributeValue("name"));
 							roleFunctionBtn.setRoleFunction(roleFunction);
 							roleFunctionBtnService.save(roleFunctionBtn);
 							

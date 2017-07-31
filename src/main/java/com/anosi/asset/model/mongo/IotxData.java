@@ -5,6 +5,8 @@ import java.util.Date;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 @Document
 public class IotxData extends AbstractDocument{
 	
@@ -73,6 +75,7 @@ public class IotxData extends AbstractDocument{
 		this.sensorSN = sensorSN;
 	}
 
+	@JSONField(format="yyyy-MM-dd HH:mm:ss")
 	public Date getCloseTime() {
 		return closeTime;
 	}
@@ -137,6 +140,7 @@ public class IotxData extends AbstractDocument{
 		this.minVal = minVal;
 	}
 
+	@JSONField(format="yyyy-MM-dd HH:mm:ss")
 	public Date getCollectTime() {
 		return collectTime;
 	}

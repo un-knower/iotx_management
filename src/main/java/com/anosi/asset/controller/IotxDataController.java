@@ -44,7 +44,7 @@ public class IotxDataController extends BaseController<IotxData>{
 	@RequestMapping(value="/iotxData/management/table",method = RequestMethod.GET)
 	public ModelAndView toViewsensorManage(){
 		logger.info("view iotxData table");
-		return new ModelAndView("/iotxData/managementTable");
+		return new ModelAndView("iotxData/managementTable");
 	}
 	
 	/***
@@ -71,7 +71,7 @@ public class IotxDataController extends BaseController<IotxData>{
 	
 	@RequestMapping(value="/iotxData/dynamicData",method = RequestMethod.GET)
 	public ModelAndView toViewDynamicData() throws Exception{
-		return new ModelAndView("/iotxData/dynamicData");
+		return new ModelAndView("iotxData/dynamicData");
 	}
 	
 	/***

@@ -21,6 +21,8 @@ public class RoleFunction extends BaseEntity{
 	 */
 	private static final long serialVersionUID = 4646361903857229821L;
 	
+	private String name;
+	
 	private String roleFunctionPageId;
 	
 	private RoleFunction parentRoleFunction;
@@ -30,6 +32,14 @@ public class RoleFunction extends BaseEntity{
 	private List<RoleFunctionBtn> roleFunctionBtnList = new ArrayList<RoleFunctionBtn>();
 	
 	private List<Privilege> privilegeList = new ArrayList<Privilege>();
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	@Column(unique=true,nullable=false)
 	public String getRoleFunctionPageId() {

@@ -61,7 +61,7 @@ public class IotxController extends BaseController<Iotx> {
 	@RequestMapping(value = "/iotx/management/map", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageMap() {
 		logger.info("view iotx management map");
-		return new ModelAndView("/iotx/managementMap");
+		return new ModelAndView("iotx/managementMap");
 	}
 
 	/***
@@ -72,7 +72,7 @@ public class IotxController extends BaseController<Iotx> {
 	@RequestMapping(value = "/iotx/management/table", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable() {
 		logger.info("view iotx management table");
-		return new ModelAndView("/iotx/managementTable").addObject("networkCategorys", NetworkCategory.values())
+		return new ModelAndView("iotx/managementTable").addObject("networkCategorys", NetworkCategory.values())
 				.addObject("iotxCategorys", IotxCategory.values()).addObject("iotxModels", IotxModel.values())
 				.addObject("companys", companySerivce.findAll());
 	}
@@ -117,7 +117,7 @@ public class IotxController extends BaseController<Iotx> {
 		Iotx iotx = iotxService.findById(iotxId);
 		this.checkCompany(iotx.getCompany().getCode());
 		
-		return new ModelAndView("/iotx/managementDetail").addObject("iotx", iotx);
+		return new ModelAndView("iotx/managementDetail").addObject("iotx", iotx);
 	}
 
 	/***
@@ -136,7 +136,7 @@ public class IotxController extends BaseController<Iotx> {
 		} else {
 			iotx = new Iotx();
 		}
-		return new ModelAndView("/iotx/saveIotx").addObject("iotx", iotx).addObject("networkCategorys", NetworkCategory.values())
+		return new ModelAndView("iotx/saveIotx").addObject("iotx", iotx).addObject("networkCategorys", NetworkCategory.values())
 				.addObject("iotxCategorys", IotxCategory.values()).addObject("iotxModels", IotxModel.values())
 				.addObject("companys", companySerivce.findAll());
 	}

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RoleFunctions>
 	<!-- iotx节点管理 -->
-	<RoleFunction roleFunctionPageId="iotxManagement"></RoleFunction>
+	<RoleFunction roleFunctionPageId="iotxManagement" name="iotx节点管理"></RoleFunction>
 	<!-- 传感器管理 -->
-	<RoleFunction roleFunctionPageId="sensorManagement"></RoleFunction>
+	<RoleFunction roleFunctionPageId="sensorManagement" name="传感器管理"></RoleFunction>
 	<!-- 告警管理 -->
-	<RoleFunction roleFunctionPageId="iotxAlarmData"></RoleFunction>
+	<RoleFunction roleFunctionPageId="iotxAlarmData" name="告警管理"></RoleFunction>
 	<!-- 数据分析 -->
-	<RoleFunction roleFunctionPageId="dataAnalysis"></RoleFunction>
+	<RoleFunction roleFunctionPageId="dataAnalysis" name="数据分析"></RoleFunction>
 </RoleFunctions>

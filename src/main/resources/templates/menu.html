@@ -6,7 +6,6 @@
 		<section class="sidebar" style="height: auto;">
 			<ul class="sidebar-menu" id="side-menu">
 			
-				<!-- iotx节点管理 -->
 				<li th:class="${session.menuId=='iotxManagement'?'treeview active':'treeview'}" shiro:hasPermission="iotxManagement:view">
 					<a th:href="@{/iotx/management/map(menuId=iotxManagement)}">
 						<img th:src="'/webResources/img/icon/'+${session.menuId=='iotxManagement'?'iotxManagement_active.png':'iotxManagement.png'}" class="sider-icon" height="35" width="35"/>
@@ -15,7 +14,6 @@
 					</a>
 				</li>
 				
-				<!-- 传感器管理 -->
 				<li th:class="${session.menuId=='sensorManagement'?'treeview active':'treeview'}" shiro:hasPermission="sensorManagement:view">
 					<a th:href="@{/sensor/management/table(menuId=sensorManagement)}">
 						<img th:src="'/webResources/img/icon/'+${session.menuId=='sensorManagement'?'sensorManagement_active.png':'sensorManagement.png'}" class="sider-icon" height="35" width="35"/>
@@ -24,7 +22,6 @@
 					</a>
 				</li>
 				
-				<!-- 告警管理 -->
 				<li th:class="${session.menuId=='iotxAlarmData'?'treeview active':'treeview'}" shiro:hasPermission="iotxAlarmData:view">
 					<a th:href="@{/iotxData/management/table(menuId=iotxAlarmData)}">
 						<img th:src="'/webResources/img/icon/'+${session.menuId=='iotxAlarmData'?'iotxAlarmData_active.png':'iotxAlarmData.png'}" class="sider-icon" height="35" width="35"/>
@@ -33,7 +30,6 @@
 					</a>
 				</li>
 				
-				<!-- 数据分析 -->
 				<li th:class="${session.menuId=='dataAnalysis'?'treeview active':'treeview'}" shiro:hasPermission="dataAnalysis:view">
 					<a href="#">
 						<img th:src="'/webResources/img/icon/'+${session.menuId=='dataAnalysis'?'dataAnalysis_active.png':'dataAnalysis.png'}" class="sider-icon" height="35" width="35"/>

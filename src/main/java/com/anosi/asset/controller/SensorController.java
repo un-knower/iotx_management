@@ -62,7 +62,7 @@ public class SensorController extends BaseController<Sensor>{
 	@RequestMapping(value="/sensor/management/table",method = RequestMethod.GET)
 	public ModelAndView toViewsensorManage(){
 		logger.info("view sensorManage table");
-		return new ModelAndView("/sensor/managementTable").addObject("sensorCategorys", sensorCategoryService.findAll())
+		return new ModelAndView("sensor/managementTable").addObject("sensorCategorys", sensorCategoryService.findAll())
 				.addObject("sensorInterfaces", sensorInterfaceService.findAll())
 				.addObject("sensorPorts", sensorPortService.findAll());
 	}
@@ -100,7 +100,7 @@ public class SensorController extends BaseController<Sensor>{
 		logger.info("view sensor management detail");
 		Sensor sensor = sensorService.findById(sensorId);
 		this.checkCompany(sensor.getIotx().getCompany().getCode());
-		return new ModelAndView("/sensor/managementDetail").addObject("sensor",sensor );
+		return new ModelAndView("sensor/managementDetail").addObject("sensor",sensor );
 	}
 	
 	/***
@@ -119,7 +119,7 @@ public class SensorController extends BaseController<Sensor>{
 		} else {
 			sensor = new Sensor();
 		}
-		return new ModelAndView("/sensor/saveSensor").addObject("sensor", sensor).addObject("sensorCategorys", sensorCategoryService.findAll())
+		return new ModelAndView("sensor/saveSensor").addObject("sensor", sensor).addObject("sensorCategorys", sensorCategoryService.findAll())
 				.addObject("sensorInterfaces", sensorInterfaceService.findAll()).addObject("sensorPorts", sensorPortService.findAll());
 	}
 

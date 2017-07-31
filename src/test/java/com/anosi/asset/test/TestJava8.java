@@ -19,6 +19,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -99,6 +100,8 @@ public class TestJava8 {
 		/*Map<String, Collection<Integer>> map = multimap.asMap();
 		map.remove("test1");*/
 		System.out.println(multimap);
+		ImmutableMap<String,String> of = ImmutableMap.of("assignee", "abc");
+		System.out.println(of.get("assignee"));
 	}
 	
 	@Test

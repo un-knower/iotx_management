@@ -30,7 +30,7 @@ public class ExcelUtil {
 	 * 
 	 * @param file
 	 * @param sheetIndex
-	 *            sheet的序号，默认从0开始
+	 *            sheet的序号，从0开始,如果为-1,代表遍历全部sheet
 	 *            
 	 * @return 返回Guava的table类型
 	 * 
@@ -49,9 +49,19 @@ public class ExcelUtil {
 			workbook = new XSSFWorkbook(new FileInputStream(file));
 		}
 
-		
+		if(sheetIndex==-1){
+			//遍历所有sheet
+			for (Sheet sheet : workbook) {
+				readSheet(sheet, excelTable, workbook);
+			}
+		}else{
+			readSheet(workbook.getSheetAt(sheetIndex), excelTable, workbook);
+		}
+		return excelTable;
+	}
+
+	private static void readSheet(Sheet sheet, Table<Integer, String, Object> excelTable, Workbook workbook) {
 		try {
-			Sheet sheet = workbook.getSheetAt(sheetIndex);
 			// 标题行
 			Row titles = sheet.getRow(0);
 			// 循环每一行
@@ -68,11 +78,16 @@ public class ExcelUtil {
 			} 
 		} finally {
 			if(workbook!=null){
-				workbook.close();
+				try {
+					workbook.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
-		return excelTable;
 	}
+	
 
 	/***
 	 * 根据cell内容的格式，读取cell的值

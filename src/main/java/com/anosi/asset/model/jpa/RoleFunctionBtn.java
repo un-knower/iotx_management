@@ -17,12 +17,22 @@ public class RoleFunctionBtn extends BaseEntity{
 	 * 
 	 */
 	private static final long serialVersionUID = 2198675367580201263L;
+	
+	private String name;
 
 	private String btnId;
 	
 	private RoleFunction roleFunction;
 	
 	private List<Privilege> privilegeList = new ArrayList<Privilege>();
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public String getBtnId() {
 		return btnId;

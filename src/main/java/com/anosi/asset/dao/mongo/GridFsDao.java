@@ -31,7 +31,7 @@ public class GridFsDao {
 		gridFS=new GridFS(mongoTemplate.getDb());
 	}
 	
-	public Object uploadFileToGridFS(InputStream in,String fileName) throws Exception{
+	public Object uploadFileToGridFS(InputStream in,String fileName) {
 		GridFSInputFile inputFile = gridFS.createFile(in, true);
 		inputFile.setFilename(fileName);
 		inputFile.save();

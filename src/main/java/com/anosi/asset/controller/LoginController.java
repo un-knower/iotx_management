@@ -26,7 +26,7 @@ import com.anosi.asset.util.LoginUtil;
 @RestController
 public class LoginController extends BaseController<Account> {
 
-	private static final Logger logger = LoggerFactory.getLogger(IotxDataController.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 	
 	@Autowired
 	private AccountService accountService;
@@ -35,7 +35,7 @@ public class LoginController extends BaseController<Account> {
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView loginForm(Model model) {
-		return new ModelAndView("/login","model",model);
+		return new ModelAndView("login","model",model);
 	}
 
 	/***

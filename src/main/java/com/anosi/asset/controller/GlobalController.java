@@ -27,7 +27,7 @@ public class GlobalController<T> {
 			return mv;
 		}else{
 			ex.printStackTrace();
-			ModelAndView mv =  new ModelAndView("/error");
+			ModelAndView mv =  new ModelAndView("error");
 			return mv;
 		}
 	}
