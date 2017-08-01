@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -21,7 +20,6 @@ import com.alibaba.fastjson.JSONObject;
  *
  */
 @Configuration
-@PropertySource("classpath:baiduMap/baiduMap.properties")
 public class MapUtil {
 
 	private static final Logger logger = LoggerFactory.getLogger(MapUtil.class);
