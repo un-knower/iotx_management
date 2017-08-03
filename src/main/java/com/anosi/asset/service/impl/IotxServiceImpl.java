@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
 import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
@@ -32,7 +33,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Service("iotxService")
 @Transactional
-public class IotxServiceImpl implements IotxService{
+public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxService{
 
 	private static final Logger logger = LoggerFactory.getLogger(IotxServiceImpl.class);
 	
@@ -46,6 +47,11 @@ public class IotxServiceImpl implements IotxService{
 	private EntityManager entityManager;
 
 	@Override
+	public BaseJPADao<Iotx> getRepository() {
+		return iotxDao;
+	}
+
+	@Override
 	public Page<Iotx> findAll(Predicate predicate, Pageable pageable) {
 		logger.debug("finAll by predicate:{}",predicate==null?"is null":predicate.toString());
 		Page<Iotx> iotxPage = iotxDao.findAll(predicate, pageable);
@@ -56,35 +62,9 @@ public class IotxServiceImpl implements IotxService{
 		return iotxPage;
 	}
 
-	@Override
-	public Iotx saveIotx(Iotx iotx) {
-		return iotxDao.save(iotx);
-	}
 
 	@Override
-	public void deleteIotx(Iotx iox) {
-		iotxDao.delete(iox);
-	}
-
-	@Override
-	public Iotx findById(Long id) {
-		Iotx iotx = iotxDao.findOne(id);
-		iotx.setAlarmQuantity(iotxDataService.countByiotxSN(iotx.getSerialNo()));
-		return iotx;
-	}
-
-	@Override
-	public boolean exists(Predicate predicate) {
-		return iotxDao.exists(predicate);
-	}
-
-	@Override
-	public Iterable<Iotx> findAll(Predicate predicate) {
-		return iotxDao.findAll(predicate);
-	}
-
-	@Override
-	public Iotx setIoxDistrict(Iotx iotx) {
+	public Iotx setIotxDistrict(Iotx iotx) {
 		JSONObject addressComponent = MapUtil.getAddressComponent(String.valueOf(iotx.getLongitude()), String.valueOf(iotx.getLatitude()));
 		District district = districtService.findByNameAndCity(addressComponent.getString("district"), addressComponent.getString("city"));
 		iotx.setDistrict(district);
@@ -145,5 +125,5 @@ public class IotxServiceImpl implements IotxService{
 		QIotx iotx=new QIotx(Iotx.class, forVariable("iotx"), inits);
 		return iotx;
 	}
-	
+
 }

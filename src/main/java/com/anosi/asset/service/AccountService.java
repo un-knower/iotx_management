@@ -6,6 +6,4 @@ public interface AccountService extends BaseService<Account, Long> {
 	
 	public Account findByLoginId(String loginId);
 
-	public Account save(Account account);
-	
 }

@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.IotxManagementApplication;
+import com.anosi.asset.component.PasswordEncry;
 import com.anosi.asset.dao.jpa.AccountDao;
 import com.anosi.asset.dao.jpa.CompanyDao;
 import com.anosi.asset.dao.jpa.PrivilegeDao;
@@ -33,7 +34,6 @@ import com.anosi.asset.model.jpa.SensorCategory;
 import com.anosi.asset.model.jpa.SensorInterface;
 import com.anosi.asset.model.jpa.SensorPort;
 import com.anosi.asset.model.mongo.IotxData;
-import com.anosi.asset.util.PasswordEncry;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = IotxManagementApplication.class)

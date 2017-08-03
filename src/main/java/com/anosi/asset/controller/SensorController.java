@@ -98,7 +98,7 @@ public class SensorController extends BaseController<Sensor>{
 	@RequestMapping(value="/sensor/management/detail/{sensorId}",method = RequestMethod.GET)
 	public ModelAndView toViewSensorManageTable(@PathVariable Long sensorId){
 		logger.info("view sensor management detail");
-		Sensor sensor = sensorService.findById(sensorId);
+		Sensor sensor = sensorService.getOne(sensorId);
 		this.checkCompany(sensor.getIotx().getCompany().getCode());
 		return new ModelAndView("sensor/managementDetail").addObject("sensor",sensor );
 	}
@@ -114,7 +114,7 @@ public class SensorController extends BaseController<Sensor>{
 	public ModelAndView toSaveSensorPage(@RequestParam(value = "id", required = false) Long id) {
 		Sensor sensor = null;
 		if (id != null) {
-			sensor = sensorService.findById(id);
+			sensor = sensorService.getOne(id);
 			this.checkCompany(sensor.getIotx().getCompany().getCode());
 		} else {
 			sensor = new Sensor();
@@ -128,7 +128,7 @@ public class SensorController extends BaseController<Sensor>{
 	@RequestMapping(value = "/sensor/saveSensor", method = RequestMethod.POST)
 	public JSONObject saveSensor(@Valid @ModelAttribute("sensor") Sensor sensor,BindingResult result) throws Exception {
 		logger.debug("saveOrUpdate sensor");
-		sensorService.saveSensor(sensor);
+		sensorService.save(sensor);
 		JSONObject jsonObject = new JSONObject();
 		//valid是否有错误
 		if(result.hasErrors()){
@@ -141,7 +141,7 @@ public class SensorController extends BaseController<Sensor>{
 		}else{
 			//valid无误的时候,再检测一下companyCode
 			this.checkCompany(sensor.getIotx().getCompany().getCode());
-			sensorService.saveSensor(sensor);
+			sensorService.save(sensor);
 			jsonObject.put("result", "success");
 		}
 		return jsonObject;
@@ -157,7 +157,7 @@ public class SensorController extends BaseController<Sensor>{
 	@ModelAttribute
 	public void getIox(@RequestParam(value = "sensorId", required = false) Long id, Model model) {
 		if (id != null) {
-			model.addAttribute("sensor", sensorService.findById(id));
+			model.addAttribute("sensor", sensorService.getOne(id));
 		}
 	}
 
@@ -166,11 +166,11 @@ public class SensorController extends BaseController<Sensor>{
 	@RequestMapping(value = "/sensor/deleteSensor", method = RequestMethod.POST)
 	public JSONObject deleteSensor(@RequestParam(value = "id") Long id) throws Exception {
 		logger.debug("delete sensor");
-		Sensor sensor = sensorService.findById(id);
+		Sensor sensor = sensorService.getOne(id);
 		//检测一下companyCode
 		this.checkCompany(sensor.getIotx().getCompany().getCode());
 		//检测无误就可以删除
-		sensorService.deleteSensor(sensorService.findById(id));
+		sensorService.delete(id);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("result", "success");
 		return jsonObject;

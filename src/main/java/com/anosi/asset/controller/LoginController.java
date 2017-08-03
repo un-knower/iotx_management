@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.anosi.asset.component.LoginComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.service.AccountService;
-import com.anosi.asset.util.LoginUtil;
 
 @RestController
 public class LoginController extends BaseController<Account> {
@@ -31,7 +31,7 @@ public class LoginController extends BaseController<Account> {
 	@Autowired
 	private AccountService accountService;
 	@Autowired
-	private LoginUtil loginUtil;
+	private LoginComponent loginComponent;
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView loginForm(Model model) {
@@ -59,7 +59,7 @@ public class LoginController extends BaseController<Account> {
         Subject currentUser = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(loginId, account.getPassword(),rememberMe);
         //登录验证
-        String result = loginUtil.login(currentUser,loginId,token);
+        String result = loginComponent.login(currentUser,loginId,token);
         if(StringUtils.isNoneBlank(result)){
         	redirectAttributes.addFlashAttribute("message",result);
         }

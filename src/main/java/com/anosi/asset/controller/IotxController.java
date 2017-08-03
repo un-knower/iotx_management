@@ -114,7 +114,7 @@ public class IotxController extends BaseController<Iotx> {
 	@RequestMapping(value = "/iotx/management/detail/{iotxId}", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable(@PathVariable Long iotxId) throws Exception{
 		logger.info("view iotx management detail");
-		Iotx iotx = iotxService.findById(iotxId);
+		Iotx iotx = iotxService.getOne(iotxId);
 		this.checkCompany(iotx.getCompany().getCode());
 		
 		return new ModelAndView("iotx/managementDetail").addObject("iotx", iotx);
@@ -131,7 +131,7 @@ public class IotxController extends BaseController<Iotx> {
 	public ModelAndView toSaveIotxPage(@RequestParam(value = "id", required = false) Long id) throws Exception{
 		Iotx iotx = null;
 		if (id != null) {
-			iotx = iotxService.findById(id);
+			iotx = iotxService.getOne(id);
 			this.checkCompany(iotx.getCompany().getCode());
 		} else {
 			iotx = new Iotx();
@@ -158,7 +158,7 @@ public class IotxController extends BaseController<Iotx> {
 		}else{
 			//valid无误的时候,再检测一下companyCode
 			this.checkCompany(iotx.getCompany().getCode());
-			iotxService.saveIotx(iotx);
+			iotxService.save(iotx);
 			jsonObject.put("result", "success");
 		}
 		return jsonObject;
@@ -174,7 +174,7 @@ public class IotxController extends BaseController<Iotx> {
 	@ModelAttribute
 	public void getIox(@RequestParam(value = "iotxId", required = false) Long id, Model model) {
 		if (id != null) {
-			model.addAttribute("iotx", iotxService.findById(id));
+			model.addAttribute("iotx", iotxService.getOne(id));
 		}
 	}
 
@@ -183,11 +183,11 @@ public class IotxController extends BaseController<Iotx> {
 	@RequestMapping(value = "/iotx/deleteIotx", method = RequestMethod.POST)
 	public JSONObject deleteIotx(@RequestParam(value = "id")Long id) throws Exception {
 		logger.debug("delete iotx");
-		Iotx iotx = iotxService.findById(id);
+		Iotx iotx = iotxService.getOne(id);
 		//检测一下companyCode
 		this.checkCompany(iotx.getCompany().getCode());
 		//检测无误就可以删除
-		iotxService.deleteIotx(iotxService.findById(id));
+		iotxService.delete(id);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("result", "success");
 		return jsonObject;

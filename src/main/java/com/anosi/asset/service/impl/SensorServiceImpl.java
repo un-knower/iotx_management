@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.cache.annotation.SensorEvictCache;
 import com.anosi.asset.cache.annotation.SensorSaveCache;
+import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.SensorDao;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.IotxDataService;
@@ -22,7 +23,7 @@ import com.querydsl.core.types.Predicate;
 @Service("sensorService")
 @Transactional
 @CacheConfig(cacheNames="sensor")
-public class SensorServiceImpl implements SensorService{
+public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements SensorService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(SensorServiceImpl.class);
 	
@@ -41,34 +42,23 @@ public class SensorServiceImpl implements SensorService{
 		}
 		return sensorPage;
 	}
-
+	
 	@Override
-	public Sensor findById(Long sensorId) {
-		Sensor sensor = sensorDao.findOne(sensorId);
-		sensor.setAlarmQuantity(iotxDataService.countBysensorSN(sensor.getSerialNo()));
-		return sensor;
+	public BaseJPADao<Sensor> getRepository() {
+		return sensorDao;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@SensorSaveCache  //缓存
-	public Sensor saveSensor(Sensor sensor) {
+	public Sensor save(Sensor sensor) {
 		return sensorDao.save(sensor);
 	}
 
 	@Override
 	@SensorEvictCache  //清理缓存
-	public void deleteSensor(Sensor sensor) {
+	public void delete(Sensor sensor) {
 		sensorDao.delete(sensor);
-	}
-
-	@Override
-	public boolean exists(Predicate predicate) {
-		return sensorDao.exists(predicate);
-	}
-
-	@Override
-	public Iterable<Sensor> findAll(Predicate predicate) {
-		return sensorDao.findAll(predicate);
 	}
 
 	@Override

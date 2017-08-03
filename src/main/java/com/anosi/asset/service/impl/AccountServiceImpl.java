@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.anosi.asset.dao.jpa.AccountDao;
+import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.service.AccountService;
 
 @Service("accountService")
 @Transactional
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl extends BaseServiceImpl<Account> implements AccountService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 	
@@ -27,8 +28,8 @@ public class AccountServiceImpl implements AccountService{
 	}
 
 	@Override
-	public Account save(Account account) {
-		return this.accountDao.save(account);
+	public BaseJPADao<Account> getRepository() {
+		return accountDao;
 	}
-
+	
 }

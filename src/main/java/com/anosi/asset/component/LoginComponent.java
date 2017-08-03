@@ -1,4 +1,4 @@
-package com.anosi.asset.util;
+package com.anosi.asset.component;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExcessiveAttemptsException;
@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LoginUtil {
+public class LoginComponent {
 
-	private static final Logger logger = LoggerFactory.getLogger(LoginUtil.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoginComponent.class);
 
 	public String login(Subject currentUser,String loginId,UsernamePasswordToken token) {
 		try {

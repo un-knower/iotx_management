@@ -1,7 +1,9 @@
 package com.anosi.asset.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
+import com.google.common.collect.Multisets;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
@@ -73,12 +76,31 @@ public class TestJava8 {
 	}
 	
 	@Test
+	public void TestMap(){
+		Map<String, Integer> map = new HashMap<>();
+		map.put("a", 1);
+		map.put("b", 2);
+		System.out.println(map);
+	}
+	
+	@Test
 	public void testMultiset(){
 		ArrayList<Integer> intList = Lists.newArrayList(1,1,2,2,2,2,3,3,4,5,4,4);
+		ArrayList<Integer> intList2 = Lists.newArrayList(1,1,1,1,2,2,2,3,3,3,4,5,5,4);
+		
 		Multiset<Integer> multiset = HashMultiset.create();
 		multiset.addAll(intList);
+		
+		Multiset<Integer> multiset2 = HashMultiset.create();
+		multiset2.addAll(intList2);
+		
+		System.out.println(Multisets.intersection(multiset, multiset2));
+		Multisets.removeOccurrences(multiset, multiset2);
+		System.out.println(multiset);
+		
 		System.out.println(multiset.size());
 		System.out.println(multiset.count(1));
+		System.out.println(multiset.count(0));
 		multiset.stream().forEach(System.out::print);
 		
 		System.out.println();

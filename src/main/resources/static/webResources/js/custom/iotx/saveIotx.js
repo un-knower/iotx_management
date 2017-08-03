@@ -34,8 +34,8 @@ $(document).ready(function() {
 					if(data.result=='success'){
 						info('操作成功');
 						$("#iotxTable").trigger("reloadGrid");
-					}else{
-						warning('操作失败:'+data.result);
+					}else if(data.result=='error'){
+						warning('操作失败:'+data.message);
 					}
 				}
 			};

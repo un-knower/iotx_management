@@ -37,9 +37,9 @@ public class TestMap {
 	@Test
 	@Rollback(false)
 	public void testMapDistrict(){
-		Iterable<Iotx> iotxs = iotxService.findAll(null);
+		Iterable<Iotx> iotxs = iotxService.findAll();
 		for (Iotx iotx : iotxs) {
-			iotxService.setIoxDistrict(iotx);
+			iotxService.setIotxDistrict(iotx);
 		}
 	}
 
