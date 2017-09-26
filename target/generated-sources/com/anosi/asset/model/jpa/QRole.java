@@ -39,6 +39,8 @@ public class QRole extends EntityPathBase<Role> {
     //inherited
     public final DateTimePath<java.util.Date> lastModifiedDate = _super.lastModifiedDate;
 
+    public final StringPath name = createString("name");
+
     public final StringPath roleCode = createString("roleCode");
 
     public QRole(String variable) {

@@ -41,9 +41,13 @@ public class QRoleFunctionBtn extends EntityPathBase<RoleFunctionBtn> {
     //inherited
     public final DateTimePath<java.util.Date> lastModifiedDate = _super.lastModifiedDate;
 
+    public final StringPath name = createString("name");
+
     public final ListPath<Privilege, QPrivilege> privilegeList = this.<Privilege, QPrivilege>createList("privilegeList", Privilege.class, QPrivilege.class, PathInits.DIRECT2);
 
     public final QRoleFunction roleFunction;
+
+    public final ListPath<RoleFunctionGroup, QRoleFunctionGroup> roleFunctionGroupList = this.<RoleFunctionGroup, QRoleFunctionGroup>createList("roleFunctionGroupList", RoleFunctionGroup.class, QRoleFunctionGroup.class, PathInits.DIRECT2);
 
     public QRoleFunctionBtn(String variable) {
         this(RoleFunctionBtn.class, forVariable(variable), INITS);

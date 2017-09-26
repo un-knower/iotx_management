@@ -1,0 +1,12 @@
+{
+  "settings" : {
+        "analysis" : {
+            "analyzer" : {
+                "ik" : {
+                	"type": "custom",
+                    "tokenizer" : "ik_max_word"
+                }
+            }
+        }
+    }
+}

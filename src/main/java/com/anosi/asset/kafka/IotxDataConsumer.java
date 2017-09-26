@@ -75,8 +75,8 @@ public class IotxDataConsumer {
 			Sensor sensor = sensorService.findBySerialNo(iotxData.getSensorSN());
 			iotxData.setMaxVal(sensor.getMaxVal());
 			iotxData.setMinVal(sensor.getMinVal());
-			iotxData.setIotxSN(sensor.getIotx().getSerialNo());
-			iotxData.setCompanId(sensor.getIotx().getCompany().getId());
+			iotxData.setIotxSN(sensor.getDust().getIotx().getSerialNo());
+			iotxData.setCompanyName(sensor.getDust().getIotx().getCompany().getName());
 			iotxData.setCategory(sensor.getSensorCategory().getName());
 		}
 	}
@@ -123,7 +123,7 @@ public class IotxDataConsumer {
 	 * @param key
 	 * @param value
 	 * 
-	 * 考虑多线程安全，加入了锁
+	 * 考虑多线程安全,加入了锁,防止出现在比对还没完成前,另一个线程完成了比对
 	 */
 	private void checkIsContinuously(String key, String value) {
 		lock.lock();// 得到锁

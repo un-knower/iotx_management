@@ -49,6 +49,8 @@ public class QAccount extends EntityPathBase<Account> {
 
     public final ListPath<Privilege, QPrivilege> privilegeList = this.<Privilege, QPrivilege>createList("privilegeList", Privilege.class, QPrivilege.class, PathInits.DIRECT2);
 
+    public final ListPath<RoleFunctionGroup, QRoleFunctionGroup> roleFunctionGroupList = this.<RoleFunctionGroup, QRoleFunctionGroup>createList("roleFunctionGroupList", RoleFunctionGroup.class, QRoleFunctionGroup.class, PathInits.DIRECT2);
+
     public final ListPath<Role, QRole> roleList = this.<Role, QRole>createList("roleList", Role.class, QRole.class, PathInits.DIRECT2);
 
     public final StringPath salt = createString("salt");

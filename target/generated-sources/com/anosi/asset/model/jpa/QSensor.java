@@ -32,10 +32,14 @@ public class QSensor extends EntityPathBase<Sensor> {
     //inherited
     public final DateTimePath<java.util.Date> createdDate = _super.createdDate;
 
+    public final QDevice device;
+
+    public final QDust dust;
+
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final QIotx iotx;
+    public final BooleanPath isWorked = createBoolean("isWorked");
 
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
@@ -49,9 +53,9 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     public final QSensorCategory sensorCategory;
 
-    public final QSensorPort sensorPort;
-
     public final StringPath serialNo = createString("serialNo");
+
+    public final StringPath unit = createString("unit");
 
     public QSensor(String variable) {
         this(Sensor.class, forVariable(variable), INITS);
@@ -71,9 +75,9 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     public QSensor(Class<? extends Sensor> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.iotx = inits.isInitialized("iotx") ? new QIotx(forProperty("iotx"), inits.get("iotx")) : null;
+        this.device = inits.isInitialized("device") ? new QDevice(forProperty("device"), inits.get("device")) : null;
+        this.dust = inits.isInitialized("dust") ? new QDust(forProperty("dust"), inits.get("dust")) : null;
         this.sensorCategory = inits.isInitialized("sensorCategory") ? new QSensorCategory(forProperty("sensorCategory")) : null;
-        this.sensorPort = inits.isInitialized("sensorPort") ? new QSensorPort(forProperty("sensorPort"), inits.get("sensorPort")) : null;
     }
 
 }

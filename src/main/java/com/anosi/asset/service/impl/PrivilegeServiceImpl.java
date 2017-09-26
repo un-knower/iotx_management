@@ -31,4 +31,9 @@ public class PrivilegeServiceImpl extends BaseServiceImpl<Privilege> implements 
 		return privilegeDao.findByAccount_loginIdEqualsAndRoleFunction_RoleFunctionPageIdEquals(loginId, roleFunctionPageId);
 	}
 
+	@Override
+	public void deleteByAccountLoginId(String accountLoginId) {
+		Iterable<Privilege> privileges = privilegeDao.findByAccount_loginIdEquals(accountLoginId);
+		privilegeDao.delete(privileges);
+	}
 }

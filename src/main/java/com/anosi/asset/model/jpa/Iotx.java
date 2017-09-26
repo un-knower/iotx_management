@@ -13,68 +13,60 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Formula;
-import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
-@Table(name="iotx")
-public class Iotx extends BaseEntity{
+@Table(name = "iotx")
+public class Iotx extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2480716502123174880L;
-	
-	@NotBlank (message="{SNCannotBeNull}")
+
 	private String serialNo;
-	
+
 	private String installLocation;
-	
+
 	private String cpu;
-	
+
 	private String memory;
-	
+
 	private String hardDisk;
-	
+
 	private String mac;
-	
+
 	private String version;
-	
-	private String url;
-	
-	private String wifiSsid;
-	
+
 	private Date openTime;
-	
+
 	private Long continueTime;
-	
+
+	private Long dustQuantity;
+
 	private Long sensorQuantity;
-	
+
 	private Long alarmQuantity;
-	
-	private List<Sensor> sensorList = new ArrayList<Sensor>();
-	
-	@NotNull(message="{CompanyCannotBeNull}")
+
+	private List<Dust> dustList = new ArrayList<>();
+
 	private Company company;
-	
+
 	private NetworkCategory networkCategory;
 	
-	private IotxCategory iotxCategory;
-	
-	private IotxModel iotxModel;
-	
-	private Double longitude;//经度
-	
-	private Double latitude;//纬度
-	
-	private District district;//所属区县
-	 
-	//内部枚举类
-	public static enum NetworkCategory{
-		WIFI("wifi"),NET_2G("2G"),NET_3G("3G");
-		
+	private Status status;
+
+	private Double longitude;// 经度
+
+	private Double latitude;// 纬度
+
+	private District district;// 所属区县
+
+	// 内部枚举类
+	public static enum NetworkCategory {
+		WIFI("wifi"), NET_2G("2G"), NET_3G("3G");
+
 		private String network;
 
 		private NetworkCategory(String network) {
@@ -88,48 +80,29 @@ public class Iotx extends BaseEntity{
 		public void setNetwork(String network) {
 			this.network = network;
 		}
-		
+
 	}
 	
-	public static enum IotxCategory{
-		IOTXCATEGORY("iotxCategory");
+	public static enum Status {
+		ONLINE("在线"), OFFLINE("离线");
+
+		private String status;
 		
-		private String category;
-
-		private IotxCategory(String category) {
-			this.category = category;
+		private Status(String status) {
+			this.status = status;
 		}
 
-		public String getCategory() {
-			return category;
+		public String getStatus() {
+			return status;
 		}
 
-		public void setCategory(String category) {
-			this.category = category;
+		public void setStatus(String status) {
+			this.status = status;
 		}
-		
+
 	}
 
-	public static enum IotxModel{
-		IOTXMODEL("iotxModel");
-		
-		private String model;
-
-		private IotxModel(String model) {
-			this.model = model;
-		}
-
-		public String getModel() {
-			return model;
-		}
-
-		public void setModel(String model) {
-			this.model = model;
-		}
-		
-	}
-	
-	@Column(unique=true,nullable=false)
+	@Column(unique = true, nullable = false)
 	public String getSerialNo() {
 		return serialNo;
 	}
@@ -138,13 +111,23 @@ public class Iotx extends BaseEntity{
 		this.serialNo = serialNo;
 	}
 
-	@OneToMany(cascade=CascadeType.MERGE,fetch=FetchType.LAZY,mappedBy="iotx",targetEntity=Sensor.class)
-	public List<Sensor> getSensorList() {
-		return sensorList;
+	// 获取关联的微尘数量
+	@Formula("(select COUNT(*) from dust d where d.iotx_id=id)")
+	public Long getDustQuantity() {
+		return dustQuantity;
 	}
 
-	public void setSensorList(List<Sensor> sensorList) {
-		this.sensorList = sensorList;
+	public void setDustQuantity(Long dustQuantity) {
+		this.dustQuantity = dustQuantity;
+	}
+
+	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "iotx", targetEntity = Dust.class)
+	public List<Dust> getDustList() {
+		return dustList;
+	}
+
+	public void setDustList(List<Dust> dustList) {
+		this.dustList = dustList;
 	}
 
 	public String getInstallLocation() {
@@ -195,22 +178,6 @@ public class Iotx extends BaseEntity{
 		this.version = version;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	public String getWifiSsid() {
-		return wifiSsid;
-	}
-
-	public void setWifiSsid(String wifiSsid) {
-		this.wifiSsid = wifiSsid;
-	}
-
 	public Date getOpenTime() {
 		return openTime;
 	}
@@ -218,9 +185,9 @@ public class Iotx extends BaseEntity{
 	public void setOpenTime(Date openTime) {
 		this.openTime = openTime;
 	}
-	
-	//获取关联的传感器数量
-	@Formula("(select COUNT(*) from sensor s where s.iotx_id=id)")  
+
+	// 获取关联的传感器数量
+	@Formula("(select COUNT(*) from sensor s left join dust d on s.dust_id = d.id where d.iotx_id=id)")
 	public Long getSensorQuantity() {
 		return sensorQuantity;
 	}
@@ -245,7 +212,8 @@ public class Iotx extends BaseEntity{
 	public void setContinueTime(Long continueTime) {
 		this.continueTime = continueTime;
 	}
-	@ManyToOne(fetch=FetchType.LAZY,targetEntity=Company.class)
+
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Company.class)
 	public Company getCompany() {
 		return company;
 	}
@@ -261,21 +229,13 @@ public class Iotx extends BaseEntity{
 	public void setNetworkCategory(NetworkCategory networkCategory) {
 		this.networkCategory = networkCategory;
 	}
-
-	public IotxCategory getIotxCategory() {
-		return iotxCategory;
+	
+	public Status getStatus() {
+		return status;
 	}
 
-	public void setIotxCategory(IotxCategory iotxCategory) {
-		this.iotxCategory = iotxCategory;
-	}
-
-	public IotxModel getIotxModel() {
-		return iotxModel;
-	}
-
-	public void setIotxModel(IotxModel iotxModel) {
-		this.iotxModel = iotxModel;
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	public Double getLongitude() {
@@ -293,7 +253,8 @@ public class Iotx extends BaseEntity{
 	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
-	@ManyToOne(fetch=FetchType.LAZY,targetEntity=District.class)
+
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = District.class)
 	public District getDistrict() {
 		return district;
 	}
@@ -306,7 +267,8 @@ public class Iotx extends BaseEntity{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((serialNo == null) ? 0 : serialNo.hashCode())+((getId() == null) ? 0 : getId().hashCode());
+		result = prime * result + ((serialNo == null) ? 0 : serialNo.hashCode())
+				+ ((getId() == null) ? 0 : getId().hashCode());
 		return result;
 	}
 
@@ -319,13 +281,13 @@ public class Iotx extends BaseEntity{
 		if (getClass() != obj.getClass())
 			return false;
 		Iotx other = (Iotx) obj;
-		if(Objects.equals(serialNo, other.getSerialNo())){
+		if (Objects.equals(serialNo, other.getSerialNo())) {
 			return true;
 		}
-		if(Objects.equals(getId(), other.getId())){
+		if (Objects.equals(getId(), other.getId())) {
 			return true;
 		}
 		return true;
 	}
-	
+
 }

@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.alibaba.fastjson.annotation.JSONField;
 
 @Document
-public class IotxData extends AbstractDocument{
-	
+public class IotxData extends AbstractDocument {
+
 	/**
 	 * 
 	 */
@@ -17,33 +17,35 @@ public class IotxData extends AbstractDocument{
 
 	@Indexed
 	private String iotxSN;
-	
+
 	@Indexed
 	private String sensorSN;
-	
+
 	@Indexed
-	private Long companId;
-	
-	private String category;
-	
+	private String companyName;
+
 	private Double val;
-	
+
+	private String unit;// 单位
+
 	private Double maxVal;
-	
+
 	private Double minVal;
-	
+
 	private Date collectTime;
-	
+
 	private Date closeTime;
-	
+
 	private String message;
-	
+
 	private Level level;
 	
-	//内部枚举类
-	public static enum Level{
-		NORMAL("正常"),ALARM_1("一级告警"),ALARM_2("二级告警"),ALARM_3("三级告警");
-		
+	private String category;
+
+	// 内部枚举类
+	public static enum Level {
+		NORMAL("正常"), ALARM_1("一级告警"), ALARM_2("二级告警"), ALARM_3("三级告警");
+
 		private String level;
 
 		private Level(String level) {
@@ -57,6 +59,14 @@ public class IotxData extends AbstractDocument{
 		public void setLevel(String level) {
 			this.level = level;
 		}
+	}
+	
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 	public String getIotxSN() {
@@ -75,7 +85,7 @@ public class IotxData extends AbstractDocument{
 		this.sensorSN = sensorSN;
 	}
 
-	@JSONField(format="yyyy-MM-dd HH:mm:ss")
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	public Date getCloseTime() {
 		return closeTime;
 	}
@@ -100,14 +110,6 @@ public class IotxData extends AbstractDocument{
 		this.level = level;
 	}
 
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
 	public Double getVal() {
 		return val;
 	}
@@ -123,13 +125,13 @@ public class IotxData extends AbstractDocument{
 	public void setMaxVal(Double maxVal) {
 		this.maxVal = maxVal;
 	}
-	
-	public Long getCompanId() {
-		return companId;
+
+	public String getCompanyName() {
+		return companyName;
 	}
 
-	public void setCompanId(Long companId) {
-		this.companId = companId;
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
 
 	public Double getMinVal() {
@@ -140,7 +142,7 @@ public class IotxData extends AbstractDocument{
 		this.minVal = minVal;
 	}
 
-	@JSONField(format="yyyy-MM-dd HH:mm:ss")
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
 	public Date getCollectTime() {
 		return collectTime;
 	}
@@ -149,5 +151,12 @@ public class IotxData extends AbstractDocument{
 		this.collectTime = collectTime;
 	}
 
-}
+	public String getCategory() {
+		return category;
+	}
 
+	public void setCategory(String category) {
+		this.category = category;
+	}
+	
+}

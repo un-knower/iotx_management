@@ -26,13 +26,13 @@ public class QCompany extends EntityPathBase<Company> {
 
     public final StringPath address = createString("address");
 
-    public final StringPath code = createString("code");
-
     //inherited
     public final StringPath createBy = _super.createBy;
 
     //inherited
     public final DateTimePath<java.util.Date> createdDate = _super.createdDate;
+
+    public final ListPath<Device, QDevice> deviceList = this.<Device, QDevice>createList("deviceList", Device.class, QDevice.class, PathInits.DIRECT2);
 
     //inherited
     public final NumberPath<Long> id = _super.id;

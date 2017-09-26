@@ -11,18 +11,20 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "role")
-public class Role extends BaseEntity{
-	
+public class Role extends BaseEntity {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7714418401452387106L;
-	
+
 	private String roleCode;
-	
+
+	private String name;
+
 	private List<Account> accountList = new ArrayList<Account>();
 
-	@Column(unique=true,nullable=false)
+	@Column(unique = true, nullable = false)
 	public String getRoleCode() {
 		return roleCode;
 	}
@@ -31,7 +33,7 @@ public class Role extends BaseEntity{
 		this.roleCode = roleCode;
 	}
 
-	@ManyToMany(fetch=FetchType.LAZY,mappedBy="roleList",targetEntity=Account.class)
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "roleList", targetEntity = Account.class)
 	public List<Account> getAccountList() {
 		return accountList;
 	}
@@ -40,4 +42,12 @@ public class Role extends BaseEntity{
 		this.accountList = accountList;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 }

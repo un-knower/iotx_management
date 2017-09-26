@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.mongo.FileMetaDataDao;
 import com.anosi.asset.dao.mongo.GridFsDao;
 import com.anosi.asset.model.mongo.FileMetaData;
@@ -25,7 +26,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 	private static final Logger logger = LoggerFactory.getLogger(FileMetaDataServiceImpl.class);
 
 	@Autowired
-	private FileMetaDataDao fileAttributesDao;
+	private FileMetaDataDao fileMetaDataDao;
 	@Autowired
 	private GridFsDao gridFsDao;
 	
@@ -33,6 +34,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 	public FileMetaData saveFile(String identification, String fileName,InputStream is,Long fileSize) throws Exception{
 		FileMetaData fileMetaData=new FileMetaData();
 		fileMetaData.setIdentification(identification);
+		fileMetaData.setUploader(SessionUtil.getCurrentUser()==null?identification:SessionUtil.getCurrentUser().getLoginId());
 		fileMetaData.setUploadTime(new Date());
 		fileMetaData.setFileName(fileName);
 		fileMetaData.setFileSize(fileSize);
@@ -45,7 +47,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 		logger.info("upload file to gridfs");
 		Object id = gridFsDao.uploadFileToGridFS(in,fileMetaData.getFileName());
 		fileMetaData.setObjectId(FileMetaData.ObjectIdToBigIntegerConverter((ObjectId) id));
-		fileAttributesDao.save(fileMetaData);
+		fileMetaDataDao.save(fileMetaData);
 		return fileMetaData;
 	}
 	
@@ -54,7 +56,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 	@Override
 	public void deleteFile(FileMetaData fileMetaData) {
 		ObjectId id=FileMetaData.BigIntegerToObjectIdConverter(fileMetaData.getObjectId());
-		fileAttributesDao.delete(fileMetaData);
+		fileMetaDataDao.delete(fileMetaData);
 		//gridfs删除文件
 		logger.info("delete file from gridfs");
 		gridFsDao.deleteFileFromGridFS(id);
@@ -62,12 +64,17 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 
 	@Override
 	public Page<FileMetaData> findByIdentification(String identification,Pageable pageable) {
-		return fileAttributesDao.findByIdentification(identification,pageable);
+		return fileMetaDataDao.findByIdentification(identification,pageable);
+	}
+	
+	@Override
+	public Page<FileMetaData> findByUploader(String uploader,Pageable pageable) {
+		return fileMetaDataDao.findByUploader(uploader,pageable);
 	}
 
 	@Override
 	public FileMetaData findByObjectId(BigInteger objectId) {
-		return fileAttributesDao.findByObjectId(objectId);
+		return fileMetaDataDao.findByObjectId(objectId);
 	}
 
 	@Override

@@ -26,14 +26,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
-import com.anosi.asset.model.jpa.Iotx.IotxCategory;
-import com.anosi.asset.model.jpa.Iotx.IotxModel;
+import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
-import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.IotxService;
-import com.anosi.asset.util.JqgridUtil;
-import com.anosi.asset.util.JsonUtil;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -44,20 +42,31 @@ public class IotxController extends BaseController<Iotx> {
 	@Autowired
 	private IotxService iotxService;
 
-	@Autowired
-	private JqgridUtil<Iotx> jqgridUtil;
-	
-	@Autowired
-	private JsonUtil<Iotx> jsonUtil;
-	
-	@Autowired
-	private CompanyService companySerivce;
+	/***
+	 * 在所有关于iotx的请求之前，为查询条件中添加公司
+	 * 
+	 * @param companyId
+	 * @param model
+	 */
+	@ModelAttribute
+	public void interceptIotx(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
+			@RequestParam(value = "company.id", required = false) Long companyId, Model model) {
+		Account account = SessionUtil.getCurrentUser();
+		if (account != null) {
+			if (!account.isAdmin()) {
+				model.addAttribute("predicate", QIotx.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
+			} else if (account.isAdmin() && companyId != null) {
+				model.addAttribute("predicate", QIotx.iotx.company.id.eq(companyId).and(predicate));
+			}
+		}
+	}
 
 	/***
 	 * 进入iotx管理地图页面
+	 * 
 	 * @return
 	 */
-	@RequiresPermissions({"iotxManagement:view"})
+	@RequiresPermissions({ "iotxManagement:view" })
 	@RequestMapping(value = "/iotx/management/map", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageMap() {
 		logger.info("view iotx management map");
@@ -66,20 +75,20 @@ public class IotxController extends BaseController<Iotx> {
 
 	/***
 	 * 进入iotx管理表格页面
+	 * 
 	 * @return
 	 */
-	@RequiresPermissions({"iotxManagement:view"})
+	@RequiresPermissions({ "iotxManagement:view" })
 	@RequestMapping(value = "/iotx/management/table", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable() {
 		logger.info("view iotx management table");
-		return new ModelAndView("iotx/managementTable").addObject("networkCategorys", NetworkCategory.values())
-				.addObject("iotxCategorys", IotxCategory.values()).addObject("iotxModels", IotxModel.values())
-				.addObject("companys", companySerivce.findAll());
+		return new ModelAndView("iotx/managementTable").addObject("networkCategorys", NetworkCategory.values());
 	}
 
 	/***
 	 * 获取iotx管理的数据
 	 * 
+	 * @param showType
 	 * @param pageable
 	 * @param predicate
 	 *            querydsl自动绑定，形式:serialNo=abc&.....
@@ -88,76 +97,70 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequiresPermissions({"iotxManagement:view"})
-	@RequestMapping(value = "/iotx/management/data", method = RequestMethod.GET)
-	public JSONObject findIotxManageData(
+	@RequiresPermissions({ "iotxManagement:view" })
+	@RequestMapping(value = "/iotx/management/data/{showType}", method = RequestMethod.GET)
+	public JSONObject findIotxManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@QuerydslPredicate(root = Iotx.class) Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes, @RequestParam(value = "rowId") String rowId,
-			@RequestParam(value = "company.code",required=false)String companyCode)
-					throws Exception {
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find iotx");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
-		
-		this.checkCompany(companyCode);
-		return jqgridUtil.parsePageToJqgridJson(iotxService.findAll(predicate, pageable), rowId,
-				showAttributes.split(","));
+
+		return parseToJson(iotxService.findAll(predicate, pageable), rowId, showAttributes, showType);
 	}
 
 	/***
 	 * 点击iotx详情进入的页面
+	 * 
 	 * @param iotxId
 	 * @return
 	 */
-	@RequiresPermissions({"iotxManagement:view","sensorManagement:view"})
+	@RequiresPermissions({ "iotxManagement:view", "dustManagement:view" })
 	@RequestMapping(value = "/iotx/management/detail/{iotxId}", method = RequestMethod.GET)
-	public ModelAndView toViewIotxManageTable(@PathVariable Long iotxId) throws Exception{
+	public ModelAndView toViewIotxManageTable(@PathVariable Long iotxId) throws Exception {
 		logger.info("view iotx management detail");
 		Iotx iotx = iotxService.getOne(iotxId);
-		this.checkCompany(iotx.getCompany().getCode());
-		
+
 		return new ModelAndView("iotx/managementDetail").addObject("iotx", iotx);
 	}
 
 	/***
 	 * 进入save和update iotx的页面
+	 * 
 	 * @param id
 	 * @return
 	 */
 	@RequiresAuthentication
-	@RequiresPermissions({"iotxManagement:add","iotxManagement:edit"})
-	@RequestMapping(value = "/iotx/saveIotx", method = RequestMethod.GET)
-	public ModelAndView toSaveIotxPage(@RequestParam(value = "id", required = false) Long id) throws Exception{
+	@RequiresPermissions({ "iotxManagement:add", "iotxManagement:edit" })
+	@RequestMapping(value = "/iotx/save", method = RequestMethod.GET)
+	public ModelAndView toSaveIotxPage(@RequestParam(value = "id", required = false) Long id) throws Exception {
 		Iotx iotx = null;
 		if (id != null) {
 			iotx = iotxService.getOne(id);
-			this.checkCompany(iotx.getCompany().getCode());
 		} else {
 			iotx = new Iotx();
 		}
-		return new ModelAndView("iotx/saveIotx").addObject("iotx", iotx).addObject("networkCategorys", NetworkCategory.values())
-				.addObject("iotxCategorys", IotxCategory.values()).addObject("iotxModels", IotxModel.values())
-				.addObject("companys", companySerivce.findAll());
+		return new ModelAndView("iotx/save").addObject("iotx", iotx).addObject("networkCategorys",
+				NetworkCategory.values());
 	}
 
 	@RequiresAuthentication
-	@RequiresPermissions({"iotxManagement:add","iotxManagement:edit"})
-	@RequestMapping(value = "/iotx/saveIotx", method = RequestMethod.POST)
-	public JSONObject saveIotx(@Valid @ModelAttribute("iotx") Iotx iotx,BindingResult result) throws Exception {
+	@RequiresPermissions({ "iotxManagement:add", "iotxManagement:edit" })
+	@RequestMapping(value = "/iotx/save", method = RequestMethod.POST)
+	public JSONObject saveIotx(@Valid @ModelAttribute("iotx") Iotx iotx, BindingResult result) throws Exception {
 		logger.debug("saveOrUpdate iotx");
 		JSONObject jsonObject = new JSONObject();
-		//valid是否有错误
-		if(result.hasErrors()){
-			List<ObjectError>  list = result.getAllErrors();
+		// valid是否有错误
+		if (result.hasErrors()) {
+			List<ObjectError> list = result.getAllErrors();
 			StringBuffer stringBuffer = new StringBuffer();
-            for(ObjectError error:list){
-            	stringBuffer.append(error.getCode()+"---"+error.getArguments()+"---"+error.getDefaultMessage()+"\n");
-            }
-            jsonObject.put("result", stringBuffer.toString());
-		}else{
-			//valid无误的时候,再检测一下companyCode
-			this.checkCompany(iotx.getCompany().getCode());
+			for (ObjectError error : list) {
+				stringBuffer.append(
+						error.getCode() + "---" + error.getArguments() + "---" + error.getDefaultMessage() + "\n");
+			}
+			jsonObject.put("result", stringBuffer.toString());
+		} else {
 			iotxService.save(iotx);
 			jsonObject.put("result", "success");
 		}
@@ -179,14 +182,10 @@ public class IotxController extends BaseController<Iotx> {
 	}
 
 	@RequiresAuthentication
-	@RequiresPermissions({"iotxManagement:delete"})
-	@RequestMapping(value = "/iotx/deleteIotx", method = RequestMethod.POST)
-	public JSONObject deleteIotx(@RequestParam(value = "id")Long id) throws Exception {
+	@RequiresPermissions({ "iotxManagement:delete" })
+	@RequestMapping(value = "/iotx/delete", method = RequestMethod.POST)
+	public JSONObject deleteIotx(@RequestParam(value = "id") Long id) throws Exception {
 		logger.debug("delete iotx");
-		Iotx iotx = iotxService.getOne(id);
-		//检测一下companyCode
-		this.checkCompany(iotx.getCompany().getCode());
-		//检测无误就可以删除
 		iotxService.delete(id);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("result", "success");
@@ -195,46 +194,48 @@ public class IotxController extends BaseController<Iotx> {
 
 	/**
 	 * 按照Iotx某些属性判断是否存在
+	 * 
 	 * @param predicate
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/iotx/checkExist", method = RequestMethod.GET)
-	public JSONObject checkExist(@QuerydslPredicate(root = Iotx.class) Predicate predicate) throws Exception{
+	public JSONObject checkExist(@ModelAttribute Predicate predicate) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("result", iotxService.exists(predicate));
 		return jsonObject;
 	}
-	
+
 	/***
 	 * 按照某些属性返回iotx的jsonarray
+	 * 
 	 * @param predicate
 	 * @param showAttributes
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/iotx/jsonArray", method = RequestMethod.GET)
-	public JSONArray getIoxJsonArray(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes,@RequestParam(value = "company.code",required=false)String companyCode) throws Exception{
-		this.checkCompany(companyCode);
+	public JSONArray getIoxJsonArray(@ModelAttribute Predicate predicate,
+			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
 		return jsonUtil.parseAttributesToJsonArray(showAttributes.split(","), iotxService.findAll(predicate));
-	} 
-	
+	}
+
 	/****
 	 * 获取iotx分布的数据
+	 * 
 	 * @param predicate
 	 * @param showAttributes
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/iotx/iotxDistribute", method = RequestMethod.GET)
-	public JSONArray iotxDistribute(@QuerydslPredicate(root = Iotx.class) Predicate predicate,@RequestParam(value = "company.code",required=false)String companyCode) throws Exception{
-		this.checkCompany(companyCode);
+	public JSONArray iotxDistribute(@ModelAttribute Predicate predicate) throws Exception {
 		return iotxService.ascertainArea(predicate);
-	} 
-	
+	}
+
 	/***
 	 * 获取autocomplete的source
+	 * 
 	 * @param predicate
 	 * @param label
 	 * @param value
@@ -242,11 +243,9 @@ public class IotxController extends BaseController<Iotx> {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/iotx/autocomplete", method = RequestMethod.GET)
-	public JSONArray autocomplete(@QuerydslPredicate(root = Iotx.class) Predicate predicate,@RequestParam(value = "label") String label,
-			String value,@RequestParam(value = "company.code",required=false)String companyCode) throws Exception{
-		this.checkCompany(companyCode);
+	public JSONArray autocomplete(@ModelAttribute Predicate predicate, @RequestParam(value = "label") String label,
+			String value) throws Exception {
 		return jsonUtil.parseAttributesToAutocomplete(label, value, iotxService.findAll(predicate));
-	} 
-	
-	
+	}
+
 }

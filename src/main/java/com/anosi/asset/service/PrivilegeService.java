@@ -7,5 +7,7 @@ public interface PrivilegeService extends BaseService<Privilege, Long>{
 	public Privilege findByRoleFunctionPageId(String roleFunctionPageId);
 	
 	public Privilege findByAccountAndRoleFunction(String loginId,String roleFunctionPageId);
+
+	void deleteByAccountLoginId(String accountLoginId);
 	
 }

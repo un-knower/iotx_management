@@ -45,7 +45,7 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 	 */
 	@RequestMapping(value = "/fileUpload/multipartFiles/{identification}", method = RequestMethod.POST)
 	public String fileUpload(@RequestParam("file_upload") MultipartFile[] multipartFiles,
-			@PathVariable String identification) {
+			@PathVariable String identification) throws Exception {
 		logger.info("file upload");
 		logger.debug("identification:{}",identification);
 		JSONObject jsonObject = new JSONObject();
@@ -68,13 +68,28 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 	}
 
 	/***
-	 * 可下载文件的列表
+	 * 根据上传者来获取可下载文件的列表
 	 * 
 	 * @param identification
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/fileDownload/list/{identification}", method = RequestMethod.GET)
-	public Page<FileMetaData> fileDownloadList(@PathVariable String identification,
+	@RequestMapping(value = "/fileDownload/list/{uploader}", method = RequestMethod.GET)
+	public Page<FileMetaData> fileDownloadList(@PathVariable String uploader,
+			@PageableDefault(sort = {"uploadTime" }, direction = Sort.Direction.DESC, page = 0, value = 20) Pageable pageable)throws Exception {
+		logger.info("to view file list");
+		logger.debug("uploader:{}",uploader);
+		logger.debug("page:{},size{},sort{}",pageable.getPageNumber(),pageable.getPageSize(),pageable.getSort());
+		return fileMetaDataService.findByIdentification(uploader, pageable);
+	}
+	
+	/***
+	 * 根据文件组来获取可下载文件的列表
+	 * 
+	 * @param identification
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/fileDownload/list/group/{identification}", method = RequestMethod.GET)
+	public Page<FileMetaData> fileDownloadListGroup(@PathVariable String identification,
 			@PageableDefault(sort = {"uploadTime" }, direction = Sort.Direction.DESC, page = 0, value = 20) Pageable pageable)throws Exception {
 		logger.info("to view file list");
 		logger.debug("identification:{}",identification);
@@ -99,10 +114,10 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 		if(fileMetaData!=null){
 			logger.debug("fileMetaData:{}",fileMetaData.toString());
 			// 设置http请求头
-			response.setHeader("Contentdisposition", "attachment;filename=" + fileMetaData.getFileName());
-			response.setContentType("application/forcedownload;charset=utf8");
+			response.setHeader("Content-disposition", "attachment;filename=" + new String(fileMetaData.getFileName().getBytes("gbk"),"iso-8859-1"));
+			response.setContentType("application/force-download;charset=utf-8");
 			response.setHeader("Content_length", String.valueOf(fileMetaData.getFileSize()));
-
+			
 			/*start:trywithresource*/
 			try (BufferedInputStream bis = new BufferedInputStream(fileMetaDataService.getFileByObjectId(objectId));// 获取文件流
 					OutputStream os = new BufferedOutputStream(response.getOutputStream())) {

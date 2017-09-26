@@ -15,6 +15,7 @@ public class GlobalController<T> {
 	
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleAllException(Exception ex) throws IOException {
+		ex.printStackTrace();
 		//如果抛出的是自定义的异常
 		if(ex instanceof CustomRunTimeException){
 			ModelAndView mv = new ModelAndView(new MappingJackson2JsonView());
@@ -27,8 +28,13 @@ public class GlobalController<T> {
 			ModelAndView mv =  new ModelAndView("redirect:/login");
 			return mv;
 		}else{
-			ex.printStackTrace();
 			ModelAndView mv =  new ModelAndView("error");
+			StringBuilder sb = new StringBuilder();
+			StackTraceElement[] stackTrace = ex.getStackTrace();
+			for (StackTraceElement stackTraceElement : stackTrace) {
+				sb.append(stackTraceElement+"\n");
+			}
+			mv.addObject("message", sb.toString());
 			return mv;
 		}
 	}

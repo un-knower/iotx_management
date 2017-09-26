@@ -19,6 +19,8 @@ public class FileMetaData extends AbstractDocument{
 	@Indexed
 	private String identification;//组标识，下次可以通过标识找到相应的fileList
 	
+	private String uploader;
+	
 	private Date uploadTime;
 	
 	private String fileName;
@@ -35,7 +37,7 @@ public class FileMetaData extends AbstractDocument{
 	public void setIdentification(String identification) {
 		this.identification = identification;
 	}
-	
+
 	@JSONField(format="yyyy-MM-dd HH:mm:ss")
 	public Date getUploadTime() {
 		return uploadTime;
@@ -69,10 +71,18 @@ public class FileMetaData extends AbstractDocument{
 		this.fileSize = fileSize;
 	}
 
+	public String getUploader() {
+		return uploader;
+	}
+
+	public void setUploader(String uploader) {
+		this.uploader = uploader;
+	}
+
 	@Override
 	public String toString() {
-		return "FileMetaData [identification=" + identification + ", uploadTime=" + uploadTime + ", fileName="
-				+ fileName + ", fileSize=" + fileSize + ", objectId=" + objectId + "]";
+		return "FileMetaData [identification=" + identification + ", uploader=" + uploader + ", uploadTime="
+				+ uploadTime + ", fileName=" + fileName + ", fileSize=" + fileSize + ", objectId=" + objectId + "]";
 	}
-	
+
 }

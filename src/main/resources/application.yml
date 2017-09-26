@@ -5,9 +5,14 @@ spring:
     mongodb:
       uri: mongodb://127.0.0.1:27017/test
       
+    #elasticsearch
+    elasticsearch:
+      cluster-name: elasticsearch
+      cluster-nodes: 127.0.0.1:9300
+      
   #i18n
   messages:
-    basename: i18n/messages
+    basename: static/webResources/i18n/messages
     
   #thymeleaf
   thymeleaf:

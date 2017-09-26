@@ -13,33 +13,33 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 @Entity
 @Table(name = "account")
-public class Account extends BaseEntity{
+public class Account extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1503690620448714787L;
-	
+
 	private String name;
-	
+
 	private String loginId;
 
 	private String password;
-	
+
 	private Company company;
-	
+
 	private List<Role> roleList = new ArrayList<Role>();
 
 	private List<Privilege> privilegeList = new ArrayList<Privilege>();
 	
-	//密码加盐
+	private List<RoleFunctionGroup> roleFunctionGroupList = new ArrayList<>();
+
+	// 密码加盐
 	private String salt;
-	
-	@Column(unique=true,nullable=false)
+
+	@Column(unique = true, nullable = false)
 	public String getLoginId() {
 		return loginId;
 	}
@@ -55,7 +55,7 @@ public class Account extends BaseEntity{
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	@JSONField(serialize=false)
+
 	@ManyToMany(fetch = FetchType.LAZY, targetEntity = Role.class)
 	public List<Role> getRoleList() {
 		return roleList;
@@ -64,7 +64,7 @@ public class Account extends BaseEntity{
 	public void setRoleList(List<Role> roleList) {
 		this.roleList = roleList;
 	}
-	@JSONField(serialize=false)
+
 	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "account", targetEntity = Privilege.class)
 	public List<Privilege> getPrivilegeList() {
 		return privilegeList;
@@ -89,7 +89,8 @@ public class Account extends BaseEntity{
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
-	@ManyToOne(fetch=FetchType.LAZY,targetEntity=Company.class)
+
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Company.class)
 	public Company getCompany() {
 		return company;
 	}
@@ -97,16 +98,31 @@ public class Account extends BaseEntity{
 	public void setCompany(Company company) {
 		this.company = company;
 	}
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	public List<RoleFunctionGroup> getRoleFunctionGroupList() {
+		return roleFunctionGroupList;
+	}
+
+	public void setRoleFunctionGroupList(List<RoleFunctionGroup> roleFunctionGroupList) {
+		this.roleFunctionGroupList = roleFunctionGroupList;
+	}
 
 	/**
 	 * 密码盐.
+	 * 
 	 * @return
 	 */
 	@Transient
-    public String getCredentialsSalt(){
-       return this.loginId+this.salt;
-    }
+	public String getCredentialsSalt() {
+		return this.loginId + this.salt;
+	}
 	
-	
-	
+	@Transient
+	public boolean isAdmin(){
+		Role role = new Role();
+		role.setRoleCode("admin");
+		return roleList.contains(role);
+	}
+
 }

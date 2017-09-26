@@ -2,63 +2,54 @@ package com.anosi.asset.model.jpa;
 
 import java.util.Objects;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
-import javax.persistence.NamedSubgraph;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name="sensor")
-@NamedEntityGraphs({
-	@NamedEntityGraph(
-				name = "sensor.all",
-				attributeNodes = { 
-						@NamedAttributeNode("sensorCategory"),
-						@NamedAttributeNode("sensorPort"),
-						@NamedAttributeNode(value = "sensorPort",subgraph = "sensorInterface")
-				},
-				subgraphs = {
-						@NamedSubgraph(name = "sensorInterface", attributeNodes = @NamedAttributeNode("sensorInterface")),		  
-				}//延伸属性
-			),
-	@NamedEntityGraph(
-			name = "sensor.iotx.company",
-			attributeNodes = { 
-					@NamedAttributeNode("iotx"),
-					@NamedAttributeNode(value = "iotx",subgraph = "company")
-			},
-			subgraphs = {
-					@NamedSubgraph(name = "company", attributeNodes = @NamedAttributeNode("company")),		  
-			}//延伸属性
-		),
-})
-public class Sensor extends BaseEntity{
+@Table(name = "sensor", uniqueConstraints = { @UniqueConstraint(columnNames = { "serialNo", "dust_id" }) })
+/*
+ * @NamedEntityGraphs({
+ * 
+ * @NamedEntityGraph( name = "sensor.all", attributeNodes = {
+ * 
+ * @NamedAttributeNode("sensorCategory"),
+ * 
+ * @NamedAttributeNode("sensorPort"),
+ * 
+ * @NamedAttributeNode(value = "sensorPort",subgraph = "sensorInterface") },
+ * subgraphs = {
+ * 
+ * @NamedSubgraph(name = "sensorInterface", attributeNodes
+ * = @NamedAttributeNode("sensorInterface")), }//延伸属性 ), })
+ */
+public class Sensor extends BaseEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5359114601983561364L;
-	
+
 	private String serialNo;
-	
-	private Iotx iotx;
-	
-	private SensorPort sensorPort;
-	
+
+	private Dust dust;
+
 	private SensorCategory sensorCategory;
-	
+
 	private Long alarmQuantity;
-	
+
 	private Double maxVal;
-	
+
 	private Double minVal;
-	
-	@Column(unique=true,nullable=false)
+
+	private String unit;
+
+	private Device device;
+
+	private Boolean isWorked;
+
 	public String getSerialNo() {
 		return serialNo;
 	}
@@ -66,26 +57,17 @@ public class Sensor extends BaseEntity{
 	public void setSerialNo(String serialNo) {
 		this.serialNo = serialNo;
 	}
-	
-	@ManyToOne(fetch=FetchType.LAZY,targetEntity=Iotx.class)
-	public Iotx getIotx() {
-		return iotx;
+
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Dust.class)
+	public Dust getDust() {
+		return dust;
 	}
 
-	public void setIotx(Iotx iotx) {
-		this.iotx = iotx;
-	}
-	
-	@ManyToOne(fetch=FetchType.LAZY,targetEntity=SensorPort.class)
-	public SensorPort getSensorPort() {
-		return sensorPort;
+	public void setDust(Dust dust) {
+		this.dust = dust;
 	}
 
-	public void setSensorPort(SensorPort sensorPort) {
-		this.sensorPort = sensorPort;
-	}
-
-	@ManyToOne(fetch=FetchType.LAZY,targetEntity=SensorCategory.class)
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = SensorCategory.class)
 	public SensorCategory getSensorCategory() {
 		return sensorCategory;
 	}
@@ -117,12 +99,38 @@ public class Sensor extends BaseEntity{
 	public void setMinVal(Double minVal) {
 		this.minVal = minVal;
 	}
-	
+
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Device.class)
+	public Device getDevice() {
+		return device;
+	}
+
+	public void setDevice(Device device) {
+		this.device = device;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+
+	public Boolean getIsWorked() {
+		return isWorked;
+	}
+
+	public void setIsWorked(Boolean isWorked) {
+		this.isWorked = isWorked;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((serialNo == null) ? 0 : serialNo.hashCode())+((getId() == null) ? 0 : getId().hashCode());
+		result = prime * result + ((serialNo == null) ? 0 : serialNo.hashCode())
+				+ ((getId() == null) ? 0 : getId().hashCode());
 		return result;
 	}
 
@@ -135,13 +143,13 @@ public class Sensor extends BaseEntity{
 		if (getClass() != obj.getClass())
 			return false;
 		Sensor other = (Sensor) obj;
-		if(Objects.equals(serialNo, other.getSerialNo())){
+		if (Objects.equals(serialNo, other.getSerialNo())) {
 			return true;
 		}
-		if(Objects.equals(getId(), other.getId())){
+		if (Objects.equals(getId(), other.getId())) {
 			return true;
 		}
 		return true;
 	}
-	
+
 }

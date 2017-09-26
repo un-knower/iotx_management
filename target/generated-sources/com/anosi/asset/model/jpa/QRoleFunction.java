@@ -39,11 +39,15 @@ public class QRoleFunction extends EntityPathBase<RoleFunction> {
     //inherited
     public final DateTimePath<java.util.Date> lastModifiedDate = _super.lastModifiedDate;
 
+    public final StringPath name = createString("name");
+
     public final QRoleFunction parentRoleFunction;
 
     public final ListPath<Privilege, QPrivilege> privilegeList = this.<Privilege, QPrivilege>createList("privilegeList", Privilege.class, QPrivilege.class, PathInits.DIRECT2);
 
     public final ListPath<RoleFunctionBtn, QRoleFunctionBtn> roleFunctionBtnList = this.<RoleFunctionBtn, QRoleFunctionBtn>createList("roleFunctionBtnList", RoleFunctionBtn.class, QRoleFunctionBtn.class, PathInits.DIRECT2);
+
+    public final ListPath<RoleFunctionGroup, QRoleFunctionGroup> roleFunctionGroupList = this.<RoleFunctionGroup, QRoleFunctionGroup>createList("roleFunctionGroupList", RoleFunctionGroup.class, QRoleFunctionGroup.class, PathInits.DIRECT2);
 
     public final StringPath roleFunctionPageId = createString("roleFunctionPageId");
 

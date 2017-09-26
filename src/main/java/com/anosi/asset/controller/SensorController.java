@@ -1,5 +1,7 @@
 package com.anosi.asset.controller;
 
+import static com.querydsl.core.types.PathMetadataFactory.forVariable;
+
 import java.util.List;
 
 import javax.validation.Valid;
@@ -26,49 +28,65 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.model.jpa.Account;
+import com.anosi.asset.model.jpa.QSensor;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.SensorCategoryService;
-import com.anosi.asset.service.SensorInterfaceService;
-import com.anosi.asset.service.SensorPortService;
 import com.anosi.asset.service.SensorService;
-import com.anosi.asset.util.JqgridUtil;
-import com.anosi.asset.util.JsonUtil;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.PathInits;
 
 @RestController
-public class SensorController extends BaseController<Sensor>{
-	
+public class SensorController extends BaseController<Sensor> {
+
 	private static final Logger logger = LoggerFactory.getLogger(BaseController.class);
-	
+
 	@Autowired
 	private SensorService sensorService;
 	@Autowired
 	private SensorCategoryService sensorCategoryService;
-	@Autowired
-	private SensorInterfaceService sensorInterfaceService;
-	@Autowired
-	private SensorPortService sensorPortService;
-	@Autowired
-	private JqgridUtil<Sensor> jqgridUtil;
-	@Autowired
-	private JsonUtil<Sensor> jsonUtil;
-	
-	
+
+	/***
+	 * 在所有关于sensor的请求之前，为查询条件中添加公司
+	 * 
+	 * @param companyId
+	 * @param model
+	 */
+	@ModelAttribute
+	public void interceptSensor(@QuerydslPredicate(root = Sensor.class) Predicate predicate,
+			@RequestParam(value = "dust.iotx.company.id", required = false) Long companyId, Model model) {
+		Account account = SessionUtil.getCurrentUser();
+		if (account != null) {
+			if (!account.isAdmin()) {
+				PathInits inits = new PathInits("district.city.province");
+				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
+				model.addAttribute("predicate",
+						sensor.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
+			} else if (account.isAdmin() && companyId != null) {
+				PathInits inits = new PathInits("district.city.province");
+				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
+				model.addAttribute("predicate", sensor.dust.iotx.company.id.eq(companyId).and(predicate));
+			}
+		}
+	}
+
 	/**
 	 * 进入传感器管理表格页面
+	 * 
 	 * @return
 	 */
-	@RequiresPermissions({"sensorManagement:view"})
-	@RequestMapping(value="/sensor/management/table",method = RequestMethod.GET)
-	public ModelAndView toViewsensorManage(){
+	@RequiresPermissions({ "sensorManagement:view" })
+	@RequestMapping(value = "/sensor/management/table", method = RequestMethod.GET)
+	public ModelAndView toViewsensorManage() {
 		logger.info("view sensorManage table");
-		return new ModelAndView("sensor/managementTable").addObject("sensorCategorys", sensorCategoryService.findAll())
-				.addObject("sensorInterfaces", sensorInterfaceService.findAll())
-				.addObject("sensorPorts", sensorPortService.findAll());
+		return new ModelAndView("sensor/managementTable").addObject("sensorCategorys", sensorCategoryService.findAll());
 	}
-	
+
 	/***
 	 * 获取传感器管理数据
+	 * 
+	 * @param showType
 	 * @param pageable
 	 * @param predicate
 	 * @param showAttributes
@@ -76,71 +94,71 @@ public class SensorController extends BaseController<Sensor>{
 	 * @return
 	 * @throws Exception
 	 */
-	@RequiresPermissions({"sensorManagement:view"})
-	@RequestMapping(value="/sensor/management/data",method = RequestMethod.GET)
-	public JSONObject findSensorManageData(@PageableDefault(sort={"id"}, direction = Sort.Direction.DESC,page=0,size=20) Pageable pageable,
-			@QuerydslPredicate(root = Sensor.class) Predicate predicate,@RequestParam(value = "showAttributes")String showAttributes,
-			@RequestParam(value = "rowId")String rowId,@RequestParam(value = "iotx.company.code",required=false)String companyCode) throws Exception{
+	@RequiresPermissions({ "sensorManagement:view" })
+	@RequestMapping(value = "/sensor/management/data/{showType}", method = RequestMethod.GET)
+	public JSONObject findSensorManageData(@PathVariable ShowType showType,
+			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find sensor");
-		logger.debug("page:{},size{},sort{}",pageable.getPageNumber(),pageable.getPageSize(),pageable.getSort());
-		logger.debug("rowId:{},showAttributes:{}",rowId,showAttributes);
-		
-		this.checkCompany(companyCode);
-		return jqgridUtil.parsePageToJqgridJson(sensorService.findAll(predicate, pageable), rowId, showAttributes.split(","));
+		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
+
+		return parseToJson(sensorService.findAll(predicate, pageable), rowId, showAttributes, showType);
 	}
-	
+
 	/***
 	 * 点进传感器查看详情的页面
+	 * 
 	 * @param sensorId
 	 * @return
 	 */
-	@RequiresPermissions({"sensorManagement:view","iotxAlarmData:view"})
-	@RequestMapping(value="/sensor/management/detail/{sensorId}",method = RequestMethod.GET)
-	public ModelAndView toViewSensorManageTable(@PathVariable Long sensorId){
+	@RequiresPermissions({ "sensorManagement:view", "iotxAlarmData:view" })
+	@RequestMapping(value = "/sensor/management/detail/{sensorId}", method = RequestMethod.GET)
+	public ModelAndView toViewSensorManageTable(@PathVariable Long sensorId) {
 		logger.info("view sensor management detail");
 		Sensor sensor = sensorService.getOne(sensorId);
-		this.checkCompany(sensor.getIotx().getCompany().getCode());
-		return new ModelAndView("sensor/managementDetail").addObject("sensor",sensor );
+		return new ModelAndView("sensor/managementDetail").addObject("sensor", sensor);
 	}
-	
+
 	/***
 	 * 进入save和update sensor的页面
+	 * 
 	 * @param id
 	 * @return
 	 */
 	@RequiresAuthentication
-	@RequiresPermissions({"sensorManagement:add","sensorManagement:edit"})
-	@RequestMapping(value = "/sensor/saveSensor", method = RequestMethod.GET)
+	@RequiresPermissions({ "sensorManagement:add", "sensorManagement:edit" })
+	@RequestMapping(value = "/sensor/save", method = RequestMethod.GET)
 	public ModelAndView toSaveSensorPage(@RequestParam(value = "id", required = false) Long id) {
 		Sensor sensor = null;
 		if (id != null) {
 			sensor = sensorService.getOne(id);
-			this.checkCompany(sensor.getIotx().getCompany().getCode());
 		} else {
 			sensor = new Sensor();
 		}
-		return new ModelAndView("sensor/saveSensor").addObject("sensor", sensor).addObject("sensorCategorys", sensorCategoryService.findAll())
-				.addObject("sensorInterfaces", sensorInterfaceService.findAll()).addObject("sensorPorts", sensorPortService.findAll());
+		return new ModelAndView("sensor/save").addObject("sensor", sensor).addObject("sensorCategorys",
+				sensorCategoryService.findAll());
 	}
 
 	@RequiresAuthentication
-	@RequiresPermissions({"sensorManagement:add","sensorManagement:edit"})
-	@RequestMapping(value = "/sensor/saveSensor", method = RequestMethod.POST)
-	public JSONObject saveSensor(@Valid @ModelAttribute("sensor") Sensor sensor,BindingResult result) throws Exception {
+	@RequiresPermissions({ "sensorManagement:add", "sensorManagement:edit" })
+	@RequestMapping(value = "/sensor/save", method = RequestMethod.POST)
+	public JSONObject saveSensor(@Valid @ModelAttribute("sensor") Sensor sensor, BindingResult result)
+			throws Exception {
 		logger.debug("saveOrUpdate sensor");
 		sensorService.save(sensor);
 		JSONObject jsonObject = new JSONObject();
-		//valid是否有错误
-		if(result.hasErrors()){
-			List<ObjectError>  list = result.getAllErrors();
+		// valid是否有错误
+		if (result.hasErrors()) {
+			List<ObjectError> list = result.getAllErrors();
 			StringBuffer stringBuffer = new StringBuffer();
-            for(ObjectError error:list){
-            	stringBuffer.append(error.getCode()+"---"+error.getArguments()+"---"+error.getDefaultMessage()+"\n");
-            }
-            jsonObject.put("result", stringBuffer.toString());
-		}else{
-			//valid无误的时候,再检测一下companyCode
-			this.checkCompany(sensor.getIotx().getCompany().getCode());
+			for (ObjectError error : list) {
+				stringBuffer.append(
+						error.getCode() + "---" + error.getArguments() + "---" + error.getDefaultMessage() + "\n");
+			}
+			jsonObject.put("result", stringBuffer.toString());
+		} else {
 			sensorService.save(sensor);
 			jsonObject.put("result", "success");
 		}
@@ -162,14 +180,10 @@ public class SensorController extends BaseController<Sensor>{
 	}
 
 	@RequiresAuthentication
-	@RequiresPermissions({"sensorManagement:delete"})
-	@RequestMapping(value = "/sensor/deleteSensor", method = RequestMethod.POST)
+	@RequiresPermissions({ "sensorManagement:delete" })
+	@RequestMapping(value = "/sensor/delete", method = RequestMethod.POST)
 	public JSONObject deleteSensor(@RequestParam(value = "id") Long id) throws Exception {
 		logger.debug("delete sensor");
-		Sensor sensor = sensorService.getOne(id);
-		//检测一下companyCode
-		this.checkCompany(sensor.getIotx().getCompany().getCode());
-		//检测无误就可以删除
 		sensorService.delete(id);
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("result", "success");
@@ -178,19 +192,21 @@ public class SensorController extends BaseController<Sensor>{
 
 	/**
 	 * 按照Sensor某些属性判断是否存在
+	 * 
 	 * @param predicate
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/sensor/checkExist", method = RequestMethod.GET)
-	public JSONObject checkExist(@QuerydslPredicate(root = Sensor.class) Predicate predicate,@RequestParam(value = "iotx.company.code",required=false)Long companyCode) throws Exception{
+	public JSONObject checkExist(@ModelAttribute Predicate predicate) throws Exception {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("result", sensorService.exists(predicate));
 		return jsonObject;
 	}
-	
+
 	/***
 	 * 获取autocomplete的source
+	 * 
 	 * @param predicate
 	 * @param label
 	 * @param value
@@ -198,9 +214,9 @@ public class SensorController extends BaseController<Sensor>{
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/sensor/autocomplete", method = RequestMethod.GET)
-	public JSONArray autocomplete(@QuerydslPredicate(root = Sensor.class) Predicate predicate,@RequestParam(value = "label") String label,
-			String value,@RequestParam(value = "iotx.company.code",required=false)String companyCode) throws Exception{
+	public JSONArray autocomplete(@ModelAttribute Predicate predicate, @RequestParam(value = "label") String label,
+			String value) throws Exception {
 		return jsonUtil.parseAttributesToAutocomplete(label, value, sensorService.findAll(predicate));
-	} 
-	
+	}
+
 }

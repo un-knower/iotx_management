@@ -38,16 +38,16 @@ public class QIotx extends EntityPathBase<Iotx> {
 
     public final QDistrict district;
 
+    public final ListPath<Dust, QDust> dustList = this.<Dust, QDust>createList("dustList", Dust.class, QDust.class, PathInits.DIRECT2);
+
+    public final NumberPath<Long> dustQuantity = createNumber("dustQuantity", Long.class);
+
     public final StringPath hardDisk = createString("hardDisk");
 
     //inherited
     public final NumberPath<Long> id = _super.id;
 
     public final StringPath installLocation = createString("installLocation");
-
-    public final EnumPath<Iotx.IotxCategory> iotxCategory = createEnum("iotxCategory", Iotx.IotxCategory.class);
-
-    public final EnumPath<Iotx.IotxModel> iotxModel = createEnum("iotxModel", Iotx.IotxModel.class);
 
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
@@ -67,17 +67,13 @@ public class QIotx extends EntityPathBase<Iotx> {
 
     public final DateTimePath<java.util.Date> openTime = createDateTime("openTime", java.util.Date.class);
 
-    public final ListPath<Sensor, QSensor> sensorList = this.<Sensor, QSensor>createList("sensorList", Sensor.class, QSensor.class, PathInits.DIRECT2);
-
     public final NumberPath<Long> sensorQuantity = createNumber("sensorQuantity", Long.class);
 
     public final StringPath serialNo = createString("serialNo");
 
-    public final StringPath url = createString("url");
+    public final EnumPath<Iotx.Status> status = createEnum("status", Iotx.Status.class);
 
     public final StringPath version = createString("version");
-
-    public final StringPath wifiSsid = createString("wifiSsid");
 
     public QIotx(String variable) {
         this(Iotx.class, forVariable(variable), INITS);

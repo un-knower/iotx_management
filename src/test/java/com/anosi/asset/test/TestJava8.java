@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
@@ -31,6 +33,7 @@ import com.google.common.collect.Multisets;
 import com.google.common.collect.Ordering;
 import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
+import com.google.common.collect.Sets;
 import com.google.common.collect.Table;
 import com.google.common.collect.TreeRangeSet;
 import com.google.common.primitives.Ints;
@@ -51,6 +54,30 @@ public class TestJava8 {
 		System.out.println("sum is:"+nums.stream().filter(num -> num != null).
 		            distinct().mapToInt(num -> num * 2).
 		            peek(System.out::println).skip(2).limit(4).sum());
+	}
+	
+	@Test
+	public void testSequentialStream(){
+		long t0 = System.nanoTime();
+		
+		Stream.generate(UUID.randomUUID()::toString).limit(1000000).sorted().count();
+
+		long t1 = System.nanoTime();
+
+		long millis = TimeUnit.NANOSECONDS.toMillis(t1 - t0);
+		System.out.println(String.format("sequential  sort took: %d ms", millis));
+	}
+	
+	@Test
+	public void testParallelStream(){
+		long t0 = System.nanoTime();
+
+		Stream.generate(UUID.randomUUID()::toString).parallel().limit(1000000).sorted().count();
+
+		long t1 = System.nanoTime();
+
+		long millis = TimeUnit.NANOSECONDS.toMillis(t1 - t0);
+		System.out.println(String.format("parallel sort took: %d ms", millis));
 	}
 	
 	@Test
@@ -222,4 +249,12 @@ public class TestJava8 {
 		System.out.println(CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, "CONSTANT_NAME"));
 		System.out.println(CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, "CONSTANT-NAME"));
 	}
+	
+	@Test
+	public void testDifference(){
+		Set<Integer> set1 = Sets.newHashSet(1,2,3,4,5);
+		Set<Integer> set2 = Sets.newHashSet(4,5,6,7);
+		System.out.println(Sets.difference(set1, set2));
+	}
+	
 }
