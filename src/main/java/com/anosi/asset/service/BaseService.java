@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.Query;
 
-import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 
@@ -21,8 +20,6 @@ import com.querydsl.core.types.Predicate;
  * @param <ID>
  */
 public interface BaseService<T,ID extends Serializable> {
-	
-	public BaseJPADao<T> getRepository();
 	
 	/**
 	 * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the

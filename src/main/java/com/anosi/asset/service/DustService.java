@@ -1,7 +1,13 @@
 package com.anosi.asset.service;
 
-import com.anosi.asset.model.jpa.Dust;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-public interface DustService extends BaseService<Dust, Long>{
+import com.anosi.asset.model.jpa.Dust;
+import com.querydsl.core.types.Predicate;
+
+public interface DustService extends BaseService<Dust, Long> {
+
+	public Page<Dust> findDustByContentSearch(String content, Predicate predicate, Pageable pageable);
 
 }

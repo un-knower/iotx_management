@@ -16,6 +16,8 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
 
+import com.anosi.asset.model.elasticsearch.Content;
+
 @Entity
 @Table(name = "iotx")
 public class Iotx extends BaseEntity {
@@ -25,8 +27,10 @@ public class Iotx extends BaseEntity {
 	 */
 	private static final long serialVersionUID = -2480716502123174880L;
 
+	@Content
 	private String serialNo;
 
+	@Content
 	private String installLocation;
 
 	private String cpu;
@@ -51,16 +55,19 @@ public class Iotx extends BaseEntity {
 
 	private List<Dust> dustList = new ArrayList<>();
 
+	@Content(extractFields={"company.name"})
 	private Company company;
 
 	private NetworkCategory networkCategory;
 	
+	@Content(extractFields={"status.status"})
 	private Status status;
 
 	private Double longitude;// 经度
 
 	private Double latitude;// 纬度
 
+	@Content(extractFields={"district.name","district.city.name","district.city.province.name"})
 	private District district;// 所属区县
 
 	// 内部枚举类

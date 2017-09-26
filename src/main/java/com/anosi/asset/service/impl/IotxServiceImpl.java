@@ -3,6 +3,7 @@ package com.anosi.asset.service.impl;
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -16,12 +17,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
+import com.anosi.asset.model.elasticsearch.IotxContent;
+import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.service.DistrictService;
+import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.util.MapUtil;
@@ -44,10 +49,29 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	private DistrictService districtService;
 	@Autowired
 	private EntityManager entityManager;
+	@Autowired
+	private IotxContentService iotxContentService;
 
 	@Override
 	public BaseJPADao<Iotx> getRepository() {
 		return iotxDao;
+	}
+
+	/***
+	 * 重写save,保存iotx的同时，将@Content标记的字段内容提取，存储到iotxContent中
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iotx save(Iotx iotx) {
+		iotx = iotxDao.save(iotx);
+		try {
+			iotxContentService.save(iotx);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return iotx;
 	}
 
 	@Override
@@ -125,6 +149,20 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		PathInits inits = new PathInits("district.city.province");
 		QIotx iotx = new QIotx(Iotx.class, forVariable("iotx"), inits);
 		return iotx;
+	}
+
+	@Override
+	public Page<Iotx> findIotxByContentSearch(String content, Predicate predicate, Pageable pageable) {
+		Account account = SessionUtil.getCurrentUser();
+		Page<IotxContent> iotxContents;
+		if (account.isAdmin()) {
+			iotxContents = iotxContentService.findByContent(content, pageable);
+		} else {
+			iotxContents = iotxContentService.findByContent(account.getCompany().getName(), content, pageable);
+		}
+		List<Long> ids = iotxContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
+				.collect(Collectors.toList());
+		return findAll(QIotx.iotx.id.in(ids).and(predicate), pageable);
 	}
 
 }

@@ -20,6 +20,9 @@ public class IotxData extends AbstractDocument {
 
 	@Indexed
 	private String sensorSN;
+	
+	@Indexed
+	private String deviceSN;
 
 	@Indexed
 	private String companyName;
@@ -157,6 +160,14 @@ public class IotxData extends AbstractDocument {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+
+	public String getDeviceSN() {
+		return deviceSN;
+	}
+
+	public void setDeviceSN(String deviceSN) {
+		this.deviceSN = deviceSN;
 	}
 	
 }

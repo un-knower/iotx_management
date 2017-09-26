@@ -8,6 +8,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.anosi.asset.model.elasticsearch.Content;
+
 @Entity
 @Table(name = "sensor", uniqueConstraints = { @UniqueConstraint(columnNames = { "serialNo", "dust_id" }) })
 /*
@@ -32,6 +34,7 @@ public class Sensor extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 5359114601983561364L;
 
+	@Content
 	private String serialNo;
 
 	private Dust dust;

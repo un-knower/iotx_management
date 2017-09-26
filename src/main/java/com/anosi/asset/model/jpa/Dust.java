@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.anosi.asset.model.elasticsearch.Content;
+
 @Entity
 @Table(name = "dust")
 public class Dust extends BaseEntity {
@@ -20,18 +22,23 @@ public class Dust extends BaseEntity {
 	 */
 	private static final long serialVersionUID = -4198486870068912965L;
 
+	@Content
 	private String name;
 
+	@Content
 	private String serialNo;
 
 	private Double frequency;// 采集频率，单位:秒
-	
+
+	@Content
 	private String type;
-	
+
+	@Content
 	private String interfaceName;
-	
+
+	@Content
 	private String powerType;
-	
+
 	private String configId;
 
 	private Iotx iotx;
@@ -112,5 +119,5 @@ public class Dust extends BaseEntity {
 	public void setConfigId(String configId) {
 		this.configId = configId;
 	}
-	
+
 }
