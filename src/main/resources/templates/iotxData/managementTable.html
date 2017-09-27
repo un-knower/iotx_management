@@ -28,23 +28,18 @@
 						<li>
 							<a id="workOrder_city_info_link1" href='#' style="color:#3795FF;font-size:24px;border:none;" th:text="#{iotxAlarmData}"></a>
 						</li>
+						<input id= "toSearch" type="text" class=" input-place form-control" th:placeholder="#{searchContent}"/>
+						<span class="input-group-btn" style="height:35px; float:left; margin-left:-10px;margin-top:20px">
+							<button class=" btn btn-search" id="searchBtn" type="button" ><i class="fa fa-fw fa-search"></i></button>
+						</span>
+						<li style="float:right;right:50px;margin-top:20px">
+						   <input type="button" th:value="#{map}" class="btn btn-area-blue" id="viewMap"/>
+						   <input type="button" th:value="#{table}" class="btn btn-image-blue"/>
+						</li> 
 					</ul>
 					
 					<div class="tab-content">
 						<section class="content">
-							<div class="row" >
-								<div class="col-lg-12" >
-									<div class="box box-warning"  >
-										<div class="box-body" style="display: block;background:#363C4C">
-											
-										<div class="box-body" style="margin:10px 0px 0 0; height:45px;text-align:right;  color:#fff; border-top:1px solid #f4f4f4 ;">
-                   							<input type="button" th:value="#{confirm}" id="confirm"/>
-											<input type="button" th:value="#{empty}" id="empty"/>
-										</div>
-										</div>
-									</div>
-								</div>
-							</div>
 							<div class="row">
 								<div class="col-lg-12">
 									<div th:fragment="iotxData">

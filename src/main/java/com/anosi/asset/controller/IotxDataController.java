@@ -2,10 +2,12 @@ package com.anosi.asset.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -61,6 +63,18 @@ public class IotxDataController extends BaseController<IotxData> {
 		}
 	}
 
+	/***
+	 * 进入告警管理的地图页面
+	 *
+	 * @return
+	 */
+	@RequiresPermissions({ "iotxAlarmData:view" })
+	@RequestMapping(value = "/iotxData/management/map", method = RequestMethod.GET)
+	public ModelAndView toViewIotxDataManageMap() {
+		logger.info("view iotxData management map");
+		return new ModelAndView("iotxData/managementMap");
+	}
+
 	/**
 	 * 进入传感器管理表格页面
 	 * 
@@ -81,20 +95,35 @@ public class IotxDataController extends BaseController<IotxData> {
 	 * @param predicate
 	 * @param showAttributes
 	 * @param rowId
+	 * @param searchContent
+	 * @param isAlarm
 	 * @return
 	 * @throws Exception
 	 */
 	@RequiresPermissions({ "iotxAlarmData:view" })
 	@RequestMapping(value = "/iotxData/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findIotxDataManageData(@PathVariable ShowType showType,
-			@PageableDefault(sort = { "collectTime" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
+			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
-			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
+			@RequestParam(value = "searchContent", required = false) String searchContent,
+			@RequestParam(value = "isAlarm", required = false) Boolean isAlarm) throws Exception {
 		logger.info("find iotxData");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
-		return parseToJson(iotxDataService.findAll(predicate, pageable), rowId, showAttributes, showType);
+		Page<IotxData> iotxDatas;
+		if (StringUtils.isNoneBlank(searchContent)) {
+			if (isAlarm != null) {
+				iotxDatas = iotxDataService.findByContentSearch(searchContent, isAlarm, predicate, pageable);
+			} else {
+				iotxDatas = iotxDataService.findByContentSearch(searchContent, predicate, pageable);
+			}
+		} else {
+			iotxDatas = iotxDataService.findAll(predicate, pageable);
+		}
+
+		return parseToJson(iotxDatas, rowId, showAttributes, showType);
 	}
 
 	@RequestMapping(value = "/iotxData/dynamicData", method = RequestMethod.GET)
