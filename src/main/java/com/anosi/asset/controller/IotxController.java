@@ -113,7 +113,7 @@ public class IotxController extends BaseController<Iotx> {
 
 		Page<Iotx> iotxs;
 		if(StringUtils.isNoneBlank(searchContent)){
-			iotxs = iotxService.findIotxByContentSearch(searchContent, predicate, pageable);
+			iotxs = iotxService.findByContentSearch(searchContent, predicate, pageable);
 		}else{
 			iotxs = iotxService.findAll(predicate, pageable);
 		}

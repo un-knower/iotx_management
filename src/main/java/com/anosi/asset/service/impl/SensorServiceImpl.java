@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import com.anosi.asset.cache.annotation.SensorSaveCache;
 import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.SensorDao;
+import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.SensorContent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.QSensor;
@@ -61,7 +63,13 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 	@Override
 	@SensorSaveCache // 缓存
 	public Sensor save(Sensor sensor) {
-		return sensorDao.save(sensor);
+		sensor = sensorDao.save(sensor);
+		try {
+			sensorContentService.save(sensor);
+		} catch (Exception e) {
+			throw new CustomRunTimeException(e.getMessage());
+		}
+		return sensor;
 	}
 
 	@Override
@@ -77,13 +85,16 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 	}
 
 	@Override
-	public Page<Sensor> findSensorByContentSearch(String content, Predicate predicate, Pageable pageable) {
+	public Page<Sensor> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
 		Account account = SessionUtil.getCurrentUser();
 		Page<SensorContent> sensorContents;
+		// 防止sort报错，只获取pageable的页数和size
+		logger.debug("page:{},size:{}",pageable.getPageNumber(), pageable.getPageSize());
+		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
-			sensorContents = sensorContentService.findByContent(content, pageable);
+			sensorContents = sensorContentService.findByContent(content, contentPage);
 		} else {
-			sensorContents = sensorContentService.findByContent(account.getCompany().getName(), content, pageable);
+			sensorContents = sensorContentService.findByContent(account.getCompany().getName(), content, contentPage);
 		}
 		List<Long> ids = sensorContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());

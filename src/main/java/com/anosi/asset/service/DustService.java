@@ -8,6 +8,6 @@ import com.querydsl.core.types.Predicate;
 
 public interface DustService extends BaseService<Dust, Long> {
 
-	public Page<Dust> findDustByContentSearch(String content, Predicate predicate, Pageable pageable);
+	public Page<Dust> findByContentSearch(String content, Predicate predicate, Pageable pageable);
 
 }
