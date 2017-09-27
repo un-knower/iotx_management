@@ -27,7 +27,7 @@ public class IotxContentServiceImpl extends BaseContentServiceImpl<IotxContent, 
 	@Override
 	public IotxContent save(Iotx iotx) throws Exception {
 		String id = String.valueOf(iotx.getId());
-		IotxContent iotxContent = iotxContentDao.findOne(id);
+		IotxContent iotxContent = getRepository().findOne(id);
 		if (iotxContent == null) {
 			iotxContent = new IotxContent();
 			iotxContent.setId(id);

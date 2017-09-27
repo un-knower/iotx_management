@@ -52,7 +52,7 @@ public class Sensor extends BaseEntity {
 
 	private String unit;
 
-	private Boolean isWorked = false;
+	private Boolean isWorked;
 
 	public String getSerialNo() {
 		return serialNo;

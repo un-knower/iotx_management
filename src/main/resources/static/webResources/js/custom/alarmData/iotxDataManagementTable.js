@@ -14,15 +14,18 @@ $(document).ready(function() {
 		
 		 var colModel=[
 		               	{label:'iotx序列号',name:'iotxSN', index:'iotxSN', width:'120', sortable: false,align: 'center'},
-		               	{label:'微尘序列号',name:'dustSN', index:'dustSN', width:'120', sortable: false,align: 'center'},
 						{label:'传感器序列号',name:'sensorSN',index:'sensorSN', width: '120', sortable:false, align: 'center'},
-						{label:'设备序列号',name:'deviceSN',index:'deviceSN', width: '120', sortable:false, align: 'center'},
+						{label:'类型',name:'category', index:'category', width:'120', sortable: false,align: 'center'},
 						{label:'数值',name:'val', index:'val', width:'120', sortable: false,align: 'center'},
 						{label:'上限阈值',name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
 						{label:'下限阈值',name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
 						{label:'告警信息',name:'message', index:'message', width:'120', sortable: false,align: 'center'},
 						{label:'等级',name:'level', index:'level', width:'120', sortable: false,align: 'center'},
 						{label:'采集时间',name:'collectTime', collectTime:'minVal', width:'120', sortable: false,align: 'center',
+							formatter:'date', 
+							formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
+						},
+						{label:'关闭时间',name:'closeTime', index:'closeTime', width:'120', sortable: false,align: 'center',
 							formatter:'date', 
 							formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
 						},
@@ -43,15 +46,14 @@ $(document).ready(function() {
 		 //每页显示多少行
 		 var rowNum=20;
 		 var page=0;
-		 var url='/iotxData/management/data/GRID';
+		 var url='/sensor/management/data';
 		 var sort;
 		 
 		 //请求参数
 		 var params={}
 		 //设置请求需要的一些参数
 		 params['rowId']='id'
-		 params['showAttributes']='iotxSN,dustSN,sensorSN,deviceSN,val,maxVal,minVal,message,level,collectTime';//要获取的属性名
-		 params['alarm']=true;
+		 params['showAttributes']='iotxSN,sensorSN,category,val,maxVal.minVal,message,level,collectTime,closeTime';//要获取的属性名
 		 params['page']=page;
 		 params['size']=rowNum;
 		 params['sort']=sort;
@@ -93,15 +95,5 @@ $(document).ready(function() {
 		    	},
 	    		
 	    	});
-		 
-		 //查询按钮点击事件
-		 $('#searchBtn').click(function(){
-			var search = $('#toSearch').val();
-			params['searchContent']=search;
-			myGrid.jqGrid().setGridParam({
-				url:url,
-				postData:params,
-			}).trigger("reloadGrid");
-		 })
 		 
 	});

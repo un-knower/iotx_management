@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.anosi.asset.model.elasticsearch.Content;
 
 @Document
 public class IotxData extends AbstractDocument {
@@ -16,23 +15,18 @@ public class IotxData extends AbstractDocument {
 	 */
 	private static final long serialVersionUID = -1976199296388056305L;
 
-	@Content
 	@Indexed
 	private String iotxSN;
-
-	@Content
+	
 	@Indexed
 	private String dustSN;
 
-	@Content
 	@Indexed
 	private String sensorSN;
-
-	@Content
+	
 	@Indexed
 	private String deviceSN;
 
-	@Content
 	@Indexed
 	private String companyName;
 
@@ -44,25 +38,17 @@ public class IotxData extends AbstractDocument {
 
 	private Double minVal;
 
-	@Content
 	private Date collectTime;
 
 	private Date closeTime;
 
-	@Content
 	private String message;
 
-	@Content(extractFields = { "level.level" })
 	private Level level;
-
-	@Content
+	
 	private String category;
-
-	private boolean alarm = false;
-
-	private Double baiduLongitude;// 经度
-
-	private Double baiduLatitude;// 纬度
+	
+	private boolean isAlarm;
 
 	// 内部枚举类
 	public static enum Level {
@@ -82,7 +68,7 @@ public class IotxData extends AbstractDocument {
 			this.level = level;
 		}
 	}
-
+	
 	public String getUnit() {
 		return unit;
 	}
@@ -98,7 +84,7 @@ public class IotxData extends AbstractDocument {
 	public void setIotxSN(String iotxSN) {
 		this.iotxSN = iotxSN;
 	}
-
+	
 	public String getDustSN() {
 		return dustSN;
 	}
@@ -197,29 +183,12 @@ public class IotxData extends AbstractDocument {
 		this.deviceSN = deviceSN;
 	}
 
-
-	public Double getBaiduLongitude() {
-		return baiduLongitude;
-	}
-
-	public void setBaiduLongitude(Double baiduLongitude) {
-		this.baiduLongitude = baiduLongitude;
-	}
-
-	public Double getBaiduLatitude() {
-		return baiduLatitude;
-	}
-
-	public void setBaiduLatitude(Double baiduLatitude) {
-		this.baiduLatitude = baiduLatitude;
-	}
-
 	public boolean isAlarm() {
-		return alarm;
+		return isAlarm;
 	}
 
-	public void setAlarm(boolean alarm) {
-		this.alarm = alarm;
+	public void setAlarm(boolean isAlarm) {
+		this.isAlarm = isAlarm;
 	}
 	
 }
