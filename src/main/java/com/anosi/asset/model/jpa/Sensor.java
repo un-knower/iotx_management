@@ -39,17 +39,18 @@ public class Sensor extends BaseEntity {
 
 	private Dust dust;
 
+	@Content(extractFields = { "sensorCategory.name" })
 	private SensorCategory sensorCategory;
 
 	private Long alarmQuantity;
 
+	@Content
 	private Double maxVal;
 
+	@Content
 	private Double minVal;
 
 	private String unit;
-
-	private Device device;
 
 	private Boolean isWorked;
 
@@ -101,15 +102,6 @@ public class Sensor extends BaseEntity {
 
 	public void setMinVal(Double minVal) {
 		this.minVal = minVal;
-	}
-
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Device.class)
-	public Device getDevice() {
-		return device;
-	}
-
-	public void setDevice(Device device) {
-		this.device = device;
 	}
 
 	public String getUnit() {

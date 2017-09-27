@@ -32,6 +32,8 @@ public class QDevice extends EntityPathBase<Device> {
     //inherited
     public final DateTimePath<java.util.Date> createdDate = _super.createdDate;
 
+    public final ListPath<Dust, QDust> dustList = this.<Dust, QDust>createList("dustList", Dust.class, QDust.class, PathInits.DIRECT2);
+
     //inherited
     public final NumberPath<Long> id = _super.id;
 
@@ -40,8 +42,6 @@ public class QDevice extends EntityPathBase<Device> {
 
     //inherited
     public final DateTimePath<java.util.Date> lastModifiedDate = _super.lastModifiedDate;
-
-    public final ListPath<Sensor, QSensor> sensorList = this.<Sensor, QSensor>createList("sensorList", Sensor.class, QSensor.class, PathInits.DIRECT2);
 
     public final StringPath serialNo = createString("serialNo");
 

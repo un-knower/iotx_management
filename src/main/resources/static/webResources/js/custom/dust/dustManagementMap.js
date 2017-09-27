@@ -3,7 +3,7 @@
  */
 $(document).ready(
 		function() {
-			var map = document.getElementById("showIotxMap");
+			var map = document.getElementById("showDustMap");
 			var myChart = echarts.init(map);
 
 			myChart.showLoading();
@@ -20,14 +20,14 @@ $(document).ready(
 					}
 				},
 				legend : {
-					data : [ 'iotx分布' ],
+					data : [ 'dust分布' ],
 					textStyle : {
 						color : '#fff'
 					},
 
 				},
 				series : [ {
-					//name : 'iotx分布',
+					//name : 'dust分布',
 					type : 'effectScatter',
 					mapType : 'china',
 					coordinateSystem : 'bmap',
@@ -47,19 +47,19 @@ $(document).ready(
 			bmap.addControl(new BMap.NavigationControl()); // 缩放控件
 			bmap.addControl(new BMap.ScaleControl()); // 比例尺
 
-			loadIotx();
+			loaddust();
 
 			// 添加点方法
 			function addMarker(longitude, latitude, id) {
 				pointData.push({'name':id,'value':[longitude,latitude]})
 			}
 			
-			// 加载iotx节点
-			function loadIotx() {
+			// 加载dust节点
+			function loaddust() {
 				$.ajax({
-					url : '/iotx/management/data/REMOTE',
+					url : '/dust/management/data/REMOTE',
 					data : {
-						'showAttributes' : 'id,baiduLongitude,baiduLatitude',
+						'showAttributes' : 'id,iotx.baiduLongitude,iotx.baiduLatitude',
 					},
 					type : 'get',
 					dataType : 'json',
@@ -68,8 +68,8 @@ $(document).ready(
 						var latitude;
 						var id;
 						$.each(datas.content, function(i, value) {
-							longitude = this.baiduLongitude;
-							latitude = this.baiduLatitude;
+							longitude = this['iotx.baiduLongitude'];
+							latitude = this['iotx.baiduLatitude'];
 							id = this.id;
 							// 添加点
 							addMarker(longitude, latitude, id)
@@ -77,7 +77,7 @@ $(document).ready(
 						myChart.setOption(option);
 						// 在这里做一个点击事件的监听
 				        myChart.on('click', function(param){
-				        	window.location.href = '/iotx/management/detail/' + param.name;
+				        	window.location.href = '/dust/management/detail/' + param.name;
 				        });        
 					},
 					error : function(data) {
@@ -88,6 +88,6 @@ $(document).ready(
 
 			// 地图按钮点击事件
 			$("#viewTable").click(function() {
-				window.location.href = '/iotx/management/table';
+				window.location.href = '/dust/management/table';
 			});
 		})

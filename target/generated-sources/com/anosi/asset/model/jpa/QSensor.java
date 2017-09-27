@@ -32,8 +32,6 @@ public class QSensor extends EntityPathBase<Sensor> {
     //inherited
     public final DateTimePath<java.util.Date> createdDate = _super.createdDate;
 
-    public final QDevice device;
-
     public final QDust dust;
 
     //inherited
@@ -75,7 +73,6 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     public QSensor(Class<? extends Sensor> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.device = inits.isInitialized("device") ? new QDevice(forProperty("device"), inits.get("device")) : null;
         this.dust = inits.isInitialized("dust") ? new QDust(forProperty("dust"), inits.get("dust")) : null;
         this.sensorCategory = inits.isInitialized("sensorCategory") ? new QSensorCategory(forProperty("sensorCategory")) : null;
     }

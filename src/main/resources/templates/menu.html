@@ -14,8 +14,16 @@
 					</a>
 				</li>
 				
+				<li th:class="${session.menuId=='dustManagement'?'treeview active':'treeview'}" shiro:hasPermission="dustManagement:view">
+					<a th:href="@{/dust/management/map(menuId=dustManagement)}">
+						<img th:src="'/webResources/img/icon/'+${session.menuId=='dustManagement'?'dustManagement_active.png':'dustManagement.png'}" class="sider-icon" height="35" width="35"/>
+						&nbsp;&nbsp;
+						<b th:text="#{dustManagement}"></b>
+					</a>
+				</li>
+				
 				<li th:class="${session.menuId=='sensorManagement'?'treeview active':'treeview'}" shiro:hasPermission="sensorManagement:view">
-					<a th:href="@{/sensor/management/table(menuId=sensorManagement)}">
+					<a th:href="@{/sensor/management/map(menuId=sensorManagement)}">
 						<img th:src="'/webResources/img/icon/'+${session.menuId=='sensorManagement'?'sensorManagement_active.png':'sensorManagement.png'}" class="sider-icon" height="35" width="35"/>
 						&nbsp;&nbsp;
 						<b th:text="#{sensorManagement}"></b>
@@ -23,20 +31,13 @@
 				</li>
 				
 				<li th:class="${session.menuId=='iotxAlarmData'?'treeview active':'treeview'}" shiro:hasPermission="iotxAlarmData:view">
-					<a th:href="@{/iotxData/management/table(menuId=iotxAlarmData)}">
+					<a th:href="@{/iotxData/management/map(menuId=iotxAlarmData)}">
 						<img th:src="'/webResources/img/icon/'+${session.menuId=='iotxAlarmData'?'iotxAlarmData_active.png':'iotxAlarmData.png'}" class="sider-icon" height="35" width="35"/>
 						&nbsp;&nbsp;
 						<b th:text="#{iotxAlarmData}"></b>
 					</a>
 				</li>
 				
-				<li th:class="${session.menuId=='dataAnalysis'?'treeview active':'treeview'}" shiro:hasPermission="dataAnalysis:view">
-					<a href="#">
-						<img th:src="'/webResources/img/icon/'+${session.menuId=='dataAnalysis'?'dataAnalysis_active.png':'dataAnalysis.png'}" class="sider-icon" height="35" width="35"/>
-						&nbsp;&nbsp;
-						<b th:text="#{dataAnalysis}"></b>
-					</a>
-				</li>
 			</ul>
 		</section>
 	</aside>

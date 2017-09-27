@@ -5,10 +5,10 @@
 
 <head>
 	<meta charset="UTF-8" />
-	<title>iotx节点管理-地图</title>
+	<title>sensor节点管理-地图</title>
 	
 	<style type="text/css">
-	#showIotxMap {
+	#showSensorMap {
 		width: 100%;
 		height: 700px;
 		overflow: hidden;
@@ -24,8 +24,7 @@
 	<script type="text/javascript" src="/webResources/plugins/echarts/echarts.min.js"></script>
 	<script type="text/javascript" src="/webResources/plugins/bMap/bmap.js" ></script>
 	<script type="text/javascript" src="/webResources/js/custom/map/commonMap.js"></script>
-	<script type="text/javascript" src="/webResources/js/custom/iotx/iotxManagementMap.js"></script>
-	<script type="text/javascript" src="/webResources/js/custom/iotx/iotxDistributePie.js"></script>
+	<script type="text/javascript" src="/webResources/js/custom/sensor/sensorManagementMap.js"></script>
 </head>
 
 <body>
@@ -35,7 +34,7 @@
 				<div  style="padding-top:30px;padding-left:30px;">
 					<ul class="nav nav-tabs">
 						<li>
-							<a id="workOrder_city_info_link1" href='#' style="color:#3795FF;font-size:24px;border:none;" th:text="#{iotxManagement}"></a>
+							<a id="workOrder_city_info_link1" href='#' style="color:#3795FF;font-size:24px;border:none;" th:text="#{sensorManagement}"></a>
 						</li>
 						<li style="float:right;right:50px;margin-top:20px">
 						   <input type="button" th:value="#{map}" class="btn btn-area-warning"/>
@@ -49,17 +48,7 @@
 			<section class="content">
 				<div class="row" >
 					<div class="col-md-8" >
-						<div id="showIotxMap"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="iotxDistributePie" style="height:270px"></div>
-						
-						<div class="box solid" style="background:#404656">
-							<div class="box-body">
-								<div id="iotxAlarmScroll" style="height:270px"></div>
-							</div>
-						</div>
-						
+						<div id="showSensorMap"></div>
 					</div>
 				</div>
 			</section>

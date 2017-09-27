@@ -2,6 +2,7 @@ package com.anosi.asset.service.impl;
 
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
@@ -51,6 +53,8 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	private EntityManager entityManager;
 	@Autowired
 	private IotxContentService iotxContentService;
+	@Autowired
+	private I18nComponent i18nComponent;
 
 	@Override
 	public BaseJPADao<Iotx> getRepository() {
@@ -64,7 +68,8 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	@SuppressWarnings("unchecked")
 	@Override
 	public Iotx save(Iotx iotx) {
-		iotx = iotxDao.save(iotx);
+		// 根据经纬度获取位置,并保存
+		setIotxDistrict(iotx);
 		try {
 			iotxContentService.save(iotx);
 		} catch (Exception e) {
@@ -87,11 +92,24 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 
 	@Override
 	public Iotx setIotxDistrict(Iotx iotx) {
-		JSONObject addressComponent = MapUtil.getAddressComponent(String.valueOf(iotx.getLongitude()),
-				String.valueOf(iotx.getLatitude()));
+		Double longitude = iotx.getLongitude();
+		Double latitude = iotx.getLatitude();
+		if (longitude == null) {
+			throw new RuntimeException(i18nComponent.getMessage("iotx.longitude.cannot.null"));
+		}
+		if (latitude == null) {
+			throw new RuntimeException(i18nComponent.getMessage("iotx.latitude.cannot.null"));
+		}
+		JSONObject addressComponent = MapUtil.getAddressComponent(String.valueOf(longitude), String.valueOf(latitude));
 		District district = districtService.findByNameAndCity(addressComponent.getString("district"),
 				addressComponent.getString("city"));
 		iotx.setDistrict(district);
+		// 获取转换的百度坐标
+		JSONObject convertLocation = MapUtil.convertLocation(String.valueOf(longitude), String.valueOf(latitude));
+		iotx.setBaiduLongitude(
+				Double.parseDouble(new String(Base64.getDecoder().decode(convertLocation.getString("x")))));
+		iotx.setBaiduLatitude(
+				Double.parseDouble(new String(Base64.getDecoder().decode(convertLocation.getString("y")))));
 		return iotxDao.save(iotx);
 	}
 

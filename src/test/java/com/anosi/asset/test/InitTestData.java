@@ -1,6 +1,7 @@
 package com.anosi.asset.test;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +23,22 @@ import com.anosi.asset.dao.jpa.RoleFunctionDao;
 import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Company;
+import com.anosi.asset.model.jpa.Device;
+import com.anosi.asset.model.jpa.Dust;
+import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Privilege;
 import com.anosi.asset.model.jpa.Role;
 import com.anosi.asset.model.jpa.RoleFunction;
 import com.anosi.asset.model.jpa.RoleFunctionBtn;
+import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
+import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.model.mongo.IotxData;
+import com.anosi.asset.service.CompanyService;
+import com.anosi.asset.service.DeviceService;
+import com.anosi.asset.service.DustService;
+import com.anosi.asset.service.IotxService;
+import com.anosi.asset.service.SensorService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = IotxManagementApplication.class)
@@ -47,6 +59,16 @@ public class InitTestData {
 	private RoleFunctionDao roleFunctionDao;
 	@Autowired
 	private PrivilegeDao privilegeDao;
+	@Autowired
+	private IotxService iotxService;
+	@Autowired
+	private DustService dustService;
+	@Autowired
+	private SensorService sensorService;
+	@Autowired
+	private CompanyService companyService;
+	@Autowired
+	private DeviceService deivceService;
 	
 	@Test
 	@Rollback(false)
@@ -123,6 +145,66 @@ public class InitTestData {
 			}
 			privilegeDao.save(privilege);
 		}
+	}
+	
+	@Test
+	@Rollback(false)
+	public void initIotx(){
+		Company anosi = companyService.findByName("北京安诺信通信科技有限公司");
+		Device device = new Device();
+		device.setCompany(anosi);
+		device.setSerialNo(UUID.randomUUID().toString());
+		deivceService.save(device);
+		
+		Iotx iotx = new Iotx();
+		iotx.setCompany(anosi);
+		iotx.setSerialNo(UUID.randomUUID().toString());
+		iotx.setInstallLocation("武汉");
+		iotx.setLongitude(114.3118287971);
+		iotx.setLatitude(30.5984342798);
+		iotx.setNetworkCategory(NetworkCategory.WIFI);
+		iotx.setStatus(Status.ONLINE);
+		iotxService.save(iotx);
+		
+		Dust dust1 = new Dust();
+		dust1.setName("测试微尘1");
+		dust1.setSerialNo(UUID.randomUUID().toString());
+		dust1.setIotx(iotx);
+		dust1.setFrequency((double) 1);
+		dust1.setIsWorked(true);
+		dust1.setType("486");
+		dust1.setPowerType("电源");
+		dust1.setConfigId("1");
+		dust1.setDevice(device);
+		dustService.save(dust1);
+		
+		Dust dust2 = new Dust();
+		dust2.setName("测试微尘2");
+		dust2.setSerialNo(UUID.randomUUID().toString());
+		dust2.setIotx(iotx);
+		dust2.setFrequency((double) 1);
+		dust2.setIsWorked(true);
+		dust2.setType("486");
+		dust2.setPowerType("电源");
+		dust2.setConfigId("2");
+		dust2.setDevice(device);
+		dustService.save(dust2);
+		
+		Sensor sensor1 = new Sensor();
+		sensor1.setSerialNo(UUID.randomUUID().toString());
+		sensor1.setDust(dust1);
+		sensor1.setIsWorked(true);
+		sensor1.setMaxVal((double) 50);
+		sensor1.setMinVal((double) 20);
+		sensorService.save(sensor1);
+		
+		Sensor sensor2 = new Sensor();
+		sensor2.setSerialNo(UUID.randomUUID().toString());
+		sensor2.setDust(dust1);
+		sensor2.setIsWorked(true);
+		sensor2.setMaxVal((double) 60);
+		sensor2.setMinVal((double) 30);
+		sensorService.save(sensor2);
 	}
 	
 }

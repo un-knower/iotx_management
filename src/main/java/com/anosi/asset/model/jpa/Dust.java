@@ -34,9 +34,6 @@ public class Dust extends BaseEntity {
 	private String type;
 
 	@Content
-	private String interfaceName;
-
-	@Content
 	private String powerType;
 
 	private String configId;
@@ -44,6 +41,10 @@ public class Dust extends BaseEntity {
 	private Iotx iotx;
 
 	private List<Sensor> sensorList = new ArrayList<>();
+	
+	private Device device;
+	
+	private Boolean isWorked;
 
 	public String getName() {
 		return name;
@@ -96,14 +97,6 @@ public class Dust extends BaseEntity {
 		this.type = type;
 	}
 
-	public String getInterfaceName() {
-		return interfaceName;
-	}
-
-	public void setInterfaceName(String interfaceName) {
-		this.interfaceName = interfaceName;
-	}
-
 	public String getPowerType() {
 		return powerType;
 	}
@@ -119,5 +112,22 @@ public class Dust extends BaseEntity {
 	public void setConfigId(String configId) {
 		this.configId = configId;
 	}
+	
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Device.class)
+	public Device getDevice() {
+		return device;
+	}
 
+	public void setDevice(Device device) {
+		this.device = device;
+	}
+
+	public Boolean getIsWorked() {
+		return isWorked;
+	}
+
+	public void setIsWorked(Boolean isWorked) {
+		this.isWorked = isWorked;
+	}
+	
 }

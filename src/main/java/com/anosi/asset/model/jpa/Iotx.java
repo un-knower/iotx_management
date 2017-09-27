@@ -55,19 +55,24 @@ public class Iotx extends BaseEntity {
 
 	private List<Dust> dustList = new ArrayList<>();
 
-	@Content(extractFields={"company.name"})
+	@Content(extractFields = { "company.name" })
 	private Company company;
 
 	private NetworkCategory networkCategory;
-	
-	@Content(extractFields={"status.status"})
+
+	@Content(extractFields = { "status.status" })
 	private Status status;
 
 	private Double longitude;// 经度
 
 	private Double latitude;// 纬度
 
-	@Content(extractFields={"district.name","district.city.name","district.city.province.name"})
+	// 为了在百度地图上显示点，还需要存储百度坐标
+	private Double baiduLongitude;// 经度
+
+	private Double baiduLatitude;// 纬度
+
+	@Content(extractFields = { "district.name", "district.city.name", "district.city.province.name" })
 	private District district;// 所属区县
 
 	// 内部枚举类
@@ -89,12 +94,12 @@ public class Iotx extends BaseEntity {
 		}
 
 	}
-	
+
 	public static enum Status {
 		ONLINE("在线"), OFFLINE("离线");
 
 		private String status;
-		
+
 		private Status(String status) {
 			this.status = status;
 		}
@@ -236,7 +241,7 @@ public class Iotx extends BaseEntity {
 	public void setNetworkCategory(NetworkCategory networkCategory) {
 		this.networkCategory = networkCategory;
 	}
-	
+
 	public Status getStatus() {
 		return status;
 	}
@@ -268,6 +273,32 @@ public class Iotx extends BaseEntity {
 
 	public void setDistrict(District district) {
 		this.district = district;
+	}
+
+	public Double getBaiduLongitude() {
+		return baiduLongitude;
+	}
+
+	public void setBaiduLongitude(Double baiduLongitude) {
+		this.baiduLongitude = baiduLongitude;
+	}
+
+	public Double getBaiduLatitude() {
+		return baiduLatitude;
+	}
+
+	public void setBaiduLatitude(Double baiduLatitude) {
+		this.baiduLatitude = baiduLatitude;
+	}
+
+	/***
+	 * 获取位置
+	 * 
+	 * @return (经度,纬度)
+	 */
+	@Transient
+	public String getLocation() {
+		return "(" + longitude + "," + latitude + ")";
 	}
 
 	@Override

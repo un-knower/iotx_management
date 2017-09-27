@@ -15,6 +15,6 @@
 		<roleFunctionBtn btnId="edit" name="修改"></roleFunctionBtn>
 		<roleFunctionBtn btnId="delete" name="删除"></roleFunctionBtn>
 	</roleFunction>
-	<roleFunction roleFunctionPageId="iotxAlarmDataManagement" name="告警管理">
+	<roleFunction roleFunctionPageId="iotxAlarmData" name="告警管理">
 	</roleFunction>
 </roleFunctions>

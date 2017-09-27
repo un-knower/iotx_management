@@ -5,10 +5,7 @@ $(document).ready(
 		function() {
 
 			$.ajax({
-				url : '/iotx/iotxDistribute',
-				data : {
-					'company.code' : ($('#isAdmin').length > 0?null:$("#companyCode").val()),
-				},
+				url : '/iotx/iotxDistribute/data',
 				type : 'get',
 				dataType : 'json',
 				success : function(datas) {

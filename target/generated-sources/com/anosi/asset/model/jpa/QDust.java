@@ -32,6 +32,8 @@ public class QDust extends EntityPathBase<Dust> {
     //inherited
     public final DateTimePath<java.util.Date> createdDate = _super.createdDate;
 
+    public final QDevice device;
+
     public final NumberPath<Double> frequency = createNumber("frequency", Double.class);
 
     //inherited
@@ -40,6 +42,8 @@ public class QDust extends EntityPathBase<Dust> {
     public final StringPath interfaceName = createString("interfaceName");
 
     public final QIotx iotx;
+
+    public final BooleanPath isWorked = createBoolean("isWorked");
 
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
@@ -75,6 +79,7 @@ public class QDust extends EntityPathBase<Dust> {
 
     public QDust(Class<? extends Dust> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.device = inits.isInitialized("device") ? new QDevice(forProperty("device"), inits.get("device")) : null;
         this.iotx = inits.isInitialized("iotx") ? new QIotx(forProperty("iotx"), inits.get("iotx")) : null;
     }
 

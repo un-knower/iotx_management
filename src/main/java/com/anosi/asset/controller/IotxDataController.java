@@ -26,6 +26,7 @@ import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.QIotxData;
+import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.IotxDataService;
 import com.querydsl.core.types.Predicate;
 
@@ -36,6 +37,8 @@ public class IotxDataController extends BaseController<IotxData> {
 
 	@Autowired
 	private IotxDataService iotxDataService;
+	@Autowired
+	private CompanyService companyService;
 
 	/***
 	 * 在所有关于dust的请求之前，为查询条件中添加公司
@@ -50,9 +53,10 @@ public class IotxDataController extends BaseController<IotxData> {
 		if (account != null) {
 			if (!account.isAdmin()) {
 				model.addAttribute("predicate",
-						QIotxData.iotxData.companId.eq(account.getCompany().getId()).and(predicate));
+						QIotxData.iotxData.companyName.eq(account.getCompany().getName()).and(predicate));
 			} else if (account.isAdmin() && companyId != null) {
-				model.addAttribute("predicate", QIotxData.iotxData.companId.eq(companyId).and(predicate));
+				model.addAttribute("predicate",
+						QIotxData.iotxData.companyName.eq(companyService.getOne(companyId).getName()).and(predicate));
 			}
 		}
 	}
@@ -83,7 +87,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	@RequiresPermissions({ "iotxAlarmData:view" })
 	@RequestMapping(value = "/iotxData/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findIotxDataManageData(@PathVariable ShowType showType,
-			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
+			@PageableDefault(sort = { "collectTime" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find iotxData");

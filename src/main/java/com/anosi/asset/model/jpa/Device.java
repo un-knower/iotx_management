@@ -24,7 +24,7 @@ public class Device extends BaseEntity {
 
 	private Company company;
 
-	private List<Sensor> sensorList = new ArrayList<>();
+	private List<Dust> dustList = new ArrayList<>();
 
 	public String getSerialNo() {
 		return serialNo;
@@ -43,13 +43,13 @@ public class Device extends BaseEntity {
 		this.company = company;
 	}
 
-	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "device", targetEntity = Sensor.class)
-	public List<Sensor> getSensorList() {
-		return sensorList;
+	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "device", targetEntity = Dust.class)
+	public List<Dust> getDustList() {
+		return dustList;
 	}
 
-	public void setSensorList(List<Sensor> sensorList) {
-		this.sensorList = sensorList;
+	public void setDustList(List<Dust> dustList) {
+		this.dustList = dustList;
 	}
-
+	
 }

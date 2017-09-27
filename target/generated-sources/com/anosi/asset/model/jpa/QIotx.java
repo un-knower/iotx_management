@@ -26,6 +26,10 @@ public class QIotx extends EntityPathBase<Iotx> {
 
     public final NumberPath<Long> alarmQuantity = createNumber("alarmQuantity", Long.class);
 
+    public final NumberPath<Double> baiduLatitude = createNumber("baiduLatitude", Double.class);
+
+    public final NumberPath<Double> baiduLongitude = createNumber("baiduLongitude", Double.class);
+
     public final QCompany company;
 
     public final StringPath cpu = createString("cpu");

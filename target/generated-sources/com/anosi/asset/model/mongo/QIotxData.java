@@ -21,18 +21,26 @@ public class QIotxData extends EntityPathBase<IotxData> {
 
     public final QAbstractDocument _super = new QAbstractDocument(this);
 
+    public final BooleanPath alarm = createBoolean("alarm");
+
     public final StringPath category = createString("category");
 
     public final DateTimePath<java.util.Date> closeTime = createDateTime("closeTime", java.util.Date.class);
 
     public final DateTimePath<java.util.Date> collectTime = createDateTime("collectTime", java.util.Date.class);
 
-    public final NumberPath<Long> companId = createNumber("companId", Long.class);
+    public final StringPath companyName = createString("companyName");
+
+    public final StringPath deviceSN = createString("deviceSN");
+
+    public final StringPath dustSN = createString("dustSN");
 
     //inherited
     public final NumberPath<java.math.BigInteger> id = _super.id;
 
     public final StringPath iotxSN = createString("iotxSN");
+
+    public final BooleanPath isAlarm = createBoolean("isAlarm");
 
     public final EnumPath<IotxData.Level> level = createEnum("level", IotxData.Level.class);
 

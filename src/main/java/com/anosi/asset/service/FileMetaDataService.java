@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.anosi.asset.model.mongo.FileMetaData;
+import com.querydsl.core.types.Predicate;
 
 public interface FileMetaDataService {
 	
@@ -33,5 +34,7 @@ public interface FileMetaDataService {
 	public InputStream getFileByObjectId(BigInteger objectId);
 
 	Page<FileMetaData> findByUploader(String uploader, Pageable pageable);
+	
+	Page<FileMetaData> findAll(Predicate predicate, Pageable pageable);
 	
 }

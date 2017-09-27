@@ -4,7 +4,6 @@
 <body>
 	<header th:fragment="top">
 	  <input type="hidden" id="loginId" name="loginId" th:value="${session.user.loginId}"/>  
-	  <input type="hidden" id="companyCode" name="companyCode" th:value="${session.user.company.code}"/>  
 	  <input type="hidden" id="isAdmin" name="isAdmin" shiro:hasRole="admin"/>  
       <!-- Logo -->
       <a id="dashboard" href="#" class="logo" >
@@ -21,6 +20,21 @@
       <a id="dashboard" href="#" class="logo" style="width:350px"><font size="5"><span class="logo-lg" th:text="#{system.title}"></span></font></a>
         <div class="navbar-custom-menu">
           <ul class="nav navbar-nav">
+          	<!-- Messages: style can be found in dropdown.less-->
+            <li class="dropdown messages-menu">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
+                <img src="/webResources/img/icon/message.png"/>
+                <span class="label label-warning" id="messageCount">3</span>
+              </a>
+              <ul class="dropdown-menu">
+                <li class="header" id="messageCountInfo"></li>
+                <li>
+                  <!-- inner menu: contains the actual data -->
+                  <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 200px;"><ul class="menu" id="message" style="overflow: hidden; width: 100%; height: 200px;"></ul><div class="slimScrollBar" style="background: rgb(0, 0, 0) none repeat scroll 0% 0%; width: 3px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px;"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div></div>
+                </li>
+                <li class="footer"><a href="#">See All Messages</a></li>
+              </ul>
+            </li>
           	<!-- User Account: style can be found in dropdown.less -->
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
@@ -37,36 +51,10 @@
                 </li>
                 <!-- Menu Footer-->
                 <li class="user-footer">
-                  <div class="pull-left"><a href="#" id="account_set_link" class="btn btn-default btn-flat" th:text="#{personalData}">¸öÈË×ÊÁÏ</a></div>
-                  <div class="pull-right"><a id="logout_link" href="javascript:customPost('/logout',null)" class="btn btn-default btn-flat" th:text="#{logout}">×¢Ïú</a></div>
+                  <div class="pull-left"><a href="#" id="account_set_link" class="btn btn-default btn-flat" th:text="#{personalData}">ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</a></div>
+                  <div class="pull-right"><a id="logout_link" href="javascript:customPost('/logout',null)" class="btn btn-default btn-flat" th:text="#{logout}">×¢ï¿½ï¿½</a></div>
                 </li>
               </ul>
-            </li>
-            <!-- Messages: style can be found in dropdown.less-->
-            <li class="dropdown messages-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
-                <img src="/webResources/img/icon/message.png"/>
-                <span class="label label-warning" id="messageCount">3</span>
-              </a>
-              <ul class="dropdown-menu">
-                <li class="header" id="messageCountInfo"></li>
-                <li>
-                  <!-- inner menu: contains the actual data -->
-                  <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 200px;"><ul class="menu" id="message" style="overflow: hidden; width: 100%; height: 200px;"></ul><div class="slimScrollBar" style="background: rgb(0, 0, 0) none repeat scroll 0% 0%; width: 3px; position: absolute; top: 0px; opacity: 0.4; display: block; border-radius: 7px; z-index: 99; right: 1px;"></div><div class="slimScrollRail" style="width: 3px; height: 100%; position: absolute; top: 0px; display: none; border-radius: 7px; background: rgb(51, 51, 51) none repeat scroll 0% 0%; opacity: 0.2; z-index: 90; right: 1px;"></div></div>
-                </li>
-                <li class="footer"><a href="#">See All Messages</a></li>
-              </ul>
-            </li>
-			<li class="dropdown messages-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
-                <img src="/webResources/img/icon/settings.png"/>
-              </a>
-            </li>
-			<li class="dropdown messages-menu">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown" >
-                <img src="/webResources/img/icon/date.png"/>
-                <span class="hidden-xs" th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm')}"></span>
-              </a>
             </li>
           </ul>
         </div>

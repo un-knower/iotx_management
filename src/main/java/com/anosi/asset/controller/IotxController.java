@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -29,8 +31,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
-import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
+import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.service.IotxService;
 import com.querydsl.core.types.Predicate;
 
@@ -94,6 +96,7 @@ public class IotxController extends BaseController<Iotx> {
 	 *            querydsl自动绑定，形式:serialNo=abc&.....
 	 * @param showAttributes
 	 * @param rowId
+	 * @param searchContent 模糊搜索的内容
 	 * @return
 	 * @throws Exception
 	 */
@@ -102,12 +105,20 @@ public class IotxController extends BaseController<Iotx> {
 	public JSONObject findIotxManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
-			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
+			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
 		logger.info("find iotx");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
-		return parseToJson(iotxService.findAll(predicate, pageable), rowId, showAttributes, showType);
+		Page<Iotx> iotxs;
+		if(StringUtils.isNoneBlank(searchContent)){
+			iotxs = iotxService.findIotxByContentSearch(searchContent, predicate, pageable);
+		}else{
+			iotxs = iotxService.findAll(predicate, pageable);
+		}
+		
+		return parseToJson(iotxs, rowId, showAttributes, showType);
 	}
 
 	/***
@@ -206,20 +217,6 @@ public class IotxController extends BaseController<Iotx> {
 		return jsonObject;
 	}
 
-	/***
-	 * 按照某些属性返回iotx的jsonarray
-	 * 
-	 * @param predicate
-	 * @param showAttributes
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/iotx/jsonArray", method = RequestMethod.GET)
-	public JSONArray getIoxJsonArray(@ModelAttribute Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
-		return jsonUtil.parseAttributesToJsonArray(showAttributes.split(","), iotxService.findAll(predicate));
-	}
-
 	/****
 	 * 获取iotx分布的数据
 	 * 
@@ -228,7 +225,7 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/iotx/iotxDistribute", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotx/iotxDistribute/data", method = RequestMethod.GET)
 	public JSONArray iotxDistribute(@ModelAttribute Predicate predicate) throws Exception {
 		return iotxService.ascertainArea(predicate);
 	}

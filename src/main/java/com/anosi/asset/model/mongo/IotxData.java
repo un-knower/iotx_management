@@ -17,6 +17,9 @@ public class IotxData extends AbstractDocument {
 
 	@Indexed
 	private String iotxSN;
+	
+	@Indexed
+	private String dustSN;
 
 	@Indexed
 	private String sensorSN;
@@ -44,6 +47,8 @@ public class IotxData extends AbstractDocument {
 	private Level level;
 	
 	private String category;
+	
+	private boolean isAlarm;
 
 	// 内部枚举类
 	public static enum Level {
@@ -78,6 +83,14 @@ public class IotxData extends AbstractDocument {
 
 	public void setIotxSN(String iotxSN) {
 		this.iotxSN = iotxSN;
+	}
+	
+	public String getDustSN() {
+		return dustSN;
+	}
+
+	public void setDustSN(String dustSN) {
+		this.dustSN = dustSN;
 	}
 
 	public String getSensorSN() {
@@ -168,6 +181,14 @@ public class IotxData extends AbstractDocument {
 
 	public void setDeviceSN(String deviceSN) {
 		this.deviceSN = deviceSN;
+	}
+
+	public boolean isAlarm() {
+		return isAlarm;
+	}
+
+	public void setAlarm(boolean isAlarm) {
+		this.isAlarm = isAlarm;
 	}
 	
 }

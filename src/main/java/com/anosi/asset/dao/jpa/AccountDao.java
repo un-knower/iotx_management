@@ -6,7 +6,7 @@ import com.anosi.asset.model.jpa.Account;
 
 public interface AccountDao extends BaseJPADao<Account>{
 
-	@EntityGraph(attributePaths = {"company"})
+	@EntityGraph(attributePaths = {"company","roleList"})
 	public Account findByLoginId(String loginId);
 	
 }

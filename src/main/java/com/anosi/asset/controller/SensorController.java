@@ -59,7 +59,7 @@ public class SensorController extends BaseController<Sensor> {
 		Account account = SessionUtil.getCurrentUser();
 		if (account != null) {
 			if (!account.isAdmin()) {
-				PathInits inits = new PathInits("district.city.province");
+				PathInits inits = new PathInits("dust.iotx.company");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate",
 						sensor.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
@@ -69,6 +69,18 @@ public class SensorController extends BaseController<Sensor> {
 				model.addAttribute("predicate", sensor.dust.iotx.company.id.eq(companyId).and(predicate));
 			}
 		}
+	}
+	
+	/***
+	 * 进入sensor管理地图页面
+	 * 
+	 * @return
+	 */
+	@RequiresPermissions({ "sensorManagement:view" })
+	@RequestMapping(value = "/sensor/management/map", method = RequestMethod.GET)
+	public ModelAndView toViewSensorManageMap() {
+		logger.info("view sensor management map");
+		return new ModelAndView("sensor/managementMap");
 	}
 
 	/**

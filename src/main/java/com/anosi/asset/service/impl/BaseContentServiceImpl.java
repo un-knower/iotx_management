@@ -3,6 +3,7 @@ package com.anosi.asset.service.impl;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -49,11 +50,11 @@ public abstract class BaseContentServiceImpl<T extends BaseContent, ID extends S
 	}
 
 	public Page<T> findByContent(String content, Pageable pageable) {
-		return getRepository().findByContentContaining(content, pageable);
+		return getRepository().findByContentContaining(StringUtils.deleteWhitespace(content), pageable);
 	}
 
 	public Page<T> findByContent(String companyName, String content, Pageable pageable) {
-		return getRepository().findByCompanyNameEqualsAndContentContaining(companyName, content, pageable);
+		return getRepository().findByCompanyNameEqualsAndContentContaining(companyName, StringUtils.deleteWhitespace(content), pageable);
 	}
 
 	public String convertContent(OriginalBean o) throws Exception {

@@ -18,6 +18,7 @@ import com.anosi.asset.dao.mongo.FileMetaDataDao;
 import com.anosi.asset.dao.mongo.GridFsDao;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.FileMetaDataService;
+import com.querydsl.core.types.Predicate;
 
 @Service("fileMetaDataService")
 @Transactional
@@ -80,6 +81,11 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 	@Override
 	public InputStream getFileByObjectId(BigInteger objectId) {
 		return gridFsDao.getFileFromGridFS(FileMetaData.BigIntegerToObjectIdConverter(objectId));
+	}
+
+	@Override
+	public Page<FileMetaData> findAll(Predicate predicate, Pageable pageable) {
+		return fileMetaDataDao.findAll(predicate, pageable);
 	}
 	
 }
