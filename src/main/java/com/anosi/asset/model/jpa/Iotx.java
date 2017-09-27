@@ -30,9 +30,6 @@ public class Iotx extends BaseEntity {
 	@Content
 	private String serialNo;
 
-	@Content
-	private String installLocation;
-
 	private String cpu;
 
 	private String memory;
@@ -43,6 +40,7 @@ public class Iotx extends BaseEntity {
 
 	private String version;
 
+	@Content
 	private Date openTime;
 
 	private Long continueTime;
@@ -140,14 +138,6 @@ public class Iotx extends BaseEntity {
 
 	public void setDustList(List<Dust> dustList) {
 		this.dustList = dustList;
-	}
-
-	public String getInstallLocation() {
-		return installLocation;
-	}
-
-	public void setInstallLocation(String installLocation) {
-		this.installLocation = installLocation;
 	}
 
 	public String getCpu() {
@@ -299,6 +289,17 @@ public class Iotx extends BaseEntity {
 	@Transient
 	public String getLocation() {
 		return "(" + longitude + "," + latitude + ")";
+	}
+
+	/***
+	 * 获取安装地点
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getInstallLocation() {
+		return district.getCity().getProvince().getName() + "-" + district.getCity().getName() + "-"
+				+ district.getName();
 	}
 
 	@Override

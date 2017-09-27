@@ -3,6 +3,7 @@ package com.anosi.asset.test;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
@@ -33,7 +34,6 @@ import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
 import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.service.CompanyService;
-import com.anosi.asset.service.DistrictService;
 import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxService;
 
@@ -47,8 +47,6 @@ public class TestIotxContent {
 	@Autowired
 	private CompanyService companyService;
 	@Autowired
-	private DistrictService districtService;
-	@Autowired
 	private IotxContentService iotxContentService;
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
@@ -58,13 +56,12 @@ public class TestIotxContent {
 	public void initContent(){
 		Iotx iotx = new Iotx();
 		iotx.setCompany(companyService.findByName("北京安诺信通信科技有限公司"));
-		iotx.setSerialNo("abc123ef");
-		iotx.setInstallLocation("北京");
+		iotx.setSerialNo("abc123efg");
 		iotx.setLongitude(116.4136103013);
 		iotx.setLatitude(39.9110666857);
 		iotx.setNetworkCategory(NetworkCategory.WIFI);
 		iotx.setStatus(Status.ONLINE);
-		iotx.setDistrict(districtService.getOne((long) 1));
+		iotx.setOpenTime(new Date());
 		iotxService.save(iotx);
 	}
 	

@@ -4,11 +4,13 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -91,6 +93,7 @@ public class DustController extends BaseController<Dust>{
 	 * @param predicate
 	 * @param showAttributes
 	 * @param rowId
+	 * @param searchContent 模糊搜索的内容
 	 * @return
 	 * @throws Exception
 	 */
@@ -99,12 +102,20 @@ public class DustController extends BaseController<Dust>{
 	public JSONObject findDustManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
-			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
+			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
 		logger.info("find dust");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
-		return parseToJson(dustService.findAll(predicate, pageable), rowId, showAttributes, showType);
+		Page<Dust> dusts;
+		if(StringUtils.isNoneBlank(searchContent)){
+			dusts = dustService.findByContentSearch(searchContent, predicate, pageable);
+		}else{
+			dusts = dustService.findAll(predicate, pageable);
+		}
+		
+		return parseToJson(dusts, rowId, showAttributes, showType);
 	}
 	
 	/***

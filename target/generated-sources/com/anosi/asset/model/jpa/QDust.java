@@ -39,8 +39,6 @@ public class QDust extends EntityPathBase<Dust> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
-    public final StringPath interfaceName = createString("interfaceName");
-
     public final QIotx iotx;
 
     public final BooleanPath isWorked = createBoolean("isWorked");
