@@ -51,6 +51,8 @@ public class QIotx extends EntityPathBase<Iotx> {
     //inherited
     public final NumberPath<Long> id = _super.id;
 
+    public final StringPath installLocation = createString("installLocation");
+
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 

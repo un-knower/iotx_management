@@ -21,6 +21,6 @@ public interface IotxService extends BaseService<Iotx, Long> {
 	 * @param pageable
 	 * @return
 	 */
-	public Page<Iotx> findByContentSearch(String content, Predicate predicate,Pageable pageable);
+	public Page<Iotx> findIotxByContentSearch(String content, Predicate predicate,Pageable pageable);
 
 }

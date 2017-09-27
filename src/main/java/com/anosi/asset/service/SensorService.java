@@ -10,6 +10,6 @@ public interface SensorService extends BaseService<Sensor, Long> {
 
 	public Sensor findBySerialNo(String serialNo);
 
-	public Page<Sensor> findByContentSearch(String content, Predicate predicate, Pageable pageable);
+	public Page<Sensor> findSensorByContentSearch(String content, Predicate predicate, Pageable pageable);
 
 }

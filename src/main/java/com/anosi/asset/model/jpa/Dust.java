@@ -11,8 +11,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Formula;
-
 import com.anosi.asset.model.elasticsearch.Content;
 
 @Entity
@@ -31,8 +29,6 @@ public class Dust extends BaseEntity {
 	private String serialNo;
 
 	private Double frequency;// 采集频率，单位:秒
-	
-	private Long sensorQuantity;
 
 	@Content
 	private String type;
@@ -48,7 +44,7 @@ public class Dust extends BaseEntity {
 	
 	private Device device;
 	
-	private Boolean isWorked = false;
+	private Boolean isWorked;
 
 	public String getName() {
 		return name;
@@ -91,16 +87,6 @@ public class Dust extends BaseEntity {
 
 	public void setIotx(Iotx iotx) {
 		this.iotx = iotx;
-	}
-	
-	// 获取关联的传感器数量
-	@Formula("(select COUNT(*) from sensor s  where s.dust_id=id)")
-	public Long getSensorQuantity() {
-		return sensorQuantity;
-	}
-
-	public void setSensorQuantity(Long sensorQuantity) {
-		this.sensorQuantity = sensorQuantity;
 	}
 
 	public String getType() {

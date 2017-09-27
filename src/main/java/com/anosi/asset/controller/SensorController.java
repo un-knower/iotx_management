@@ -6,13 +6,11 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
@@ -105,7 +103,6 @@ public class SensorController extends BaseController<Sensor> {
 	 * @param predicate
 	 * @param showAttributes
 	 * @param rowId
-	 * @param searchContent 模糊搜索的内容
 	 * @return
 	 * @throws Exception
 	 */
@@ -114,20 +111,12 @@ public class SensorController extends BaseController<Sensor> {
 	public JSONObject findSensorManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
-			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
-			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find sensor");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
-		Page<Sensor> sensors;
-		if(StringUtils.isNoneBlank(searchContent)){
-			sensors = sensorService.findByContentSearch(searchContent, predicate, pageable);
-		}else{
-			sensors = sensorService.findAll(predicate, pageable);
-		}
-		
-		return parseToJson(sensors, rowId, showAttributes, showType);
+		return parseToJson(sensorService.findAll(predicate, pageable), rowId, showAttributes, showType);
 	}
 
 	/***

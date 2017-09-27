@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
-import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.IotxContent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.District;
@@ -75,7 +73,8 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		try {
 			iotxContentService.save(iotx);
 		} catch (Exception e) {
-			throw new CustomRunTimeException(e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return iotx;
 	}
@@ -171,16 +170,13 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	}
 
 	@Override
-	public Page<Iotx> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
+	public Page<Iotx> findIotxByContentSearch(String content, Predicate predicate, Pageable pageable) {
 		Account account = SessionUtil.getCurrentUser();
 		Page<IotxContent> iotxContents;
-		// 防止sort报错，只获取pageable的页数和size
-		logger.debug("page:{},size:{}",pageable.getPageNumber(), pageable.getPageSize());
-		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
-			iotxContents = iotxContentService.findByContent(content, contentPage);
+			iotxContents = iotxContentService.findByContent(content, pageable);
 		} else {
-			iotxContents = iotxContentService.findByContent(account.getCompany().getName(), content, contentPage);
+			iotxContents = iotxContentService.findByContent(account.getCompany().getName(), content, pageable);
 		}
 		List<Long> ids = iotxContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());
