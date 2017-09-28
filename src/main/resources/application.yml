@@ -99,10 +99,10 @@ spring:
     
 #mqtt
 mqtt:
-  serverURIs: tcp://10.2.1.239:1883
-  userName: root
-  password: root  
-  topic: testMqtt
+  serverURIs: tcp://127.0.0.1:61613
+  userName: admin
+  password: password  
+  clientId: server
     
 #baiduMap
 baidu:

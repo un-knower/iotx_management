@@ -67,13 +67,13 @@ $(document).ready(function(){
 			
 			var option_dynamicData = {
 				    title: {
-				        text: 'iotx动态数据'
+				        text: '传感器动态数据'
 				    },
 				    tooltip: {
 				        trigger: 'axis',
 				        formatter: function (params) {
 				        	 param = params[0];
-				             return parseTimeStamp(param.name) + ' : ' + param.value[1];
+				             return param.name + ' : ' + param.value[1];
 				        },
 				        axisPointer: {
 				            animation: false
@@ -214,9 +214,5 @@ $(document).ready(function(){
 			}, 5000);
 		
 		}
-		
-		function parseTimeStamp(nS) {     
-			  return new Date(parseInt(nS)).toLocaleString().replace(/:\d{1,2}$/,' ');     
-		}   
 		
 	});
