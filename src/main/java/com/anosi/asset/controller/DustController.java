@@ -1,9 +1,5 @@
 package com.anosi.asset.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -16,8 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +26,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.QDust;
 import com.anosi.asset.service.DustService;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -124,7 +119,7 @@ public class DustController extends BaseController<Dust>{
 	 * @param dustId
 	 * @return
 	 */
-	@RequiresPermissions({ "dustManagement:view", "sensorManagement:view" })
+	@RequiresPermissions({ "dustManagement:view", "dustManagement:view" })
 	@RequestMapping(value = "/dust/management/detail/{dustId}", method = RequestMethod.GET)
 	public ModelAndView toViewDustManageTable(@PathVariable Long dustId) throws Exception {
 		logger.info("view dust management detail");
@@ -132,65 +127,35 @@ public class DustController extends BaseController<Dust>{
 	}
 	
 	/***
-	 * 保存或修改dust
-	 * 
-	 * @param dust
-	 * @param result
-	 * @return
-	 * @throws Exception
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "dustManagement:add", "dustManagement:edit" })
-	@RequestMapping(value = "/dust/save", method = RequestMethod.POST)
-	public JSONObject saveIotx(@Valid @ModelAttribute("dust") Dust dust, BindingResult result) throws Exception {
-		logger.debug("saveOrUpdate dust");
-		JSONObject jsonObject = new JSONObject();
-		// valid是否有错误
-		if (result.hasErrors()) {
-			List<ObjectError> list = result.getAllErrors();
-			StringBuffer stringBuffer = new StringBuffer();
-			for (ObjectError error : list) {
-				stringBuffer.append(
-						error.getCode() + "---" + error.getArguments() + "---" + error.getDefaultMessage() + "\n");
-			}
-			jsonObject.put("result", stringBuffer.toString());
-		} else {
-			dustService.save(dust);
-			jsonObject.put("result", "success");
-		}
-		return jsonObject;
-	}
-
-	/****
-	 * 在执行update前，先获取持久化的dust对象
+	 * 进入远程update dust的页面
 	 * 
 	 * @param id
-	 * @param model
-	 * 
+	 * @return
 	 */
-	@ModelAttribute
-	public void getIox(@RequestParam(value = "dustId", required = false) Long id, Model model) {
-		if (id != null) {
-			model.addAttribute("dust", dustService.getOne(id));
-		}
+	@RequiresAuthentication
+	@RequiresPermissions({ "dustManagement:edit" })
+	@RequestMapping(value = "/dust/update", method = RequestMethod.GET)
+	public ModelAndView toUpdateDustPage(@RequestParam(value = "id") Long id) {
+		return new ModelAndView("dust/update").addObject("dust", dustService.getOne(id));
 	}
 
 	/***
-	 * 删除dust
+	 * 配置dust
 	 * 
 	 * @param id
+	 * @param companyId
 	 * @return
 	 * @throws Exception
 	 */
 	@RequiresAuthentication
-	@RequiresPermissions({ "dustManagement:delete" })
-	@RequestMapping(value = "/dust/delete", method = RequestMethod.POST)
-	public JSONObject deleteDust(@RequestParam(value = "id") Long id) throws Exception {
-		logger.debug("delete dust");
-		dustService.delete(id);
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("result", "success");
-		return jsonObject;
+	@RequiresPermissions({ "dustManagement:edit" })
+	@RequestMapping(value = "/dust/update", method = RequestMethod.POST)
+	public JSONObject updateDust(@RequestParam(value = "id") Long id,
+			@RequestParam(value = "name", required = false) String name,
+			@RequestParam(value = "frequency", required = false) Double frequency,
+			@RequestParam(value = "isWorked", required = false) boolean isWorked) throws Exception {
+		dustService.remoteUpdate(dustService.getOne(id),name,frequency, isWorked);
+		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 	
 	/**

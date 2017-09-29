@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.alibaba.fastjson.JSONArray;
+import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.Iotx;
 import com.querydsl.core.types.Predicate;
 
@@ -23,4 +24,13 @@ public interface IotxService extends BaseService<Iotx, Long> {
 	 */
 	public Page<Iotx> findByContentSearch(String content, Predicate predicate,Pageable pageable);
 
+	public Iotx findBySerialNo(String serialNo);
+
+	/***
+	 * 远程配置
+	 * 
+	 * @param iotx
+	 * @param company
+	 */
+	public void remoteUpdate(Iotx iotx, Company company);
 }

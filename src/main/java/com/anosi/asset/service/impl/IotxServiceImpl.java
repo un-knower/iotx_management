@@ -4,10 +4,13 @@ import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +29,11 @@ import com.anosi.asset.dao.jpa.IotxDao;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.IotxContent;
 import com.anosi.asset.model.jpa.Account;
+import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
+import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.DistrictService;
 import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxDataService;
@@ -57,6 +62,8 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	private IotxContentService iotxContentService;
 	@Autowired
 	private I18nComponent i18nComponent;
+	@Autowired
+	private MqttServer mqttServer;
 
 	@Override
 	public BaseJPADao<Iotx> getRepository() {
@@ -175,7 +182,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		Account account = SessionUtil.getCurrentUser();
 		Page<IotxContent> iotxContents;
 		// 防止sort报错，只获取pageable的页数和size
-		logger.debug("page:{},size:{}",pageable.getPageNumber(), pageable.getPageSize());
+		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
 		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
 			iotxContents = iotxContentService.findByContent(content, contentPage);
@@ -185,6 +192,31 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		List<Long> ids = iotxContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());
 		return findAll(QIotx.iotx.id.in(ids).and(predicate), pageable);
+	}
+
+	@Override
+	public Iotx findBySerialNo(String serialNo) {
+		return iotxDao.findBySerialNo(serialNo);
+	}
+
+	@Override
+	public void remoteUpdate(Iotx iotx, Company company) {
+		JSONObject jsonObject = new JSONObject();
+		if (company != null && !Objects.equals(iotx.getCompany(), company)) {
+			iotx.setCompany(company);
+			jsonObject.put("companyName", company.getName());
+		}
+		if (!jsonObject.isEmpty()) {
+			MqttMessage message = new MqttMessage();
+			message.setQos(2);
+			message.setRetained(true);
+			message.setPayload(jsonObject.toString().getBytes());
+			try {
+				mqttServer.publish("/" + iotx.getSerialNo(), message);
+			} catch (MqttException e) {
+				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
+			}
+		}
 	}
 
 }

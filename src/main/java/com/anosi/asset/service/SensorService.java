@@ -12,4 +12,12 @@ public interface SensorService extends BaseService<Sensor, Long> {
 
 	public Page<Sensor> findByContentSearch(String content, Predicate predicate, Pageable pageable);
 
+	/***
+	 * 远程配置sensor
+	 * 
+	 * @param sensor
+	 * @param isWorked
+	 */
+	public void remoteUpdate(Sensor sensor, boolean isWorked);
+
 }

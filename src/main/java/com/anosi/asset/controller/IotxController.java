@@ -1,9 +1,5 @@
 package com.anosi.asset.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -16,8 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +27,9 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
 import com.anosi.asset.model.jpa.QIotx;
+import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.IotxService;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -43,6 +39,8 @@ public class IotxController extends BaseController<Iotx> {
 
 	@Autowired
 	private IotxService iotxService;
+	@Autowired
+	private CompanyService companyService;
 
 	/***
 	 * 在所有关于iotx的请求之前，为查询条件中添加公司
@@ -96,7 +94,8 @@ public class IotxController extends BaseController<Iotx> {
 	 *            querydsl自动绑定，形式:serialNo=abc&.....
 	 * @param showAttributes
 	 * @param rowId
-	 * @param searchContent 模糊搜索的内容
+	 * @param searchContent
+	 *            模糊搜索的内容
 	 * @return
 	 * @throws Exception
 	 */
@@ -112,12 +111,12 @@ public class IotxController extends BaseController<Iotx> {
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
 		Page<Iotx> iotxs;
-		if(StringUtils.isNoneBlank(searchContent)){
+		if (StringUtils.isNoneBlank(searchContent)) {
 			iotxs = iotxService.findByContentSearch(searchContent, predicate, pageable);
-		}else{
+		} else {
 			iotxs = iotxService.findAll(predicate, pageable);
 		}
-		
+
 		return parseToJson(iotxs, rowId, showAttributes, showType);
 	}
 
@@ -137,70 +136,34 @@ public class IotxController extends BaseController<Iotx> {
 	}
 
 	/***
-	 * 进入save和update iotx的页面
+	 * 进入远程update iotx的页面
 	 * 
 	 * @param id
 	 * @return
 	 */
 	@RequiresAuthentication
-	@RequiresPermissions({ "iotxManagement:add", "iotxManagement:edit" })
-	@RequestMapping(value = "/iotx/save", method = RequestMethod.GET)
-	public ModelAndView toSaveIotxPage(@RequestParam(value = "id", required = false) Long id) throws Exception {
-		Iotx iotx = null;
-		if (id != null) {
-			iotx = iotxService.getOne(id);
-		} else {
-			iotx = new Iotx();
-		}
-		return new ModelAndView("iotx/save").addObject("iotx", iotx).addObject("networkCategorys",
-				NetworkCategory.values());
+	@RequiresPermissions({ "iotxManagement:edit" })
+	@RequestMapping(value = "/iotx/update", method = RequestMethod.GET)
+	public ModelAndView toUpdateIotxPage(@RequestParam(value = "id") Long id) throws Exception {
+		return new ModelAndView("iotx/update").addObject("iotx", iotxService.getOne(id)).addObject("companys",
+				companyService.findAll());
 	}
 
-	@RequiresAuthentication
-	@RequiresPermissions({ "iotxManagement:add", "iotxManagement:edit" })
-	@RequestMapping(value = "/iotx/save", method = RequestMethod.POST)
-	public JSONObject saveIotx(@Valid @ModelAttribute("iotx") Iotx iotx, BindingResult result) throws Exception {
-		logger.debug("saveOrUpdate iotx");
-		JSONObject jsonObject = new JSONObject();
-		// valid是否有错误
-		if (result.hasErrors()) {
-			List<ObjectError> list = result.getAllErrors();
-			StringBuffer stringBuffer = new StringBuffer();
-			for (ObjectError error : list) {
-				stringBuffer.append(
-						error.getCode() + "---" + error.getArguments() + "---" + error.getDefaultMessage() + "\n");
-			}
-			jsonObject.put("result", stringBuffer.toString());
-		} else {
-			iotxService.save(iotx);
-			jsonObject.put("result", "success");
-		}
-		return jsonObject;
-	}
-
-	/****
-	 * 在执行update前，先获取持久化的iotx对象
+	/***
+	 * 配置iotx
 	 * 
 	 * @param id
-	 * @param model
-	 * 
+	 * @param companyId
+	 * @return
+	 * @throws Exception
 	 */
-	@ModelAttribute
-	public void getIox(@RequestParam(value = "iotxId", required = false) Long id, Model model) {
-		if (id != null) {
-			model.addAttribute("iotx", iotxService.getOne(id));
-		}
-	}
-
 	@RequiresAuthentication
-	@RequiresPermissions({ "iotxManagement:delete" })
-	@RequestMapping(value = "/iotx/delete", method = RequestMethod.POST)
-	public JSONObject deleteIotx(@RequestParam(value = "id") Long id) throws Exception {
-		logger.debug("delete iotx");
-		iotxService.delete(id);
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("result", "success");
-		return jsonObject;
+	@RequiresPermissions({ "iotxManagement:edit" })
+	@RequestMapping(value = "/iotx/update", method = RequestMethod.POST)
+	public JSONObject updateIotx(@RequestParam(value = "id") Long id,
+			@RequestParam(value = "companyId", required = false) Long companyId) throws Exception {
+		iotxService.remoteUpdate(iotxService.getOne(id), companyService.getOne(companyId));
+		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
 	/**

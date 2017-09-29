@@ -4,4 +4,6 @@ import com.anosi.asset.model.jpa.Dust;
 
 public interface DustDao extends BaseJPADao<Dust>{
 
+	public Dust findBySerialNo(String serialNo);
+	
 }

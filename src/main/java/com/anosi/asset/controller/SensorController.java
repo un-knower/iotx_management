@@ -2,10 +2,6 @@ package com.anosi.asset.controller;
 
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -18,8 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +30,7 @@ import com.anosi.asset.model.jpa.QSensor;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.SensorCategoryService;
 import com.anosi.asset.service.SensorService;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -72,7 +67,7 @@ public class SensorController extends BaseController<Sensor> {
 			}
 		}
 	}
-	
+
 	/***
 	 * 进入sensor管理地图页面
 	 * 
@@ -105,7 +100,8 @@ public class SensorController extends BaseController<Sensor> {
 	 * @param predicate
 	 * @param showAttributes
 	 * @param rowId
-	 * @param searchContent 模糊搜索的内容
+	 * @param searchContent
+	 *            模糊搜索的内容
 	 * @return
 	 * @throws Exception
 	 */
@@ -121,12 +117,12 @@ public class SensorController extends BaseController<Sensor> {
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
 		Page<Sensor> sensors;
-		if(StringUtils.isNoneBlank(searchContent)){
+		if (StringUtils.isNoneBlank(searchContent)) {
 			sensors = sensorService.findByContentSearch(searchContent, predicate, pageable);
-		}else{
+		} else {
 			sensors = sensorService.findAll(predicate, pageable);
 		}
-		
+
 		return parseToJson(sensors, rowId, showAttributes, showType);
 	}
 
@@ -145,72 +141,33 @@ public class SensorController extends BaseController<Sensor> {
 	}
 
 	/***
-	 * 进入save和update sensor的页面
+	 * 进入远程update sensor的页面
 	 * 
 	 * @param id
 	 * @return
 	 */
 	@RequiresAuthentication
-	@RequiresPermissions({ "sensorManagement:add", "sensorManagement:edit" })
-	@RequestMapping(value = "/sensor/save", method = RequestMethod.GET)
-	public ModelAndView toSaveSensorPage(@RequestParam(value = "id", required = false) Long id) {
-		Sensor sensor = null;
-		if (id != null) {
-			sensor = sensorService.getOne(id);
-		} else {
-			sensor = new Sensor();
-		}
-		return new ModelAndView("sensor/save").addObject("sensor", sensor).addObject("sensorCategorys",
-				sensorCategoryService.findAll());
+	@RequiresPermissions({ "sensorManagement:edit" })
+	@RequestMapping(value = "/sensor/update", method = RequestMethod.GET)
+	public ModelAndView toUpdateSensorPage(@RequestParam(value = "id") Long id) {
+		return new ModelAndView("sensor/update").addObject("sensor", sensorService.getOne(id));
 	}
 
-	@RequiresAuthentication
-	@RequiresPermissions({ "sensorManagement:add", "sensorManagement:edit" })
-	@RequestMapping(value = "/sensor/save", method = RequestMethod.POST)
-	public JSONObject saveSensor(@Valid @ModelAttribute("sensor") Sensor sensor, BindingResult result)
-			throws Exception {
-		logger.debug("saveOrUpdate sensor");
-		sensorService.save(sensor);
-		JSONObject jsonObject = new JSONObject();
-		// valid是否有错误
-		if (result.hasErrors()) {
-			List<ObjectError> list = result.getAllErrors();
-			StringBuffer stringBuffer = new StringBuffer();
-			for (ObjectError error : list) {
-				stringBuffer.append(
-						error.getCode() + "---" + error.getArguments() + "---" + error.getDefaultMessage() + "\n");
-			}
-			jsonObject.put("result", stringBuffer.toString());
-		} else {
-			sensorService.save(sensor);
-			jsonObject.put("result", "success");
-		}
-		return jsonObject;
-	}
-
-	/****
-	 * 在执行update前，先获取持久化的sensor对象
+	/***
+	 * 配置sensor
 	 * 
 	 * @param id
-	 * @param model
-	 * 
+	 * @param companyId
+	 * @return
+	 * @throws Exception
 	 */
-	@ModelAttribute
-	public void getIox(@RequestParam(value = "sensorId", required = false) Long id, Model model) {
-		if (id != null) {
-			model.addAttribute("sensor", sensorService.getOne(id));
-		}
-	}
-
 	@RequiresAuthentication
-	@RequiresPermissions({ "sensorManagement:delete" })
-	@RequestMapping(value = "/sensor/delete", method = RequestMethod.POST)
-	public JSONObject deleteSensor(@RequestParam(value = "id") Long id) throws Exception {
-		logger.debug("delete sensor");
-		sensorService.delete(id);
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("result", "success");
-		return jsonObject;
+	@RequiresPermissions({ "sensorManagement:edit" })
+	@RequestMapping(value = "/sensor/update", method = RequestMethod.POST)
+	public JSONObject updateSensor(@RequestParam(value = "id") Long id,
+			@RequestParam(value = "isWorked", required = false) boolean isWorked) throws Exception {
+		sensorService.remoteUpdate(sensorService.getOne(id), isWorked);
+		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
 	/**

@@ -1,8 +1,11 @@
 package com.anosi.asset.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +17,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.cache.annotation.SensorEvictCache;
 import com.anosi.asset.cache.annotation.SensorSaveCache;
+import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.SensorDao;
@@ -24,6 +29,7 @@ import com.anosi.asset.model.elasticsearch.SensorContent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.QSensor;
 import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorContentService;
 import com.anosi.asset.service.SensorService;
@@ -42,6 +48,10 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 	private IotxDataService iotxDataService;
 	@Autowired
 	private SensorContentService sensorContentService;
+	@Autowired
+	private I18nComponent i18nComponent;
+	@Autowired
+	private MqttServer mqttServer;
 
 	@Override
 	public Page<Sensor> findAll(Predicate predicate, Pageable pageable) {
@@ -89,7 +99,7 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 		Account account = SessionUtil.getCurrentUser();
 		Page<SensorContent> sensorContents;
 		// 防止sort报错，只获取pageable的页数和size
-		logger.debug("page:{},size:{}",pageable.getPageNumber(), pageable.getPageSize());
+		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
 		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
 			sensorContents = sensorContentService.findByContent(content, contentPage);
@@ -99,6 +109,27 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 		List<Long> ids = sensorContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());
 		return findAll(QSensor.sensor.id.in(ids).and(predicate), pageable);
+	}
+
+	@Override
+	public void remoteUpdate(Sensor sensor, boolean isWorked) {
+		JSONObject jsonObject = new JSONObject();
+		if (!Objects.equals(sensor.getIsWorked(), isWorked)) {
+			sensor.setIsWorked(isWorked);
+			jsonObject.put("isWorked", isWorked);
+		}
+		if (!jsonObject.isEmpty()) {
+			MqttMessage message = new MqttMessage();
+			message.setQos(2);
+			message.setRetained(true);
+			message.setPayload(jsonObject.toString().getBytes());
+			try {
+				mqttServer.publish("/" + sensor.getDust().getIotx().getSerialNo() + "/" + sensor.getDust().getSerialNo()
+						+ "/" + sensor.getSerialNo(), message);
+			} catch (MqttException e) {
+				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
+			}
+		}
 	}
 
 }
