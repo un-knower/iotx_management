@@ -21,5 +21,5 @@ public interface DustService extends BaseService<Dust, Long> {
 	 * @param isWorked
 	 */
 	public void remoteUpdate(Dust dust, String name, Double frequency, boolean isWorked);
-	
+
 }

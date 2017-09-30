@@ -1,6 +1,7 @@
 package com.anosi.asset.service;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -62,7 +63,7 @@ public interface BaseService<T,ID extends Serializable> {
 	 * 
 	 * @return all entities
 	 */
-	Iterable<T> findAll();
+	List<T> findAll();
 
 	/**
 	 * Returns all instances of the type with the given IDs.
@@ -70,7 +71,7 @@ public interface BaseService<T,ID extends Serializable> {
 	 * @param ids
 	 * @return
 	 */
-	Iterable<T> findAll(Iterable<ID> ids);
+	List<T> findAll(Iterable<ID> ids);
 
 	/**
 	 * Returns the number of entities available.

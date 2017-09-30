@@ -43,15 +43,24 @@ public interface BaseContentService<T, ID extends Serializable, OriginalBean> {
 	 * @throws Exception
 	 */
 	T save(OriginalBean o) throws Exception;
+	
+	/***
+	 * 批量保存
+	 * 
+	 * @param obs
+	 * @return
+	 * @throws Exception
+	 */
+	<S extends OriginalBean> Iterable<T> save(Iterable<S> obs) throws Exception;
 
 	/***
-	 * 更新
+	 * 用来设置一些通用的内容
 	 * 
 	 * @param t
 	 * @param o
 	 * @return
 	 * @throws Exception
 	 */
-	T update(T t, OriginalBean o) throws Exception;
-
+	T setCommonContent(T t, OriginalBean o) throws Exception;
+	
 }

@@ -40,12 +40,10 @@ import com.anosi.asset.service.SensorService;
 /****
  * 专门用来与处理由iotx发起的请求,包括如下操作:
  * 
- * <P>
+ * <pre>
  * iotx和微尘<b>配置文件</b>的上传下载.
- * </p>
- * <P>
  * iotx、微尘、传感器<b>字段信息</b>的上传更新.
- * </p>
+ * </pre>
  * 
  * @author jinyao
  *

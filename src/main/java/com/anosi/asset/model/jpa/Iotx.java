@@ -28,6 +28,7 @@ public class Iotx extends BaseEntity {
 	private static final long serialVersionUID = -2480716502123174880L;
 
 	@Content
+	// @JSONField(name="serial_no")
 	private String serialNo;
 
 	private String cpu;

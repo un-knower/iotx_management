@@ -97,8 +97,14 @@ public class IotxDataServcieImpl implements IotxDataService {
 	}
 
 	@Override
-	public Iterable<IotxData> save(Iterable<IotxData> iotxDatas) {
-		return iotxDataDao.save(iotxDatas);
+	public <S extends IotxData> Iterable<S> save(Iterable<S> iotxDatas) {
+		iotxDatas = iotxDataDao.save(iotxDatas);
+		try {
+			iotxDataContentService.save(iotxDatas);
+		} catch (Exception e) {
+			throw new CustomRunTimeException(e.getMessage());
+		}
+		return iotxDatas;
 	}
 
 	@Override
@@ -106,12 +112,13 @@ public class IotxDataServcieImpl implements IotxDataService {
 		Account account = SessionUtil.getCurrentUser();
 		Page<IotxDataContent> iotxDataContents;
 		// 防止sort报错，只获取pageable的页数和size
-		logger.debug("page:{},size:{}",pageable.getPageNumber(), pageable.getPageSize());
+		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
 		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
 			iotxDataContents = iotxDataContentService.findByContent(content, contentPage);
 		} else {
-			iotxDataContents = iotxDataContentService.findByContent(account.getCompany().getName(), content, contentPage);
+			iotxDataContents = iotxDataContentService.findByContent(account.getCompany().getName(), content,
+					contentPage);
 		}
 		List<BigInteger> ids = iotxDataContents.getContent().stream().map(c -> new BigInteger(c.getId()))
 				.collect(Collectors.toList());
@@ -123,12 +130,13 @@ public class IotxDataServcieImpl implements IotxDataService {
 		Account account = SessionUtil.getCurrentUser();
 		Page<IotxDataContent> iotxDataContents;
 		// 防止sort报错，只获取pageable的页数和size
-		logger.debug("page:{},size:{}",pageable.getPageNumber(), pageable.getPageSize());
+		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
 		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
 			iotxDataContents = iotxDataContentService.findByContentAndAlarm(content, isAlarm, contentPage);
 		} else {
-			iotxDataContents = iotxDataContentService.findByContentAndAlarmAndCompanyName(content, isAlarm, account.getCompany().getName(), contentPage);
+			iotxDataContents = iotxDataContentService.findByContentAndAlarmAndCompanyName(content, isAlarm,
+					account.getCompany().getName(), contentPage);
 		}
 		List<BigInteger> ids = iotxDataContents.getContent().stream().map(c -> new BigInteger(c.getId()))
 				.collect(Collectors.toList());

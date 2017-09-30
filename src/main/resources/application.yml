@@ -99,7 +99,7 @@ spring:
     
 #mqtt
 mqtt:
-  serverURIs: tcp://127.0.0.1:61613
+  serverURIs: tcp://127.0.0.1:1883
   userName: admin
   password: password  
   clientId: server

@@ -27,7 +27,13 @@ public interface IotxDataService {
 
 	public IotxData save(IotxData iotxData);
 
-	public Iterable<IotxData> save(Iterable<IotxData> iotxDatas);
+	/***
+	 * 批量添加
+	 * 
+	 * @param iotxDatas
+	 * @return
+	 */
+	public <S extends IotxData> Iterable<S> save(Iterable<S> iotxDatas);
 
 	/***
 	 * 根据模糊搜索的content,获取到iotxDataContent,进而获取到iotxData

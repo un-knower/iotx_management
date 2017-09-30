@@ -1,5 +1,8 @@
 package com.anosi.asset.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +36,25 @@ public class IotxContentServiceImpl extends BaseContentServiceImpl<IotxContent, 
 			iotxContent.setId(id);
 		}
 		iotxContent.setCompanyName(iotx.getCompany().getName());
-		iotxContent = update(iotxContent, iotx);
-		return iotxContent;
+		iotxContent = setCommonContent(iotxContent, iotx);
+		return iotxContentDao.save(iotxContent);
+	}
+
+	@Override
+	public <S extends Iotx> Iterable<IotxContent> save(Iterable<S> obs) throws Exception {
+		List<IotxContent> iotxContents = new ArrayList<>();
+		for (Iotx iotx : obs) {
+			String id = String.valueOf(iotx.getId());
+			IotxContent iotxContent = iotxContentDao.findOne(id);
+			if (iotxContent == null) {
+				iotxContent = new IotxContent();
+				iotxContent.setId(id);
+			}
+			iotxContent.setCompanyName(iotx.getCompany().getName());
+			iotxContent = setCommonContent(iotxContent, iotx);
+			iotxContents.add(iotxContent);
+		}
+		return iotxContentDao.save(iotxContents);
 	}
 
 }

@@ -61,9 +61,8 @@ public abstract class BaseContentServiceImpl<T extends BaseContent, ID extends S
 		return getContent(o);
 	}
 
-	public T update(T t, OriginalBean o) throws Exception {
+	public T setCommonContent(T t, OriginalBean o) throws Exception {
 		t.setContent(convertContent(o));
-		t = getRepository().save(t);
 		return t;
 	}
 

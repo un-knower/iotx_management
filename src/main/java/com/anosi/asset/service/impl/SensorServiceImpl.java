@@ -33,6 +33,7 @@ import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorContentService;
 import com.anosi.asset.service.SensorService;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @Service("sensorService")
@@ -74,12 +75,29 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 	@SensorSaveCache // 缓存
 	public Sensor save(Sensor sensor) {
 		sensor = sensorDao.save(sensor);
+
 		try {
 			sensorContentService.save(sensor);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
 		return sensor;
+	}
+
+	/***
+	 * 重写批量添加
+	 * 
+	 */
+	@Override
+	public <S extends Sensor> Iterable<S> save(Iterable<S> sensors) {
+		sensors = sensorDao.save(sensors);
+
+		try {
+			sensorContentService.save(sensors);
+		} catch (Exception e) {
+			throw new CustomRunTimeException(e.getMessage());
+		}
+		return super.save(sensors);
 	}
 
 	@Override
@@ -113,19 +131,22 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 
 	@Override
 	public void remoteUpdate(Sensor sensor, boolean isWorked) {
-		JSONObject jsonObject = new JSONObject();
+		JSONObject bodyJson = new JSONObject();
 		if (!Objects.equals(sensor.getIsWorked(), isWorked)) {
-			sensor.setIsWorked(isWorked);
-			jsonObject.put("isWorked", isWorked);
+			bodyJson.put("isWorked", isWorked);
 		}
-		if (!jsonObject.isEmpty()) {
+		if (!bodyJson.isEmpty()) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("header",
+					new JSONObject(ImmutableMap.of("type", "sensor", "serialNo", sensor.getSerialNo())));
+			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);
 			message.setRetained(true);
-			message.setPayload(jsonObject.toString().getBytes());
+			message.setPayload(bodyJson.toString().getBytes());
 			try {
-				mqttServer.publish("/" + sensor.getDust().getIotx().getSerialNo() + "/" + sensor.getDust().getSerialNo()
-						+ "/" + sensor.getSerialNo(), message);
+				mqttServer.publish("/configure/" + sensor.getDust().getIotx().getSerialNo() + "/"
+						+ sensor.getDust().getSerialNo() + "/" + sensor.getSerialNo(), message);
 			} catch (MqttException e) {
 				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
 			}

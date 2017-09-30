@@ -29,6 +29,7 @@ import com.anosi.asset.model.jpa.QDust;
 import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.DustContentService;
 import com.anosi.asset.service.DustService;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @Service("dustService")
@@ -59,12 +60,29 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 	@Override
 	public Dust save(Dust dust) {
 		dustDao.save(dust);
+
 		try {
 			dustContentService.save(dust);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
 		return dust;
+	}
+
+	/***
+	 * 重写批量添加
+	 * 
+	 */
+	@Override
+	public <S extends Dust> Iterable<S> save(Iterable<S> dusts) {
+		dusts = dustDao.save(dusts);
+
+		try {
+			dustContentService.save(dusts);
+		} catch (Exception e) {
+			throw new CustomRunTimeException(e.getMessage());
+		}
+		return dusts;
 	}
 
 	@Override
@@ -91,26 +109,26 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 
 	@Override
 	public void remoteUpdate(Dust dust, String name, Double frequency, boolean isWorked) {
-		JSONObject jsonObject = new JSONObject();
+		JSONObject bodyJson = new JSONObject();
 		if (!Objects.equals(dust.getName(), name)) {
-			dust.setName(name);
-			jsonObject.put("name", name);
+			bodyJson.put("name", name);
 		}
 		if (!Objects.equals(dust.getFrequency(), frequency)) {
-			dust.setFrequency(frequency);
-			jsonObject.put("frequency", frequency);
+			bodyJson.put("frequency", frequency);
 		}
 		if (!Objects.equals(dust.getIsWorked(), isWorked)) {
-			dust.setIsWorked(isWorked);
-			jsonObject.put("isWorked", isWorked);
+			bodyJson.put("isWorked", isWorked);
 		}
-		if (!jsonObject.isEmpty()) {
+		if (!bodyJson.isEmpty()) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("header", new JSONObject(ImmutableMap.of("type", "dust", "serialNo", dust.getSerialNo())));
+			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);
 			message.setRetained(true);
-			message.setPayload(jsonObject.toString().getBytes());
+			message.setPayload(bodyJson.toString().getBytes());
 			try {
-				mqttServer.publish("/" + dust.getIotx().getSerialNo() + "/" + dust.getSerialNo(), message);
+				mqttServer.publish("/configure/" + dust.getIotx().getSerialNo() + "/" + dust.getSerialNo(), message);
 			} catch (MqttException e) {
 				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
 			}

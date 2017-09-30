@@ -2,6 +2,7 @@ package com.anosi.asset.service.impl;
 
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +40,7 @@ import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.util.MapUtil;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathInits;
@@ -79,12 +81,34 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	public Iotx save(Iotx iotx) {
 		// 根据经纬度获取位置,并保存
 		setIotxDistrict(iotx);
+		iotxDao.save(iotx);
+
 		try {
 			iotxContentService.save(iotx);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
 		return iotx;
+	}
+
+	/***
+	 * 重写批量添加
+	 */
+	@Override
+	public <S extends Iotx> Iterable<S> save(Iterable<S> iotxs) {
+		List<Iotx> iotxsWithDistrict = new ArrayList<>();
+		for (Iotx iotx : iotxs) {
+			setIotxDistrict(iotx);
+		}
+		iotxsWithDistrict = iotxDao.save(iotxsWithDistrict);
+
+		try {
+			iotxContentService.save(iotxsWithDistrict);
+		} catch (Exception e) {
+			throw new CustomRunTimeException(e.getMessage());
+		}
+
+		return iotxs;
 	}
 
 	@Override
@@ -118,7 +142,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 				Double.parseDouble(new String(Base64.getDecoder().decode(convertLocation.getString("x")))));
 		iotx.setBaiduLatitude(
 				Double.parseDouble(new String(Base64.getDecoder().decode(convertLocation.getString("y")))));
-		return iotxDao.save(iotx);
+		return iotx;
 	}
 
 	/***
@@ -201,18 +225,20 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 
 	@Override
 	public void remoteUpdate(Iotx iotx, Company company) {
-		JSONObject jsonObject = new JSONObject();
+		JSONObject bodyJson = new JSONObject();
 		if (company != null && !Objects.equals(iotx.getCompany(), company)) {
-			iotx.setCompany(company);
-			jsonObject.put("companyName", company.getName());
+			bodyJson.put("companyName", company.getName());
 		}
-		if (!jsonObject.isEmpty()) {
+		if (!bodyJson.isEmpty()) {
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("header", new JSONObject(ImmutableMap.of("type", "iotx", "serialNo", iotx.getSerialNo())));
+			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);
 			message.setRetained(true);
-			message.setPayload(jsonObject.toString().getBytes());
+			message.setPayload(bodyJson.toString().getBytes());
 			try {
-				mqttServer.publish("/" + iotx.getSerialNo(), message);
+				mqttServer.publish("/configure/" + iotx.getSerialNo(), message);
 			} catch (MqttException e) {
 				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
 			}
