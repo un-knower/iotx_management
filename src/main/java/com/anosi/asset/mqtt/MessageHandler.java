@@ -1,5 +1,6 @@
 package com.anosi.asset.mqtt;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
@@ -67,16 +68,9 @@ public class MessageHandler {
 	 */
 	private void handle(String topic, MqttMessage message) throws Exception {
 		// 按照topic分别处理消息
-		switch (topic) {
-		case "configureCallback":
-			handleConfigureCallback(topic, message);
-			break;
-		case "status":
-			handleStatus(topic, message);
-			break;
-		default:
-			break;
-		}
+		Method handle = this.getClass().getMethod("handle" + topic.substring(0, 1).toUpperCase() + topic.substring(1),
+				String.class, MqttMessage.class);
+		handle.invoke(this, topic, message);
 	}
 
 	/***
@@ -87,6 +81,7 @@ public class MessageHandler {
 	 *            内容格式:{header:{type:xxx,serialNo:xxx},body:{k1:v1,k2:v2}}
 	 * @throws Exception
 	 */
+	@SuppressWarnings("unused")
 	private void handleConfigureCallback(String topic, MqttMessage message) throws Exception {
 		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
 		JSONObject header = jsonMessage.getJSONObject("header");
@@ -117,6 +112,7 @@ public class MessageHandler {
 	 * @param message
 	 *            内容格式:{header:{serialNo:xxx},body:{status:xxx}}
 	 */
+	@SuppressWarnings("unused")
 	private void handleStatus(String topic, MqttMessage message) {
 		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
 		JSONObject header = jsonMessage.getJSONObject("header");

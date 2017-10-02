@@ -77,10 +77,10 @@ public class SubscribeComponent {
 	 * 
 	 */
 	private void setIotxSubscrides() {
-		topicList.add("/configureCallback");
-		qosList.add(2);
-		topicList.add("/status");
-		qosList.add(2);
+		for (WillSubscrides willSubscride : WillSubscrides.values()) {
+			topicList.add(willSubscride.getTopic());
+			qosList.add(willSubscride.getQos());
+		}
 	}
 
 	public Subscrides getSubscrides() {
@@ -91,6 +91,12 @@ public class SubscribeComponent {
 		this.subscrides = subscrides;
 	}
 
+	/***
+	 * 内部类，用来存放订阅的topics和qos
+	 * 
+	 * @author jinyao
+	 *
+	 */
 	class Subscrides {
 
 		private String[] topics;
@@ -112,6 +118,42 @@ public class SubscribeComponent {
 		public void setQos(int[] qos) {
 			this.qos = qos;
 		}
+	}
+
+	/***
+	 * 枚举类，列出所有订阅和对应的qos
+	 * 
+	 * @author jinyao
+	 *
+	 */
+	enum WillSubscrides {
+		CONFIGURECALLBACK("configurecallback", 2), STATUS("status", 2);
+
+		private String topic;
+
+		private int qos;
+
+		private WillSubscrides(String topic, int qos) {
+			this.topic = topic;
+			this.qos = qos;
+		}
+
+		public String getTopic() {
+			return topic;
+		}
+
+		public void setTopic(String topic) {
+			this.topic = topic;
+		}
+
+		public int getQos() {
+			return qos;
+		}
+
+		public void setQos(int qos) {
+			this.qos = qos;
+		}
 
 	}
+
 }
