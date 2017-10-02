@@ -1,7 +1,6 @@
 package com.anosi.asset.test.groovy;
 
 import static org.junit.Assert.*
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.logger
 
 import com.anosi.asset.model.jpa.RoleFunction
 import com.anosi.asset.model.jpa.RoleFunctionBtn

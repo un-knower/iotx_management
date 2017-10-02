@@ -222,7 +222,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	}
 
 	/***
-	 * 上传文件
+	 * 上传文件,根据规则判断是Iotx还是dust的配置文件,然后进行添加或更新操作
 	 * 
 	 * @param multipartFiles
 	 * @param identification

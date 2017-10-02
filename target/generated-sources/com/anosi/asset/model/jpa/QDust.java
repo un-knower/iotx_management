@@ -55,6 +55,8 @@ public class QDust extends EntityPathBase<Dust> {
 
     public final ListPath<Sensor, QSensor> sensorList = this.<Sensor, QSensor>createList("sensorList", Sensor.class, QSensor.class, PathInits.DIRECT2);
 
+    public final NumberPath<Long> sensorQuantity = createNumber("sensorQuantity", Long.class);
+
     public final StringPath serialNo = createString("serialNo");
 
     public final StringPath type = createString("type");

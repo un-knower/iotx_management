@@ -8,9 +8,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +31,6 @@ import com.querydsl.core.types.Predicate;
 @Service("iotxDataService")
 @Transactional
 @Configuration
-@PropertySource("classpath:iotx/iotx.properties")
 public class IotxDataServcieImpl implements IotxDataService {
 
 	private static final Logger logger = LoggerFactory.getLogger(IotxDataServcieImpl.class);
@@ -42,8 +39,8 @@ public class IotxDataServcieImpl implements IotxDataService {
 	private IotxDataDao iotxDataDao;
 	@Autowired
 	private IotxDataContentService iotxDataContentService;
-	@Value("${sensor.sampling}")
-	private double sampling;
+
+	private double sampling = 1;
 
 	/***
 	 * 获取动态线图上的数据

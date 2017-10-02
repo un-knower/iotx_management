@@ -5,20 +5,20 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.util.BeanRefUtil;
 
 public class TestBeanRef {
 
-	@SuppressWarnings("static-access")
 	@Test
 	public void testSet() throws Exception{
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("serialNo", "abc123");
 		jsonObject.put("openTime", new Date());
 		jsonObject.put("companyName", "123");
-		Map<String,Object> map = jsonObject.parseObject(jsonObject.toString());
+		Map<String,Object> map = JSON.parseObject(jsonObject.toString());
 		System.out.println(map);
 		Iotx iotx = new Iotx();
 		BeanRefUtil.setValue(iotx, map);

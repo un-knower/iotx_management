@@ -23,6 +23,10 @@ public class QIotxData extends EntityPathBase<IotxData> {
 
     public final BooleanPath alarm = createBoolean("alarm");
 
+    public final NumberPath<Double> baiduLatitude = createNumber("baiduLatitude", Double.class);
+
+    public final NumberPath<Double> baiduLongitude = createNumber("baiduLongitude", Double.class);
+
     public final StringPath category = createString("category");
 
     public final DateTimePath<java.util.Date> closeTime = createDateTime("closeTime", java.util.Date.class);
@@ -39,8 +43,6 @@ public class QIotxData extends EntityPathBase<IotxData> {
     public final NumberPath<java.math.BigInteger> id = _super.id;
 
     public final StringPath iotxSN = createString("iotxSN");
-
-    public final BooleanPath isAlarm = createBoolean("isAlarm");
 
     public final EnumPath<IotxData.Level> level = createEnum("level", IotxData.Level.class);
 
