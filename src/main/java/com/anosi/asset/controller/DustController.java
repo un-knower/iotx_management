@@ -48,9 +48,9 @@ public class DustController extends BaseController<Dust>{
 			@RequestParam(value = "iotx.company.id", required = false) Long companyId, Model model) {
 		Account account = SessionUtil.getCurrentUser();
 		if (account != null) {
-			if (!account.isAdmin()) {
+			if (!SessionUtil.isAdmin()) {
 				model.addAttribute("predicate", QDust.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
-			} else if (account.isAdmin() && companyId != null) {
+			} else if (SessionUtil.isAdmin() && companyId != null) {
 				model.addAttribute("predicate", QDust.dust.iotx.company.id.eq(companyId).and(predicate));
 			}
 		}

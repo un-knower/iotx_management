@@ -55,12 +55,12 @@ public class SensorController extends BaseController<Sensor> {
 			@RequestParam(value = "dust.iotx.company.id", required = false) Long companyId, Model model) {
 		Account account = SessionUtil.getCurrentUser();
 		if (account != null) {
-			if (!account.isAdmin()) {
+			if (!SessionUtil.isAdmin()) {
 				PathInits inits = new PathInits("dust.iotx.company");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate",
 						sensor.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
-			} else if (account.isAdmin() && companyId != null) {
+			} else if (SessionUtil.isAdmin() && companyId != null) {
 				PathInits inits = new PathInits("district.city.province");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate", sensor.dust.iotx.company.id.eq(companyId).and(predicate));

@@ -8,9 +8,10 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "roleFunctionBtn")
+@Table(name = "roleFunctionBtn", uniqueConstraints = { @UniqueConstraint(columnNames = { "btnId", "roleFunction_id" }) })
 public class RoleFunctionBtn extends BaseEntity{
 
 	/**

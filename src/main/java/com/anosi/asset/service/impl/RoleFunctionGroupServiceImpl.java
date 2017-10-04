@@ -117,11 +117,12 @@ public class RoleFunctionGroupServiceImpl extends BaseServiceImpl<RoleFunctionGr
 		if (allSelectedGroups != null && allSelectedGroups.length != 0) {
 			// 所有被选中的group
 			for (String selectGroups : allSelectedGroups) {
-				if(StringUtils.isNoneBlank(selectGroups)){
+				if (StringUtils.isNoneBlank(selectGroups)) {
 					RoleFunctionGroup toCompareGroup = this.roleFunctionGroupDao.getOne(Long.parseLong(selectGroups));
 					toCompareGroup.getRoleFunctionList()
 							.forEach(roleFunction -> compareIdSet.add("menu_" + roleFunction.getId()));
-					toCompareGroup.getRoleFunctionBtnList().forEach(btn -> compareIdSet.add(String.valueOf(btn.getId())));
+					toCompareGroup.getRoleFunctionBtnList()
+							.forEach(btn -> compareIdSet.add(String.valueOf(btn.getId())));
 				}
 			}
 		}
