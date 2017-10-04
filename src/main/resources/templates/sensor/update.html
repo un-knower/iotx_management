@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title th:text="#{title.sensorConfigure}">传感器添加</title>
+  
+	<script type="text/javascript" src="/webResources/plugins/jquery-validate/dist/jquery.validate.min.js" ></script>
+	<script type="text/javascript" src="/webResources/plugins/jquery-validate/dist/localization/messages_zh.js" ></script>
+	<script type="text/javascript" src="/webResources/plugins/jquery-form/jquery.form.min.js" ></script>
+	<script type="text/javascript" src="/webResources/plugins/jquery-BlockUI/jquery.blockUI.js" ></script>
+	<script type="text/javascript" src="/webResources/js/custom/sensor/saveSensor.js" ></script>
+</head>
+
+<body class="skin-blue sidebar-mini">
+	<form class="form-horizontal" role="form" th:object="${sensor}" id="sensorForm">
+		<input type="hidden" id="sensorId" name="sensorId" th:value="${sensor.id}"/>  
+	    <fieldset>
+	    	<div class="form-group">  
+	            <label class="col-sm-3 control-label" th:text="#{sensor.isWorked}"></label>  
+            	<select name="company" class="form-control"> 
+            		<option value ="true" th:text="#{true}" th:selected="${sensor.isWorked=='true'?'selected':'}"></option>
+            		<option value ="false" th:text="#{false}" th:selected="${sensor.isWorked=='false'?'selected':'}"></option>
+	            </select>
+	        </div> 
+	    </fieldset>  
+	</form>  
+</body>
+
+</html>
+

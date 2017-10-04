@@ -98,9 +98,9 @@ $(document).ready(function() {
 						 return false;
 					 }
 				 };
-				 createModalPage("编辑dust节点","/dust/savedust?id="+selectRowId,func); 
+				 createModalPage("配置dust节点","/dust/update?id="+selectRowId,func); 
 			 }else{
-				 warning("编辑时必须选择一行");
+				 warning("配置时必须选择一行");
 			 }
 		 })
 		 

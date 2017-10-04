@@ -15,9 +15,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.Status;
+import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
+import com.anosi.asset.service.SensorService;
 
 /***
  * 消息的处理类
@@ -35,6 +37,8 @@ public class MessageHandler {
 	private IotxService iotxService;
 	@Autowired
 	private DustService dustService;
+	@Autowired
+	private SensorService sensorService;
 	@Autowired
 	private IotxRemoteService iotxRemoteService;
 
@@ -98,7 +102,8 @@ public class MessageHandler {
 			iotxRemoteService.setValue(dust, values);
 			break;
 		case "sensor":
-			// TODO 确认sensor序列号唯一规则
+			Sensor sensor = sensorService.findBySerialNo(serialNo);
+			iotxRemoteService.setValue(sensor, values);
 			break;
 		default:
 			break;

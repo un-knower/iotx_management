@@ -80,7 +80,7 @@ $(document).ready(function() {
 		    	
 	     });
 		 
-		 //add和edit按钮被点击
+		 //edit按钮被点击
 		 $("#edit").click(function(){
 			 selectRowId = myGrid.getGridParam('selarrrow');
 			 if(selectRowId!=null&&selectRowId!=""){
@@ -92,9 +92,9 @@ $(document).ready(function() {
 						 return false;
 					 }
 				 };
-				 createModalPage("编辑iotx节点","/iotx/saveIotx?id="+selectRowId,func); 
+				 createModalPage("配置iotx节点","/iotx/update?id="+selectRowId,func); 
 			 }else{
-				 warning("编辑时必须选择一行");
+				 warning("配置时必须选择一行");
 			 }
 		 })
 		 

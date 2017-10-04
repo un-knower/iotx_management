@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
+import com.anosi.asset.model.jpa.Sensor;
 
 public interface IotxRemoteService {
 
@@ -31,5 +32,7 @@ public interface IotxRemoteService {
 	Iotx save(Iotx iotx, InputStream is) throws Exception;
 
 	Dust save(Dust dust, InputStream is) throws Exception;
+
+	Sensor setValue(Sensor sensor, Map<String, Object> values);
 
 }

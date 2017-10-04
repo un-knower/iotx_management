@@ -95,9 +95,9 @@ $(document).ready(function() {
 						 return false;
 					 }
 				 };
-				 createModalPage("编辑传感器","/sensor/saveSensor?id="+selectRowId,func); 
+				 createModalPage("配置传感器","/sensor/update?id="+selectRowId,func); 
 			 }else{
-				 warning("编辑时必须选择一行");
+				 warning("配置时必须选择一行");
 			 }
 		 })
 		 

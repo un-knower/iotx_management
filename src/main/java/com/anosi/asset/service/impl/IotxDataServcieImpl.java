@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -40,30 +41,16 @@ public class IotxDataServcieImpl implements IotxDataService {
 	@Autowired
 	private IotxDataContentService iotxDataContentService;
 
-	private double sampling = 1;
-
-	/***
-	 * 获取动态线图上的数据
-	 * 
-	 * @param sensorSN
-	 * @param param
-	 * @param timeUnit
-	 *            时间单位，用来区分月线，周线，日线等，以此来获取需要取出的数据数量
-	 *            example:如果要看周线，就将一周时间换算成秒数:7*24*60*60,然后除以取样频率就获得了要获取的row总数
-	 * @param sort
-	 * @return
-	 * @throws Exception
-	 */
 	@Override
-	public List<IotxData> findDynamicData(Predicate predicate, Integer timeUnit, Sort sort) throws Exception {
+	public Page<IotxData> findDynamicData(Predicate predicate, Double frequency, Integer timeUnit, Sort sort)
+			throws Exception {
 		logger.debug("findDynamicData");
-		// TODO 从数据库中读取这个数据的发送频率，现在为了测试直接默认1秒
-		Iterable<IotxData> findDynamicData = this.iotxDataDao.findAll(predicate,
-				new PageRequest(0, (int) Math.round(timeUnit / sampling), sort));
+		PageRequest pageRequest = new PageRequest(0, (int) Math.round(timeUnit / frequency), sort);
+		Page<IotxData> findDynamicData = this.iotxDataDao.findAll(predicate, pageRequest);
 
-		List<IotxData> iotxDatas = Lists.newArrayList(findDynamicData);
+		List<IotxData> iotxDatas = Lists.newArrayList(findDynamicData.getContent());
 		Collections.reverse(iotxDatas);
-		return iotxDatas;
+		return new PageImpl<>(iotxDatas, pageRequest, findDynamicData.getTotalElements());
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.anosi.asset.controller;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -29,6 +27,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.QIotxData;
 import com.anosi.asset.service.CompanyService;
+import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxDataService;
 import com.querydsl.core.types.Predicate;
 
@@ -41,6 +40,8 @@ public class IotxDataController extends BaseController<IotxData> {
 	private IotxDataService iotxDataService;
 	@Autowired
 	private CompanyService companyService;
+	@Autowired
+	private DustService dustService;
 
 	/***
 	 * 在所有关于dust的请求之前，为查询条件中添加公司
@@ -88,7 +89,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	}
 
 	/***
-	 * 获取传感器告警数据
+	 * 获取传感器数据
 	 * 
 	 * @param showType
 	 * @param pageable
@@ -96,7 +97,9 @@ public class IotxDataController extends BaseController<IotxData> {
 	 * @param showAttributes
 	 * @param rowId
 	 * @param searchContent
+	 *            是否有用到模糊搜索
 	 * @param isAlarm
+	 *            是否搜索告警数据
 	 * @return
 	 * @throws Exception
 	 */
@@ -126,27 +129,17 @@ public class IotxDataController extends BaseController<IotxData> {
 		return parseToJson(iotxDatas, rowId, showAttributes, showType);
 	}
 
-	@RequestMapping(value = "/iotxData/dynamicData", method = RequestMethod.GET)
-	public ModelAndView toViewDynamicData() throws Exception {
-		return new ModelAndView("iotxData/dynamicData");
-	}
-
-	/****
-	 * 获取动态线图上的数据
-	 * 
-	 * @param predicate
-	 * @param timeUnit
-	 *            时间单位
-	 * @param sort
-	 * @return
-	 * @throws Exception
-	 */
 	@RequiresPermissions({ "iotxAlarmData:view" })
-	@RequestMapping(value = "/iotxData/dynamicData/{timeUnit}", method = RequestMethod.GET)
-	public List<IotxData> findDynamicData(@ModelAttribute Predicate predicate, @PathVariable Integer timeUnit,
-			@SortDefault(direction = Direction.DESC, value = "collectTime") Sort sort) throws Exception {
-		logger.info("is going to findDynamicData");
-		return this.iotxDataService.findDynamicData(predicate, timeUnit, sort);
+	@RequestMapping(value = "/iotxData/dynamicData", method = RequestMethod.GET)
+	public JSONObject dynamicData(
+			@RequestParam(value = "showAttributes", required = false, defaultValue = "360") Integer timeUnit,
+			@SortDefault(value = "collectTime", direction = Direction.DESC) Sort sort,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@RequestParam(value = "dustSN") String dustSN) throws Exception {
+		logger.info("find dynamicData");
+
+		return parseToJson(iotxDataService.findDynamicData(predicate, dustService.findBySerialNo(dustSN).getFrequency(),
+				timeUnit, sort), "id", showAttributes, ShowType.REMOTE);
 	}
 
 }

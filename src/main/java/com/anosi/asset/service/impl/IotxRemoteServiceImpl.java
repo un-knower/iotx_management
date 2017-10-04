@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
+import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
+import com.anosi.asset.service.SensorService;
 import com.anosi.asset.util.BeanRefUtil;
 
 @Service("iotxRemoteService")
@@ -24,6 +26,8 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	private IotxService iotxService;
 	@Autowired
 	private DustService dustService;
+	@Autowired
+	private SensorService sensorService;
 
 	/***
 	 * 将上传的文件处理成map
@@ -59,6 +63,11 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	@Override
 	public Dust save(Dust dust, InputStream is) throws Exception {
 		return dustService.save(setValue(dust, convertStreamToMap(is)));
+	}
+
+	@Override
+	public Sensor setValue(Sensor sensor, Map<String, Object> values) {
+		return sensorService.save(setValue(sensor, values));
 	}
 
 	// TODO 批量添加微尘
