@@ -14,13 +14,15 @@
 
 <body class="skin-blue sidebar-mini">
 	<form class="form-horizontal" role="form" th:object="${iotx}" id="iotxForm">
-		<input type="hidden" id="iotxId" name="iotxId" th:value="${iotx.id}"/>  
+		<input type="hidden" id="id" name="id" th:value="${iotx.id}"/>  
 	    <fieldset>
 	        <div class="form-group">  
 	            <label class="col-sm-3 control-label" th:text="#{company}"></label>  
-            	<select name="company" class="form-control"> 
-	            	<option th:each="company : ${companys}"  th:field="*{company}" th:value="${company.id}" th:text="${company.name}"></option>
-	            </select>
+	            <div class="col-sm-8">
+	            	<select name="companyId" class="form-control"> 
+		            	<option th:each="company : ${companys}" th:value="${company.id}" th:text="${company.name}"></option>
+		            </select>
+	            </div>
 	        </div> 
 	    </fieldset>  
 	</form>  

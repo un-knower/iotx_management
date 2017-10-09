@@ -92,8 +92,8 @@ public class MqttServer {
 		// 设置遗言，在连接断开时发送
 		options.setWill("/server/status", "server is closed".getBytes(), 2, true);
 		subscribeComponent.setSubscribe();
-		client.subscribe(subscribeComponent.getSubscrides().getTopics(), subscribeComponent.getSubscrides().getQos());
 		client.connect(options);
+		client.subscribe(subscribeComponent.getSubscrides().getTopics(), subscribeComponent.getSubscrides().getQos());
 	}
 
 	/***
@@ -111,17 +111,15 @@ public class MqttServer {
 	}
 
 	/***
-	 * 添加新的订阅，会先断开连接，然后添加订阅，再重连
+	 * 添加新的订阅
 	 * 
 	 * @param topicName
 	 * @param qos
 	 * @throws MqttException
 	 */
 	public void subscribeNewTopic(String topicName[], int[] qos) throws MqttException {
-		client.disconnect();
 		subscribeComponent.addSubscribe(topicName, qos);
 		client.subscribe(subscribeComponent.getSubscrides().getTopics(), subscribeComponent.getSubscrides().getQos());
-		client.connect(options);
 	}
 
 }

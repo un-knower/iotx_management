@@ -34,8 +34,10 @@ import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.DustService;
+import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.service.SensorService;
+import com.google.common.collect.ImmutableMap;
 
 /****
  * 专门用来与处理由iotx发起的请求,包括如下操作:
@@ -60,6 +62,8 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	private DustService dustService;
 	@Autowired
 	private SensorService sensorService;
+	@Autowired
+	private IotxRemoteService iotxRemoteService;
 	@Autowired
 	private FileUpDownLoadController fileUpDownLoadController;
 
@@ -189,7 +193,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	public JSONObject saveSensor(@Valid @ModelAttribute("sensor") Sensor sensor, BindingResult result)
 			throws Exception {
 		logger.debug("saveOrUpdate sensor");
-		sensorService.save(sensor);
+		
 		JSONObject jsonObject = new JSONObject();
 		// valid是否有错误
 		if (result.hasErrors()) {
@@ -222,17 +226,20 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	}
 
 	/***
-	 * 上传文件,根据规则判断是Iotx还是dust的配置文件,然后进行添加或更新操作
+	 * 上传文件,目前只会上传iotx配置文件,并且不会批量上传
 	 * 
-	 * @param multipartFiles
+	 * @param multipartFile
 	 * @param identification
 	 * @return
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/fileUpload/multipartFiles/{identification}", method = RequestMethod.POST)
-	public String fileUpload(@RequestParam("file_upload") MultipartFile[] multipartFiles,
+	public String fileUpload(@RequestParam("file_upload") MultipartFile multipartFile,
 			@PathVariable String identification) throws Exception {
-		return fileUpDownLoadController.fileUpload(multipartFiles, identification);
+		if(multipartFile==null){
+			return new JSONObject(ImmutableMap.of("result", "file is null")).toString();
+		}
+		return iotxRemoteService.fileUpload(multipartFile, identification);
 	}
 
 	/***

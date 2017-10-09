@@ -5,8 +5,7 @@ $(document).ready(function(){
 		
 		var dynamicData = echarts.init(document.getElementById('dynamicData'));
 		
-		var maxVal=null;
-		var minVal=null;
+		var showDatas = [];
 		
 		//发请求从后台数据库中取动态数据
 		function getDynamicData(){
@@ -15,41 +14,32 @@ $(document).ready(function(){
 				type:"get",
 				url:'/iotxData/dynamicData',
 				data : {
-					'dustSN':$("#dustSN").val(),
 					'sensorSN' : $("#sensorSN").val(),
-					'showAttributes':'collectTime,val,maxVal,minVal',
+					'showAttributes':'collectTime,val',
 				},
 				async:true,
 				success:function(data){
-					//最终展示数据，x轴时间，y轴时间：val
-					var showDatas = [];
+					if(data!=null){
+						//x,y轴数据
+						var x_data;
+						var y_data;
 					
-					//x,y轴数据
-					var x_data;
-					var y_data;
-					
-					if(maxVal==null){
-						maxVal=data.content[0].maxVal;
+						//遍历data,取出val和collect_time
+						$.each(data.content,function(i,value){
+							x_data = this.collectTime;
+							y_data = this.val;
+							showDatas.push({name:x_data.toString(),value:[x_data,y_data]})
+						})
+						
+						dynamicData.hideLoading();
+						
+						// 填入数据
+					    dynamicData.setOption({
+					        series: [{
+					            data: showDatas
+					        }]
+					    });
 					}
-					if(minVal==null){
-						minVal=data.content[0].minVal;
-					}
-					
-					//遍历data,取出val和collect_time
-					$.each(data.content,function(i,value){
-						x_data = this.collectTime;
-						y_data = this.val;
-						showDatas.push({name:x_data.toString(),value:[x_data,y_data]})
-					})
-					
-					dynamicData.hideLoading();
-					
-					// 填入数据
-				    dynamicData.setOption({
-				        series: [{
-				            data: showDatas
-				        }]
-				    });
 				},
 				error:function(){
 					alert('出错了!')
@@ -59,7 +49,7 @@ $(document).ready(function(){
 		
 		var option_dynamicData = {
 			    title: {
-			        text: '传感器动态数据'
+			        text: 'actual time datas'
 			    },
 			    tooltip: {
 			        trigger: 'axis',
@@ -132,7 +122,7 @@ $(document).ready(function(){
 		                        }
 		             		},
 		                    
-		                    {name: '上限基准线',yAxis: maxVal,
+		                    {name: 'upper',yAxis: $("#maxVal").val(),
 		             			symbol: 'circle',
 		                        label: {
 		                            normal: {
@@ -146,7 +136,7 @@ $(document).ready(function(){
 		                        	}
 		                        }
 		                    },
-		                    {name: '下限基准线',yAxis: minVal,
+		                    {name: '下限',yAxis: $("#minVal").val(),
 		                    	symbol: 'circle',
 		                        label: {
 		                            normal: {

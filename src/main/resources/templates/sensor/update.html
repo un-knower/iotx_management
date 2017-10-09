@@ -14,14 +14,16 @@
 
 <body class="skin-blue sidebar-mini">
 	<form class="form-horizontal" role="form" th:object="${sensor}" id="sensorForm">
-		<input type="hidden" id="sensorId" name="sensorId" th:value="${sensor.id}"/>  
+		<input type="hidden" id="id" name="id" th:value="${sensor.id}"/>  
 	    <fieldset>
 	    	<div class="form-group">  
 	            <label class="col-sm-3 control-label" th:text="#{sensor.isWorked}"></label>  
-            	<select name="company" class="form-control"> 
-            		<option value ="true" th:text="#{true}" th:selected="${sensor.isWorked=='true'?'selected':'}"></option>
-            		<option value ="false" th:text="#{false}" th:selected="${sensor.isWorked=='false'?'selected':'}"></option>
-	            </select>
+	            <div class="col-sm-8">
+	            	<select name="isWorked" class="form-control"> 
+	            		<option value ="true" th:text="#{true}" th:selected="${sensor.isWorked==true?'true':'false'}"></option>
+	            		<option value ="false" th:text="#{false}" th:selected="${sensor.isWorked==false?'true':'false'}"></option>
+		            </select>
+	            </div>
 	        </div> 
 	    </fieldset>  
 	</form>  

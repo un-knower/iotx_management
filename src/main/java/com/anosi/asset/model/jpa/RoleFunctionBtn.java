@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "roleFunctionBtn", uniqueConstraints = { @UniqueConstraint(columnNames = { "btnId", "roleFunction_id" }) })
+@Table(name = "roleFunctionBtn", uniqueConstraints = { @UniqueConstraint(columnNames = { "btnId", "role_function_id" }) })
 public class RoleFunctionBtn extends BaseEntity{
 
 	/**

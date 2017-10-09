@@ -2,16 +2,16 @@ package com.anosi.asset.model.jpa;
 
 import java.util.Objects;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 
 import com.anosi.asset.model.elasticsearch.Content;
 
 @Entity
-@Table(name = "sensor", uniqueConstraints = { @UniqueConstraint(columnNames = { "serialNo", "dust_id" }) })
+@Table(name = "sensor")
 /*
  * @NamedEntityGraphs({
  * 
@@ -54,6 +54,7 @@ public class Sensor extends BaseEntity {
 
 	private Boolean isWorked = false;
 
+	@Column(unique = true, nullable = false)
 	public String getSerialNo() {
 		return serialNo;
 	}

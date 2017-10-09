@@ -14,7 +14,7 @@
 
 <body class="skin-blue sidebar-mini">
 	<form class="form-horizontal" role="form" th:object="${dust}" id="dustForm">
-		<input type="hidden" id="dustId" name="dustId" th:value="${dust.id}"/>  
+		<input type="hidden" id="id" name="id" th:value="${dust.id}"/>  
 	    <fieldset>
 	        <div class="form-group">  
 	            <label class="col-sm-3 control-label" th:text="#{dust.name}"></label>  
@@ -30,10 +30,12 @@
 	        </div> 
 	        <div class="form-group">  
 	            <label class="col-sm-3 control-label" th:text="#{dust.isWorked}"></label>  
-            	<select name="company" class="form-control"> 
-            		<option value ="true" th:text="#{true}" th:selected="${dust.isWorked=='true'?'selected':'}"></option>
-            		<option value ="false" th:text="#{false}" th:selected="${dust.isWorked=='false'?'selected':'}"></option>
-	            </select>
+	            <div class="col-sm-8">
+	            	<select name="isWorked" class="form-control"> 
+	            		<option value ="true" th:text="#{true}" th:selected="${dust.isWorked==true?'true':'false'}"></option>
+	            		<option value ="false" th:text="#{false}" th:selected="${dust.isWorked==false?'true':'false'}"></option>
+		            </select>
+	            </div>
 	        </div> 
 	    </fieldset>  
 	</form>  

@@ -1,6 +1,5 @@
 package com.anosi.asset.mqtt;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.component.I18nComponent;
+import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.Status;
@@ -28,6 +30,7 @@ import com.anosi.asset.service.SensorService;
  *
  */
 @Component
+@Transactional
 public class MessageHandler {
 
 	// key为topic,value为message,每次处理message前要判断是否处理过
@@ -41,26 +44,32 @@ public class MessageHandler {
 	private SensorService sensorService;
 	@Autowired
 	private IotxRemoteService iotxRemoteService;
+	@Autowired
+	private I18nComponent i18nComponent;
 
 	/***
 	 * 进行消息是否处理过的校验
 	 * 
 	 * @param topic
 	 * @param message
-	 * @throws Exception
 	 */
-	public void handleMessage(String topic, MqttMessage message) throws Exception {
+	public void handleMessage(String topic, MqttMessage message) {
 		ValueOperations<String, String> opv = redisTemplate.opsForValue();
 		String lastValue = opv.get(topic);
 		// 没有处理过的话，再进行处理
 		if (!Objects.equals(new String(message.getPayload()), lastValue)) {
-			handle(topic, message);
+			try {
+				handle(topic, message);
+				// 最后把本次处理add到redis中
+				opv.set(topic, new String(message.getPayload()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.handle.fail"));
+			}
 		} else {
 			// 处理过的话直接返回
 			return;
 		}
-		// 最后把本次处理add到redis中
-		opv.set(topic, new String(message.getPayload()));
 	}
 
 	/***
@@ -72,9 +81,16 @@ public class MessageHandler {
 	 */
 	private void handle(String topic, MqttMessage message) throws Exception {
 		// 按照topic分别处理消息
-		Method handle = this.getClass().getMethod("handle" + topic.substring(0, 1).toUpperCase() + topic.substring(1),
-				String.class, MqttMessage.class);
-		handle.invoke(this, topic, message);
+		switch (topic) {
+		case "configureCallBack":
+			handleConfigureCallBack(topic, message);
+			break;
+		case "iotxStatus":
+			handleIotxStatus(topic, message);
+			break;
+		default:
+			break;
+		}
 	}
 
 	/***
@@ -85,8 +101,7 @@ public class MessageHandler {
 	 *            内容格式:{header:{type:xxx,serialNo:xxx},body:{k1:v1,k2:v2}}
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unused")
-	private void handleConfigureCallback(String topic, MqttMessage message) throws Exception {
+	private void handleConfigureCallBack(String topic, MqttMessage message) throws Exception {
 		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
 		JSONObject header = jsonMessage.getJSONObject("header");
 		JSONObject body = jsonMessage.getJSONObject("body");
@@ -99,11 +114,21 @@ public class MessageHandler {
 			break;
 		case "dust":
 			Dust dust = dustService.findBySerialNo(serialNo);
+			// 如果是新增dust
+			if (dust == null) {
+				dust = new Dust();
+			}
 			iotxRemoteService.setValue(dust, values);
+			dustService.save(dust);
 			break;
 		case "sensor":
 			Sensor sensor = sensorService.findBySerialNo(serialNo);
+			// 如果是新增sensor
+			if (sensor == null) {
+				sensor = new Sensor();
+			}
 			iotxRemoteService.setValue(sensor, values);
+			sensorService.save(sensor);
 			break;
 		default:
 			break;
@@ -117,8 +142,7 @@ public class MessageHandler {
 	 * @param message
 	 *            内容格式:{header:{serialNo:xxx},body:{status:xxx}}
 	 */
-	@SuppressWarnings("unused")
-	private void handleStatus(String topic, MqttMessage message) {
+	private void handleIotxStatus(String topic, MqttMessage message) {
 		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
 		JSONObject header = jsonMessage.getJSONObject("header");
 		JSONObject body = jsonMessage.getJSONObject("body");

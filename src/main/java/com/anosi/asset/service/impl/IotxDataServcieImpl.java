@@ -127,4 +127,9 @@ public class IotxDataServcieImpl implements IotxDataService {
 		return findAll(QIotxData.iotxData.id.in(ids).and(predicate), pageable);
 	}
 
+	@Override
+	public IotxData findOne(BigInteger id) {
+		return iotxDataDao.findOne(id);
+	}
+
 }

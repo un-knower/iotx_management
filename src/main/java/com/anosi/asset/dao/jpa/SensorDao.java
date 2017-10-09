@@ -6,7 +6,7 @@ import com.anosi.asset.model.jpa.Sensor;
 
 public interface SensorDao extends BaseJPADao<Sensor>{
 
-	@EntityGraph(attributePaths = {"sensorCategory"})
+	@EntityGraph(attributePaths = {"sensorCategory","dust"})
 	public Sensor findBySerialNoEquals(String serialNo);
 	
 }

@@ -1,7 +1,6 @@
 package com.anosi.asset.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.QDust;
 import com.anosi.asset.service.DustService;
-import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -119,43 +117,11 @@ public class DustController extends BaseController<Dust>{
 	 * @param dustId
 	 * @return
 	 */
-	@RequiresPermissions({ "dustManagement:view", "dustManagement:view" })
+	@RequiresPermissions({ "dustManagement:view", "sensorManagement:view" })
 	@RequestMapping(value = "/dust/management/detail/{dustId}", method = RequestMethod.GET)
 	public ModelAndView toViewDustManageTable(@PathVariable Long dustId) throws Exception {
 		logger.info("view dust management detail");
 		return new ModelAndView("dust/managementDetail").addObject("dust", dustService.getOne(dustId));
-	}
-	
-	/***
-	 * 进入远程update dust的页面
-	 * 
-	 * @param id
-	 * @return
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "dustManagement:edit" })
-	@RequestMapping(value = "/dust/update", method = RequestMethod.GET)
-	public ModelAndView toUpdateDustPage(@RequestParam(value = "id") Long id) {
-		return new ModelAndView("dust/update").addObject("dust", dustService.getOne(id));
-	}
-
-	/***
-	 * 配置dust
-	 * 
-	 * @param id
-	 * @param companyId
-	 * @return
-	 * @throws Exception
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "dustManagement:edit" })
-	@RequestMapping(value = "/dust/update", method = RequestMethod.POST)
-	public JSONObject updateDust(@RequestParam(value = "id") Long id,
-			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "frequency", required = false) Double frequency,
-			@RequestParam(value = "isWorked", required = false) boolean isWorked) throws Exception {
-		dustService.remoteUpdate(dustService.getOne(id),name,frequency, isWorked);
-		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 	
 	/**

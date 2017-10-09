@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.IotxManagementApplication;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.service.IotxService;
+import com.anosi.asset.util.DateFormatUtil;
 import com.anosi.asset.util.MapUtil;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,6 +42,12 @@ public class TestMap {
 		for (Iotx iotx : iotxs) {
 			iotxService.setIotxDistrict(iotx);
 		}
+	}
+	
+	@Test
+	public void testDate(){
+		String time = "2015-09-26 00:00:00";
+		System.out.println(DateFormatUtil.getDateByParttern(time));
 	}
 
 }

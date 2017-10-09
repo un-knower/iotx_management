@@ -1,7 +1,7 @@
 package com.anosi.asset.mqtt;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.stereotype.Component;
@@ -17,9 +17,9 @@ public class SubscribeComponent {
 
 	private Subscrides subscrides = new Subscrides();
 
-	private List<String> topicList = new Vector<>();// vector线程安全
+	private List<String> topicList = new ArrayList<>();
 
-	private List<Integer> qosList = new Vector<>();
+	private List<Integer> qosList = new ArrayList<>();
 
 	/***
 	 * 设置所有订阅
@@ -127,7 +127,7 @@ public class SubscribeComponent {
 	 *
 	 */
 	enum WillSubscrides {
-		CONFIGURECALLBACK("configurecallback", 2), STATUS("status", 2);
+		CONFIGURECALLBACK("configureCallBack", 2), IOTXSTATUS("iotxStatus", 2);
 
 		private String topic;
 

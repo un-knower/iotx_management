@@ -143,12 +143,12 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);
 			message.setRetained(true);
-			message.setPayload(bodyJson.toString().getBytes());
+			message.setPayload(jsonObject.toString().getBytes());
 			try {
-				mqttServer.publish("/configure/" + sensor.getDust().getIotx().getSerialNo() + "/"
-						+ sensor.getDust().getSerialNo() + "/" + sensor.getSerialNo(), message);
+				mqttServer.publish("/configure/" + sensor.getDust().getIotx().getSerialNo(), message);
 			} catch (MqttException e) {
-				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
+				e.printStackTrace();
+				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 			}
 		}
 	}

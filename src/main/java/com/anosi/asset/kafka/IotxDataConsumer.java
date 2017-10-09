@@ -28,17 +28,23 @@ import com.anosi.asset.service.SensorService;
 @Component
 @Transactional
 public class IotxDataConsumer {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(IotxDataConsumer.class);
 
 	@Autowired
 	private IotxDataService iotxDataService;
 	@Autowired
-	private RedisTemplate<String, String> redisTemplate;
-	@Autowired
 	private SensorService sensorService;
 
+	private ValueOperations<String, String> opv;
+
+	private String lastValue;
+
 	private Lock lock = new ReentrantLock();// 锁对象
+
+	public IotxDataConsumer(@Autowired RedisTemplate<String, String> redisTemplate) {
+		opv = redisTemplate.opsForValue();
+	}
 
 	/***
 	 * 消费kafka中的数据
@@ -47,31 +53,33 @@ public class IotxDataConsumer {
 	 */
 	@KafkaListener(topics = { "${spring.kafka.template.default-topic}" })
 	public void processMessage(ConsumerRecord<?, ?> data,
-			@Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,@Header(KafkaHeaders.OFFSET) List<Long> offsets) {
-		logger.debug("partitions：{},offsets:{},value:{}",partitions,offsets,data.value());
+			@Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Integer> partitions,
+			@Header(KafkaHeaders.OFFSET) List<Long> offsets) {
+		logger.debug("partitions：{},offsets:{},value:{}", partitions, offsets, data.value());
 		this.handleIotxData(String.valueOf(data.value()));
 	}
 
 	/***
 	 * 数据处理入口
+	 * 
 	 * @param content
 	 */
 	private void handleIotxData(String content) {
 		IotxData iotxData = JSON.parseObject(content, IotxData.class);
-		
-		//完善属性
+		// 完善属性
 		completeAttribute(iotxData);
-		//进行连续性比对
-		checkIsContinuously(getKey(iotxData)+"ForIotxDataContinuous", checkValue(iotxData));
+		// 进行连续性比对
+		checkIsContinuously(iotxData.getSensorSN() + "ForIotxDataContinuous", checkValue(iotxData));
 		iotxDataService.save(iotxData);
 	}
-	
+
 	/***
 	 * 完善属性
+	 * 
 	 * @param iotxData
 	 */
-	private void completeAttribute(IotxData iotxData){
-		if(StringUtils.isNotBlank(iotxData.getSensorSN())){
+	private void completeAttribute(IotxData iotxData) {
+		if (StringUtils.isNotBlank(iotxData.getSensorSN())) {
 			Sensor sensor = sensorService.findBySerialNo(iotxData.getSensorSN());
 			iotxData.setMaxVal(sensor.getMaxVal());
 			iotxData.setMinVal(sensor.getMinVal());
@@ -80,17 +88,10 @@ public class IotxDataConsumer {
 			iotxData.setCategory(sensor.getSensorCategory().getName());
 		}
 	}
-	
-	private String getKey(IotxData iotxData){
-		if(StringUtils.isNotBlank(iotxData.getSensorSN())){
-			return iotxData.getSensorSN();
-		}else{
-			return iotxData.getIotxSN()+":"+iotxData.getCategory();
-		}
-	}
 
 	/***
 	 * 处理val,判断val是否正常
+	 * 
 	 * @param iotxData
 	 * @return
 	 */
@@ -101,35 +102,35 @@ public class IotxDataConsumer {
 
 		String message = null;
 		Level level = null;
-		
+
 		if (val < maxVal && val > minVal) {
 			level = Level.NORMAL;
-		}else if(val>maxVal){
-			//TODO
-			
+		} else if (val > maxVal) {
+			level = Level.ALARM_1;
+			iotxData.setAlarm(true);
 			iotxData.setMessage(message);
-		}else if(val<minVal){
-			//TODO
-			
+		} else if (val < minVal) {
+			level = Level.ALARM_1;
+			iotxData.setAlarm(true);
 			iotxData.setMessage(message);
 		}
-		
+
 		iotxData.setLevel(level);
 		return level.getLevel();
 	}
 
 	/***
 	 * 判断是否同侧连续告警
+	 * 
 	 * @param key
 	 * @param value
 	 * 
-	 * 考虑多线程安全,加入了锁,防止出现在比对还没完成前,另一个线程完成了比对
+	 *            考虑多线程安全,加入了锁,防止出现在比对还没完成前,另一个线程完成了比对
 	 */
 	private void checkIsContinuously(String key, String value) {
 		lock.lock();// 得到锁
 		try {
-			ValueOperations<String, String> opv = redisTemplate.opsForValue();
-			String lastValue = opv.get(key);
+			lastValue = opv.get(key);
 			// 如果两次值不相等
 			if (!Objects.equals(value, lastValue)) {
 				opv.set(key, value);

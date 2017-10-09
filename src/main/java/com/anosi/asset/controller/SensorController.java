@@ -3,7 +3,6 @@ package com.anosi.asset.controller;
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ import com.anosi.asset.model.jpa.QSensor;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.SensorCategoryService;
 import com.anosi.asset.service.SensorService;
-import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -138,36 +136,6 @@ public class SensorController extends BaseController<Sensor> {
 		logger.info("view sensor management detail");
 		Sensor sensor = sensorService.getOne(sensorId);
 		return new ModelAndView("sensor/managementDetail").addObject("sensor", sensor);
-	}
-
-	/***
-	 * 进入远程update sensor的页面
-	 * 
-	 * @param id
-	 * @return
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "sensorManagement:edit" })
-	@RequestMapping(value = "/sensor/update", method = RequestMethod.GET)
-	public ModelAndView toUpdateSensorPage(@RequestParam(value = "id") Long id) {
-		return new ModelAndView("sensor/update").addObject("sensor", sensorService.getOne(id));
-	}
-
-	/***
-	 * 配置sensor
-	 * 
-	 * @param id
-	 * @param companyId
-	 * @return
-	 * @throws Exception
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "sensorManagement:edit" })
-	@RequestMapping(value = "/sensor/update", method = RequestMethod.POST)
-	public JSONObject updateSensor(@RequestParam(value = "id") Long id,
-			@RequestParam(value = "isWorked", required = false) boolean isWorked) throws Exception {
-		sensorService.remoteUpdate(sensorService.getOne(id), isWorked);
-		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
 	/**

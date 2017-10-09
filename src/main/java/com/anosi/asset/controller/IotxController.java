@@ -1,7 +1,6 @@
 package com.anosi.asset.controller;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,9 +26,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
 import com.anosi.asset.model.jpa.QIotx;
-import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.IotxService;
-import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -39,8 +36,6 @@ public class IotxController extends BaseController<Iotx> {
 
 	@Autowired
 	private IotxService iotxService;
-	@Autowired
-	private CompanyService companyService;
 
 	/***
 	 * 在所有关于iotx的请求之前，为查询条件中添加公司
@@ -133,37 +128,6 @@ public class IotxController extends BaseController<Iotx> {
 		Iotx iotx = iotxService.getOne(iotxId);
 
 		return new ModelAndView("iotx/managementDetail").addObject("iotx", iotx);
-	}
-
-	/***
-	 * 进入远程update iotx的页面
-	 * 
-	 * @param id
-	 * @return
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "iotxManagement:edit" })
-	@RequestMapping(value = "/iotx/update", method = RequestMethod.GET)
-	public ModelAndView toUpdateIotxPage(@RequestParam(value = "id") Long id) throws Exception {
-		return new ModelAndView("iotx/update").addObject("iotx", iotxService.getOne(id)).addObject("companys",
-				companyService.findAll());
-	}
-
-	/***
-	 * 配置iotx
-	 * 
-	 * @param id
-	 * @param companyId
-	 * @return
-	 * @throws Exception
-	 */
-	@RequiresAuthentication
-	@RequiresPermissions({ "iotxManagement:edit" })
-	@RequestMapping(value = "/iotx/update", method = RequestMethod.POST)
-	public JSONObject updateIotx(@RequestParam(value = "id") Long id,
-			@RequestParam(value = "companyId", required = false) Long companyId) throws Exception {
-		iotxService.remoteUpdate(iotxService.getOne(id), companyService.getOne(companyId));
-		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
 	/**

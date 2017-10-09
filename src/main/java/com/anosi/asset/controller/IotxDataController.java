@@ -27,8 +27,8 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.QIotxData;
 import com.anosi.asset.service.CompanyService;
-import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxDataService;
+import com.anosi.asset.service.SensorService;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -41,16 +41,16 @@ public class IotxDataController extends BaseController<IotxData> {
 	@Autowired
 	private CompanyService companyService;
 	@Autowired
-	private DustService dustService;
+	private SensorService sensorService;
 
 	/***
-	 * 在所有关于dust的请求之前，为查询条件中添加公司
+	 * 在所有关于查询dust的请求之前，为查询条件中添加公司
 	 * 
 	 * @param companyId
 	 * @param model
 	 */
 	@ModelAttribute
-	public void interceptDust(@QuerydslPredicate(root = IotxData.class) Predicate predicate,
+	public void interceptIotxData(@QuerydslPredicate(root = IotxData.class) Predicate predicate,
 			@RequestParam(value = "companyId", required = false) Long companyId, Model model) {
 		Account account = SessionUtil.getCurrentUser();
 		if (account != null) {
@@ -129,17 +129,32 @@ public class IotxDataController extends BaseController<IotxData> {
 		return parseToJson(iotxDatas, rowId, showAttributes, showType);
 	}
 
+	/***
+	 * 获取线图数据
+	 * 
+	 * @param timeUnit
+	 *            时间单位，用来区分月线，周线，日线等，以此来获取需要取出的数据数量
+	 *            example:如果要看周线，就将一周时间换算成秒数:7*24*60*60,然后除以取样频率就获得了要获取的row总数
+	 * @param sort
+	 * @param predicate
+	 * @param showAttributes
+	 * @param dustSN
+	 * @return
+	 * @throws Exception
+	 */
 	@RequiresPermissions({ "iotxAlarmData:view" })
 	@RequestMapping(value = "/iotxData/dynamicData", method = RequestMethod.GET)
 	public JSONObject dynamicData(
-			@RequestParam(value = "showAttributes", required = false, defaultValue = "360") Integer timeUnit,
+			@RequestParam(value = "timeUnit", required = false, defaultValue = "360") Integer timeUnit,
 			@SortDefault(value = "collectTime", direction = Direction.DESC) Sort sort,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
-			@RequestParam(value = "dustSN") String dustSN) throws Exception {
+			@RequestParam(value = "sensorSN") String sensorSN) throws Exception {
 		logger.info("find dynamicData");
 
-		return parseToJson(iotxDataService.findDynamicData(predicate, dustService.findBySerialNo(dustSN).getFrequency(),
-				timeUnit, sort), "id", showAttributes, ShowType.REMOTE);
+		return parseToJson(
+				iotxDataService.findDynamicData(predicate,
+						sensorService.findBySerialNo(sensorSN).getDust().getFrequency(), timeUnit, sort),
+				"id", showAttributes, ShowType.REMOTE);
 	}
 
 }

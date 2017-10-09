@@ -15,48 +15,35 @@
 	<script type="text/javascript" src="/webResources/plugins/jqgrid/src/i18n/grid.locale-cn.js"></script>
 	<script type="text/javascript" src="/webResources/plugins/pageJquery/js/zxf_page.js" ></script>
 	<script type="text/javascript" src="/webResources/js/custom/alarmData/iotxDataManagementTable.js"></script>
-	<script type="text/javascript" src="/webResources/js/custom/alarmData/iotxDataLine.js"></script>
 	<script type="text/javascript" src="/webResources/js/custom/page/createPage.js"></script>
+	<script type="text/javascript" src="/webResources/plugins/echarts/echarts.min.js"></script>
+	<script type="text/javascript" src="/webResources/js/custom/alarmData/dynamicData.js"></script>
 	
 </head>
 
 <body>
 	<div layout:fragment="content">
 		<input type="hidden" th:value="${sensor.serialNo}" id="sensorSN"/>
+		<input type="hidden" th:value="${sensor.maxVal}" id="maxVal"/>
+		<input type="hidden" th:value="${sensor.minVal}" id="minVal"/>
 		<section class="content">
 
           <!-- row -->
           <div class="row">
             <div class="col-md-12">
-              <div style="width:1620px;height:330px;background:#2F3543;margin-left:15px;position:relative;">
-				<div style="margin-left:3%;height:260px;width:28%;text-align:center;margin-top:40px;position:absolute;float:center">
-				<div style="background:#3A4050;height:65px;width:100%;position:absolute;margin-top:0px;text-align:left;line-height:63px;font-size:18px;color:#D8D9DC" ><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{sensor.serialNo}+' : '+${sensor.serialNo}"></span></div>
-				<div style="background:#363C4C;height:65px;width:100%;position:absolute;margin-top:65px;text-align:left;line-height:63px;font-size:18px;color:#D8D9DC" ><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{sensor.iotx.serialNo}+' : '+${sensor.iotx.serialNo}"></span></div>
-				<div style="background:#3A4050;height:65px;width:100%;position:absolute;margin-top:130px;text-align:left;line-height:63px;font-size:18px;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{sensor.sensorCategory}+' : '+${sensor.sensorCategory.name}"></span></div>
-				</div>
-				<div style="left:35%;height:440px;width:28%;float:right;margin-top:40px;position:absolute;">
-				<div style="background:#3A4050;height:65px;width:100%;position:absolute;margin-top:0px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{sensor.sensorPort}+' : '+${sensor.sensorPort.name}"></span></div>
-				<div style="background:#363C4C;height:65px;width:100%;position:absolute;margin-top:65px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/><span style="margin-left: 30px" th:text="#{sensor.sensorInterface}+' : '+${sensor.sensorPort.sensorInterface.name}"></span></div>
-				<div style="background:#3A4050;height:65px;width:100%;position:absolute;margin-top:130px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/></div>
-				</div>
-				<div style="left:67%;height:440px;width:28%;float:right;margin-top:40px;position:absolute;">
-				<div style="background:#3A4050;height:65px;width:100%;position:absolute;margin-top:0px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/></div>
-				<div style="background:#363C4C;height:65px;width:100%;position:absolute;margin-top:65px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/></div>
-				<div style="background:#3A4050;height:65px;width:100%;position:absolute;margin-top:130px;font-size:18px;text-align:left;color:#D8D9DC"><img src="/webResources/img/icon/commonIcon.png" class="sider-icon" height="63px" width="63px"/></div>
-				</div>
-			  </div>
             
-			<div class="col-lg-12" style="text-align:right;padding-right:30px;padding-top:10px;">
-				<div class="box-header" style="background:#363D4C">
-					<i class="fa fa-bar-chart-o fa-fw"></i>
-					<font size="5px" color="#868B94" th:text="#{iotxDataLine}"></font>
-				</div>
+				<div class="col-lg-12" style="text-align:right;padding-right:30px;padding-top:10px;">
+					<div class="box-header" style="background:#363D4C">
+						<i class="fa fa-bar-chart-o fa-fw"></i>
+						<font size="5px" color="#868B94" th:text="#{iotxDataLine}"></font>
+					</div>
 		            <div class="box-body" style="background:#2F3543">
-		                <div id="iotxDataLine" style="min-width: 310px; height:750px; margin: 0 auto; border-top: 1px solid #CCC"></div>
+		                <!-- 引入iotxData线图 -->
+						<div th:include="iotxData/dynamicData::dynamicData"></div>
 				    </div>
-				<!-- 引入sensor -->
-				<div th:include="iotxData/managementTable::iotxData"></div>
-			</div>
+					<!-- 引入告警的表格 -->
+					<div th:include="iotxData/managementTable::iotxData"></div>
+				</div>
             
 		    </div><!-- /.col -->
           </div><!-- /.row -->

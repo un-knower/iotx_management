@@ -26,18 +26,21 @@ public class BeanRefUtil {
 		Field[] fields = cls.getDeclaredFields();
 		for (Field field : fields) {
 			String fieldName = field.getName();
-			String typeName = field.getType().getSimpleName();
-			// 判断是否存在这个属性的set方法
-			String fieldSetName = parSetName(fieldName);
-			if (!checkSetMet(methods, fieldSetName)) {
-				continue;
+			if(valMap.containsKey(fieldName)){
+				String typeName = field.getType().getSimpleName();
+				// 判断是否存在这个属性的set方法
+				String fieldSetName = parSetName(fieldName);
+				if (!checkSetMet(methods, fieldSetName)) {
+					continue;
+				}
+				Method fieldSetMet = cls.getMethod(fieldSetName, field.getType());
+
+				Object value = valMap.get(fieldName);
+				if (Objects.equals("Date", typeName)) {
+					value = new Date((long) value);
+				}
+				fieldSetMet.invoke(bean, value);
 			}
-			Method fieldSetMet = cls.getMethod(fieldSetName, field.getType());
-			Object value = valMap.get(fieldName);
-			if(Objects.equals("Date", typeName)){
-				value = new Date((long) value);
-			}
-			fieldSetMet.invoke(bean, value); 
 		}
 	}
 

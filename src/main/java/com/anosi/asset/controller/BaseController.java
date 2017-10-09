@@ -3,8 +3,6 @@ package com.anosi.asset.controller;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
@@ -24,7 +23,8 @@ import com.anosi.asset.util.JqgridUtil;
 import com.anosi.asset.util.JsonUtil;
 import com.anosi.asset.util.StringUtil;
 
-public abstract class BaseController<T> extends GlobalController<T>{
+@RestController
+public class BaseController<T> extends GlobalController<T>{
 	
 	@Autowired
 	protected JqgridUtil<T> jqgridUtil;
@@ -39,7 +39,7 @@ public abstract class BaseController<T> extends GlobalController<T>{
 	 * @param binder
 	 */
 	@InitBinder
-	protected void initDate(HttpServletRequest request, ServletRequestDataBinder binder) {
+	protected void initDate(ServletRequestDataBinder binder) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		dateFormat.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
@@ -51,7 +51,7 @@ public abstract class BaseController<T> extends GlobalController<T>{
 	 * @param binder
 	 */
 	@InitBinder
-	protected void initDouble(HttpServletRequest request, ServletRequestDataBinder binder) {
+	protected void initDouble(ServletRequestDataBinder binder) {
 		binder.registerCustomEditor(Double.class,new CustomNumberEditor(Double.class,true));
 	}
 	

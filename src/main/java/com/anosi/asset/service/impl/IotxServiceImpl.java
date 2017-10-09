@@ -236,11 +236,12 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);
 			message.setRetained(true);
-			message.setPayload(bodyJson.toString().getBytes());
+			message.setPayload(jsonObject.toString().getBytes());
 			try {
 				mqttServer.publish("/configure/" + iotx.getSerialNo(), message);
 			} catch (MqttException e) {
-				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.fail"));
+				e.printStackTrace();
+				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 			}
 		}
 	}

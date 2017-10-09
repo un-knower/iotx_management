@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.PasswordEncry;
+import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.mqtt.MqttServer;
@@ -70,11 +71,11 @@ public class InitData {
 				try {
 					mqttServer.connect();
 				} catch (MqttSecurityException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.init.fail"));
 				} catch (MqttException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.init.fail"));
 				}
 
 				logger.debug("init end");

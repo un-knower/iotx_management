@@ -1,5 +1,7 @@
 package com.anosi.asset.service;
 
+import java.math.BigInteger;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -16,6 +18,8 @@ public interface IotxDataService {
 	public Long countByiotxSN(String iotxSN);
 
 	public IotxData save(IotxData iotxData);
+	
+	public IotxData findOne(BigInteger id);
 
 	/***
 	 * 批量添加
