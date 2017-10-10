@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,5 +93,15 @@ public class LoginController extends BaseController<Account> {
         currentUser.logout();
         return new ModelAndView("redirect:/login");
 	}
+	
+	/***
+	 * rememberMe 以后的默认路径
+	 * @return
+	 */
+	@RequestMapping("/")
+	@RequiresUser
+    public ModelAndView index() {
+        return new ModelAndView("redirect:/index");
+    }
 	
 }
