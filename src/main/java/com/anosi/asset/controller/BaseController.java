@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.util.JqgridUtil;
 import com.anosi.asset.util.JsonUtil;
 import com.anosi.asset.util.StringUtil;
@@ -32,6 +33,8 @@ public class BaseController<T> extends GlobalController<T>{
 	protected JsonUtil<T> jsonUtil;
 	@Autowired
 	protected I18nComponent i18nComponent;
+	@Autowired
+	protected SessionComponent sessionComponent;
 
 	/***
 	 * 注册date

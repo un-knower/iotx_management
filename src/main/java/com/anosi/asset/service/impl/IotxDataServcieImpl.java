@@ -17,7 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.IotxDataContent;
@@ -40,6 +40,8 @@ public class IotxDataServcieImpl implements IotxDataService {
 	private IotxDataDao iotxDataDao;
 	@Autowired
 	private IotxDataContentService iotxDataContentService;
+	@Autowired
+	private SessionComponent sessionComponent;
 
 	@Override
 	public Page<IotxData> findDynamicData(Predicate predicate, Double frequency, Integer timeUnit, Sort sort)
@@ -93,7 +95,7 @@ public class IotxDataServcieImpl implements IotxDataService {
 
 	@Override
 	public Page<IotxData> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		Page<IotxDataContent> iotxDataContents;
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
@@ -111,7 +113,7 @@ public class IotxDataServcieImpl implements IotxDataService {
 
 	@Override
 	public Page<IotxData> findByContentSearch(String content, Boolean isAlarm, Predicate predicate, Pageable pageable) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		Page<IotxDataContent> iotxDataContents;
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());

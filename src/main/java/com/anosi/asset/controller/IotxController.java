@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
@@ -46,11 +46,11 @@ public class IotxController extends BaseController<Iotx> {
 	@ModelAttribute
 	public void interceptIotx(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
 			@RequestParam(value = "company.id", required = false) Long companyId, Model model) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		if (account != null) {
-			if (!SessionUtil.isAdmin()) {
+			if (!SessionComponent.isAdmin()) {
 				model.addAttribute("predicate", QIotx.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
-			} else if (SessionUtil.isAdmin() && companyId != null) {
+			} else if (SessionComponent.isAdmin() && companyId != null) {
 				model.addAttribute("predicate", QIotx.iotx.company.id.eq(companyId).and(predicate));
 			}
 		}

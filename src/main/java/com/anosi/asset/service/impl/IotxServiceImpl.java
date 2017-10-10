@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
-import com.anosi.asset.component.SessionUtil;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
 import com.anosi.asset.exception.CustomRunTimeException;
@@ -203,7 +202,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 
 	@Override
 	public Page<Iotx> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		Page<IotxContent> iotxContents;
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());

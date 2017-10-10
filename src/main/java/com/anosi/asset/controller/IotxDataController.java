@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.QIotxData;
@@ -52,12 +52,12 @@ public class IotxDataController extends BaseController<IotxData> {
 	@ModelAttribute
 	public void interceptIotxData(@QuerydslPredicate(root = IotxData.class) Predicate predicate,
 			@RequestParam(value = "companyId", required = false) Long companyId, Model model) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		if (account != null) {
-			if (!SessionUtil.isAdmin()) {
+			if (!SessionComponent.isAdmin()) {
 				model.addAttribute("predicate",
 						QIotxData.iotxData.companyName.eq(account.getCompany().getName()).and(predicate));
-			} else if (SessionUtil.isAdmin() && companyId != null) {
+			} else if (SessionComponent.isAdmin() && companyId != null) {
 				model.addAttribute("predicate",
 						QIotxData.iotxData.companyName.eq(companyService.getOne(companyId).getName()).and(predicate));
 			}

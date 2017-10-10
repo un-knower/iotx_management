@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.QSensor;
 import com.anosi.asset.model.jpa.Sensor;
@@ -51,14 +51,14 @@ public class SensorController extends BaseController<Sensor> {
 	@ModelAttribute
 	public void interceptSensor(@QuerydslPredicate(root = Sensor.class) Predicate predicate,
 			@RequestParam(value = "dust.iotx.company.id", required = false) Long companyId, Model model) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		if (account != null) {
-			if (!SessionUtil.isAdmin()) {
+			if (!SessionComponent.isAdmin()) {
 				PathInits inits = new PathInits("dust.iotx.company");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate",
 						sensor.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
-			} else if (SessionUtil.isAdmin() && companyId != null) {
+			} else if (SessionComponent.isAdmin() && companyId != null) {
 				PathInits inits = new PathInits("district.city.province");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate", sensor.dust.iotx.company.id.eq(companyId).and(predicate));

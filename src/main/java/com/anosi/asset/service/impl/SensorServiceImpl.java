@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.cache.annotation.SensorEvictCache;
 import com.anosi.asset.cache.annotation.SensorSaveCache;
 import com.anosi.asset.component.I18nComponent;
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.SensorDao;
 import com.anosi.asset.exception.CustomRunTimeException;
@@ -114,7 +114,7 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 
 	@Override
 	public Page<Sensor> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		Page<SensorContent> sensorContents;
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());

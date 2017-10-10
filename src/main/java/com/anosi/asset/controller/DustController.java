@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.QDust;
@@ -44,11 +44,11 @@ public class DustController extends BaseController<Dust>{
 	@ModelAttribute
 	public void interceptDust(@QuerydslPredicate(root = Dust.class) Predicate predicate,
 			@RequestParam(value = "iotx.company.id", required = false) Long companyId, Model model) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		if (account != null) {
-			if (!SessionUtil.isAdmin()) {
+			if (!SessionComponent.isAdmin()) {
 				model.addAttribute("predicate", QDust.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
-			} else if (SessionUtil.isAdmin() && companyId != null) {
+			} else if (SessionComponent.isAdmin() && companyId != null) {
 				model.addAttribute("predicate", QDust.dust.iotx.company.id.eq(companyId).and(predicate));
 			}
 		}

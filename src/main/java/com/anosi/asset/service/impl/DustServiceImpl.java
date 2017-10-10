@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
-import com.anosi.asset.component.SessionUtil;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.DustDao;
 import com.anosi.asset.exception.CustomRunTimeException;
@@ -87,7 +87,7 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 
 	@Override
 	public Page<Dust> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
-		Account account = SessionUtil.getCurrentUser();
+		Account account = sessionComponent.getCurrentUser();
 		Page<DustContent> dustContents;
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
