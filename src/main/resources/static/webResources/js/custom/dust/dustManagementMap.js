@@ -77,7 +77,7 @@ $(document).ready(
 						myChart.setOption(option);
 						// 在这里做一个点击事件的监听
 				        myChart.on('click', function(param){
-				        	window.location.href = '/dust/management/detail/' + param.name;
+				        	window.location.href = '/dust/management/detail/' + param.name+"/view";
 				        });        
 					},
 					error : function(data) {
@@ -88,6 +88,6 @@ $(document).ready(
 
 			// 地图按钮点击事件
 			$("#viewTable").click(function() {
-				window.location.href = '/dust/management/table';
+				window.location.href = '/dust/management/table/view';
 			});
 		})

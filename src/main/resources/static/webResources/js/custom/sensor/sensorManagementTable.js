@@ -24,7 +24,7 @@ $(document).ready(function() {
 						{
 		                    label:'操作', name: 'operate', index: 'operate', width: 50, align:'center',
 		                    formatter: function (cellvalue, options, rowObject) {
-		                    	var hrefUrl='/sensor/management/detail/'+options.rowId;
+		                    	var hrefUrl='/sensor/management/detail/'+options.rowId+"/view";
 		                        var detail="<input value='详情' type='button' onclick='window.location.href=\""+hrefUrl+"\"' class='btn btn-small btn-primary btn-xs' style='background:#434A5D;border-color:#0192D7;color:white;border-radius:15px 15px;width:60px'/>";
 		                        return detail;
 		                    },
@@ -113,6 +113,6 @@ $(document).ready(function() {
 		 
 		//地图按钮点击事件
 		$("#viewMap").click(function(){
-			window.location.href='/sensor/management/map';
+			window.location.href='/sensor/management/map/view';
 		});		 
 	});

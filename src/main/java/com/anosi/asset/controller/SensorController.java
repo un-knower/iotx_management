@@ -72,7 +72,7 @@ public class SensorController extends BaseController<Sensor> {
 	 * @return
 	 */
 	@RequiresPermissions({ "sensorManagement:view" })
-	@RequestMapping(value = "/sensor/management/map", method = RequestMethod.GET)
+	@RequestMapping(value = "/sensor/management/map/view", method = RequestMethod.GET)
 	public ModelAndView toViewSensorManageMap() {
 		logger.info("view sensor management map");
 		return new ModelAndView("sensor/managementMap");
@@ -84,7 +84,7 @@ public class SensorController extends BaseController<Sensor> {
 	 * @return
 	 */
 	@RequiresPermissions({ "sensorManagement:view" })
-	@RequestMapping(value = "/sensor/management/table", method = RequestMethod.GET)
+	@RequestMapping(value = "/sensor/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewsensorManage() {
 		logger.info("view sensorManage table");
 		return new ModelAndView("sensor/managementTable").addObject("sensorCategorys", sensorCategoryService.findAll());
@@ -131,7 +131,7 @@ public class SensorController extends BaseController<Sensor> {
 	 * @return
 	 */
 	@RequiresPermissions({ "sensorManagement:view", "iotxAlarmData:view" })
-	@RequestMapping(value = "/sensor/management/detail/{sensorId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/sensor/management/detail/{sensorId}/view", method = RequestMethod.GET)
 	public ModelAndView toViewSensorManageTable(@PathVariable Long sensorId) {
 		logger.info("view sensor management detail");
 		Sensor sensor = sensorService.getOne(sensorId);

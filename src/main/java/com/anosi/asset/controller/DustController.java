@@ -60,7 +60,7 @@ public class DustController extends BaseController<Dust>{
 	 * @return
 	 */
 	@RequiresPermissions({ "dustManagement:view" })
-	@RequestMapping(value = "/dust/management/map", method = RequestMethod.GET)
+	@RequestMapping(value = "/dust/management/map/view", method = RequestMethod.GET)
 	public ModelAndView toViewDustManageMap() {
 		logger.info("view dust management map");
 		return new ModelAndView("dust/managementMap");
@@ -72,7 +72,7 @@ public class DustController extends BaseController<Dust>{
 	 * @return
 	 */
 	@RequiresPermissions({ "dustManagement:view" })
-	@RequestMapping(value = "/dust/management/table", method = RequestMethod.GET)
+	@RequestMapping(value = "/dust/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewDustManageTable() {
 		logger.info("view dust management table");
 		return new ModelAndView("dust/managementTable");
@@ -118,7 +118,7 @@ public class DustController extends BaseController<Dust>{
 	 * @return
 	 */
 	@RequiresPermissions({ "dustManagement:view", "sensorManagement:view" })
-	@RequestMapping(value = "/dust/management/detail/{dustId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/dust/management/detail/{dustId}/view", method = RequestMethod.GET)
 	public ModelAndView toViewDustManageTable(@PathVariable Long dustId) throws Exception {
 		logger.info("view dust management detail");
 		return new ModelAndView("dust/managementDetail").addObject("dust", dustService.getOne(dustId));

@@ -62,7 +62,7 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 */
 	@RequiresPermissions({ "iotxManagement:view" })
-	@RequestMapping(value = "/iotx/management/map", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotx/management/map/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageMap() {
 		logger.info("view iotx management map");
 		return new ModelAndView("iotx/managementMap");
@@ -74,7 +74,7 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 */
 	@RequiresPermissions({ "iotxManagement:view" })
-	@RequestMapping(value = "/iotx/management/table", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotx/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable() {
 		logger.info("view iotx management table");
 		return new ModelAndView("iotx/managementTable").addObject("networkCategorys", NetworkCategory.values());
@@ -122,7 +122,7 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 */
 	@RequiresPermissions({ "iotxManagement:view", "dustManagement:view" })
-	@RequestMapping(value = "/iotx/management/detail/{iotxId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotx/management/detail/{iotxId}/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable(@PathVariable Long iotxId) throws Exception {
 		logger.info("view iotx management detail");
 		Iotx iotx = iotxService.getOne(iotxId);

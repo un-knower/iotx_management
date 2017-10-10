@@ -70,7 +70,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	 * @return
 	 */
 	@RequiresPermissions({ "iotxAlarmData:view" })
-	@RequestMapping(value = "/iotxData/management/map", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotxData/management/map/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxDataManageMap() {
 		logger.info("view iotxData management map");
 		return new ModelAndView("iotxData/managementMap");
@@ -82,7 +82,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	 * @return
 	 */
 	@RequiresPermissions({ "iotxAlarmData:view" })
-	@RequestMapping(value = "/iotxData/management/table", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotxData/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxDataManage() {
 		logger.info("view iotxData table");
 		return new ModelAndView("iotxData/managementTable");
