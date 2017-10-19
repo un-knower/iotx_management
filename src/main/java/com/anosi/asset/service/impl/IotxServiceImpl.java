@@ -34,6 +34,7 @@ import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.mqtt.MqttServer;
+import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.DistrictService;
 import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxDataService;
@@ -65,6 +66,8 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	private I18nComponent i18nComponent;
 	@Autowired
 	private MqttServer mqttServer;
+	@Autowired
+	private CompanyService companyService;
 
 	@Override
 	public BaseJPADao<Iotx> getRepository() {
@@ -80,6 +83,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	public Iotx save(Iotx iotx) {
 		// 根据经纬度获取位置,并保存
 		setIotxDistrict(iotx);
+		iotx.setCompany(companyService.findByName(i18nComponent.getMessage("goaland")));
 		iotxDao.save(iotx);
 
 		try {
