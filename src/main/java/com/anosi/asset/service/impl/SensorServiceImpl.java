@@ -21,7 +21,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.cache.annotation.SensorEvictCache;
 import com.anosi.asset.cache.annotation.SensorSaveCache;
 import com.anosi.asset.component.I18nComponent;
-import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.SensorDao;
 import com.anosi.asset.exception.CustomRunTimeException;

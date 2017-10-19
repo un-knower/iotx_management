@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
+import org.ini4j.Ini;
+import org.ini4j.Profile.Section;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,17 +41,20 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	private FileMetaDataService fileMetaDataService;
 
 	/***
-	 * 将上传的文件处理成map
+	 * 将上传的ini文件处理成map
 	 * 
 	 * @param is
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private Map<String, Object> convertStreamToMap(InputStream is) throws Exception {
-		Properties pro = new Properties();
-		pro.load(is);
-		return new HashMap<String, Object>((Map) pro);
+	private Map<String, Object> convertStreamToMap(InputStream is, String section) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		Ini ini = new Ini(is);
+		Section se = ini.get(section);
+		for (Entry<String, String> entry : se.entrySet()) {
+			map.put(entry.getKey(), entry.getValue());
+		}
+		return map;
 	}
 
 	@Override
@@ -66,12 +71,12 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 
 	@Override
 	public Iotx save(Iotx iotx, InputStream is) throws Exception {
-		return iotxService.save(setValue(iotx, convertStreamToMap(is)));
+		return iotxService.save(setValue(iotx, convertStreamToMap(is, "system_conf")));
 	}
 
 	@Override
 	public Dust save(Dust dust, InputStream is) throws Exception {
-		return dustService.save(setValue(dust, convertStreamToMap(is)));
+		return dustService.save(setValue(dust, convertStreamToMap(is, null)));
 	}
 
 	@Override

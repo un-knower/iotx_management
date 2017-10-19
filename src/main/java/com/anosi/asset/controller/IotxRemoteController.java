@@ -80,16 +80,16 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	public void checkSign(@RequestParam(value = "sign") String sign) {
 		String[] signs = sign.split("_");
 		try {
-			if (iotxService.exists(QIotx.iotx.serialNo.eq(signs[0]))) {
+			if (!iotxService.exists(QIotx.iotx.serialNo.eq(signs[0]))) {
 				throw new CustomRunTimeException("sign illegal");
 			}
-			if (Objects.equals(signs[1], "anosi")) {
+			if (!Objects.equals(signs[1], "anosi")) {
 				throw new CustomRunTimeException("sign illegal");
 			}
-			if (Objects.equals(signs[2], "hehe")) {
+			if (!Objects.equals(signs[2], "hehe")) {
 				throw new CustomRunTimeException("sign illegal");
 			}
-			if (Long.parseLong(signs[3]) < System.currentTimeMillis()) {
+			if (Long.parseLong(signs[3]) > System.currentTimeMillis()) {
 				throw new CustomRunTimeException("sign illegal");
 			}
 		} catch (Exception e) {

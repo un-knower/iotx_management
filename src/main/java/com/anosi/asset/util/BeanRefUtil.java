@@ -1,5 +1,11 @@
 package com.anosi.asset.util;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -17,8 +23,7 @@ public class BeanRefUtil {
 	 * @param valMap
 	 * @throws Exception
 	 */
-	public static void setValue(Object bean, Map<String, Object> valMap)
-			throws Exception {
+	public static void setValue(Object bean, Map<String, Object> valMap) throws Exception {
 		Class<?> cls = bean.getClass();
 		// 取出bean里的所有方法
 		Method[] methods = cls.getDeclaredMethods();
@@ -26,7 +31,7 @@ public class BeanRefUtil {
 		Field[] fields = cls.getDeclaredFields();
 		for (Field field : fields) {
 			String fieldName = field.getName();
-			if(valMap.containsKey(fieldName)){
+			if (valMap.containsKey(fieldName)) {
 				String typeName = field.getType().getSimpleName();
 				// 判断是否存在这个属性的set方法
 				String fieldSetName = parSetName(fieldName);
@@ -35,7 +40,14 @@ public class BeanRefUtil {
 				}
 				Method fieldSetMet = cls.getMethod(fieldSetName, field.getType());
 
-				Object value = valMap.get(fieldName);
+				Object value = null;
+				boolean fieldHasAnno = field.isAnnotationPresent(ExtraName.class);
+				if (fieldHasAnno) {
+					value = valMap.get(field.getAnnotation(ExtraName.class).name());
+				} else {
+					value = valMap.get(fieldName);
+				}
+
 				if (Objects.equals("Date", typeName)) {
 					value = new Date((long) value);
 				}
@@ -75,6 +87,22 @@ public class BeanRefUtil {
 					+ fieldName.substring(startIndex + 1);
 		}
 		return null;
+	}
+
+	/****
+	 * 别名
+	 * 
+	 * @author jinyao
+	 *
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Documented
+	@Inherited
+	public @interface ExtraName {
+
+		String name() default "";
+
 	}
 
 }

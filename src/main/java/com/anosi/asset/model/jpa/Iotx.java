@@ -17,6 +17,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Formula;
 
 import com.anosi.asset.model.elasticsearch.Content;
+import com.anosi.asset.util.BeanRefUtil.ExtraName;
 
 @Entity
 @Table(name = "iotx")
@@ -29,6 +30,7 @@ public class Iotx extends BaseEntity {
 
 	@Content
 	// @JSONField(name="serial_no")
+	@ExtraName(name="unique_id")
 	private String serialNo;
 
 	private String cpu;

@@ -24,7 +24,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
-import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.service.IotxService;
 import com.querydsl.core.types.Predicate;
@@ -77,7 +76,7 @@ public class IotxController extends BaseController<Iotx> {
 	@RequestMapping(value = "/iotx/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable() {
 		logger.info("view iotx management table");
-		return new ModelAndView("iotx/managementTable").addObject("networkCategorys", NetworkCategory.values());
+		return new ModelAndView("iotx/managementTable");
 	}
 
 	/***
