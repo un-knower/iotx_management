@@ -138,6 +138,7 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 	 * 配置sensor
 	 * 
 	 * @param id
+	 * @param frequency
 	 * @param isWorked
 	 * @return
 	 * @throws Exception
@@ -146,9 +147,10 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 	@RequiresPermissions({ "sensorManagement:edit" })
 	@RequestMapping(value = "/sensor/update", method = RequestMethod.POST)
 	public JSONObject updateSensor(@RequestParam(value = "id") Long id,
+			@RequestParam(value = "frequency", required = false) Double frequency,
 			@RequestParam(value = "isWorked", required = false) boolean isWorked) throws Exception {
 		logger.debug("sensor configure");
-		sensorService.remoteUpdate(sensorService.getOne(id), isWorked);
+		sensorService.remoteUpdate(sensorService.getOne(id),frequency, isWorked);
 		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
