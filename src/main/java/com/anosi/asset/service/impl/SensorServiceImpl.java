@@ -2,6 +2,7 @@ package com.anosi.asset.service.impl;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -34,6 +35,8 @@ import com.anosi.asset.service.SensorContentService;
 import com.anosi.asset.service.SensorService;
 import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
+
+import groovy.json.JsonOutput;
 
 @Service("sensorService")
 @Transactional
@@ -137,8 +140,10 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 		if (!bodyJson.isEmpty()) {
 			JSONObject jsonObject = new JSONObject();
 			jsonObject.put("header",
-					new JSONObject(ImmutableMap.of("type", "sensor", "serialNo", sensor.getSerialNo())));
+					new JSONObject(ImmutableMap.of("uniqueId",UUID.randomUUID().toString(),"type", "sensor", "serialNo", sensor.getSerialNo())));
 			jsonObject.put("body", bodyJson);
+			//{"header":{"uniqueId":"uuid","type":"sensor","serialNo":"1234567ABC"},"body":{"isWorked":"true or false","frequency":"2.0"}}
+			logger.debug("json for sensor remoteUpdate:{}",JsonOutput.prettyPrint(jsonObject.toString()));
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);
 			message.setRetained(true);

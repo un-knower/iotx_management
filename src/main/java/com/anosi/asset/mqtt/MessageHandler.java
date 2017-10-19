@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
@@ -46,6 +47,8 @@ public class MessageHandler {
 	private IotxRemoteService iotxRemoteService;
 	@Autowired
 	private I18nComponent i18nComponent;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	/***
 	 * 进行消息是否处理过的校验
@@ -80,6 +83,8 @@ public class MessageHandler {
 	 * @throws Exception
 	 */
 	private void handle(String topic, MqttMessage message) throws Exception {
+		// 将接收的消息持久化到mongodb
+		mongoTemplate.save(message, "mqttReceive");
 		// 按照topic分别处理消息
 		switch (topic) {
 		case "configureCallBack":
@@ -128,6 +133,9 @@ public class MessageHandler {
 				sensor = new Sensor();
 			}
 			iotxRemoteService.setValue(sensor, values);
+			if(values.containsKey("frequency")){
+				sensor.getDust().setFrequency((Double) values.get("frequency"));
+			}
 			sensorService.save(sensor);
 			break;
 		default:

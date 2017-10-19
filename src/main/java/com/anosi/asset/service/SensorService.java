@@ -17,6 +17,7 @@ public interface SensorService extends BaseService<Sensor, Long> {
 	 * 
 	 * @param sensor
 	 * @param isWorked
+	 * 
 	 */
 	public void remoteUpdate(Sensor sensor, boolean isWorked);
 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -230,7 +231,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		}
 		if (!bodyJson.isEmpty()) {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header", new JSONObject(ImmutableMap.of("type", "iotx", "serialNo", iotx.getSerialNo())));
+			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId",UUID.randomUUID().toString(),"type", "iotx", "serialNo", iotx.getSerialNo())));
 			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);

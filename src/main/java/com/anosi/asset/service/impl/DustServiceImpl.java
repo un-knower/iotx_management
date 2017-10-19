@@ -2,6 +2,7 @@ package com.anosi.asset.service.impl;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -120,7 +121,7 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 		}
 		if (!bodyJson.isEmpty()) {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header", new JSONObject(ImmutableMap.of("type", "dust", "serialNo", dust.getSerialNo())));
+			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId",UUID.randomUUID().toString(),"type", "dust", "serialNo", dust.getSerialNo())));
 			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);

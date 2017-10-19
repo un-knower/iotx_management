@@ -103,7 +103,9 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 	 * 配置dust
 	 * 
 	 * @param id
-	 * @param companyId
+	 * @param name
+	 * @param frequency
+	 * @param isWorked
 	 * @return
 	 * @throws Exception
 	 */
@@ -136,7 +138,7 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 	 * 配置sensor
 	 * 
 	 * @param id
-	 * @param companyId
+	 * @param isWorked
 	 * @return
 	 * @throws Exception
 	 */

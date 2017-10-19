@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,9 +36,10 @@ public class MqttServer {
 
 	@Autowired
 	private MessageHandler messageHandler;
-
 	@Autowired
 	private SubscribeComponent subscribeComponent;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	private MqttClient client;
 
@@ -105,6 +107,8 @@ public class MqttServer {
 	 * @throws MqttException
 	 */
 	public void publish(String topicName, MqttMessage message) throws MqttPersistenceException, MqttException {
+		// 将要发送的message持久化到mongodb
+		mongoTemplate.save(message, "mqttSend");
 		MqttDeliveryToken token = client.getTopic(topicName).publish(message);
 		token.waitForCompletion();
 		logger.debug("message is published completely! " + token.isComplete());
