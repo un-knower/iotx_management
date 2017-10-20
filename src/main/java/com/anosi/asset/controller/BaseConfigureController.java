@@ -146,9 +146,10 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 	@RequiresPermissions({ "sensorManagement:edit" })
 	@RequestMapping(value = "/sensor/update", method = RequestMethod.POST)
 	public JSONObject updateSensor(@RequestParam(value = "id") Long id,
+			@RequestParam(value = "frequency", required = false) Double frequency,
 			@RequestParam(value = "isWorked", required = false) boolean isWorked) throws Exception {
 		logger.debug("sensor configure");
-		sensorService.remoteUpdate(sensorService.getOne(id), isWorked);
+		sensorService.remoteUpdate(sensorService.getOne(id), isWorked, frequency);
 		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 

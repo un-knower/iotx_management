@@ -129,12 +129,15 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 	}
 
 	@Override
-	public void remoteUpdate(Sensor sensor, boolean isWorked) {
+	public void remoteUpdate(Sensor sensor, boolean isWorked, Double frequency) {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
 				"sensor", "serialNo", sensor.getSerialNo())));
 		if (!Objects.equals(sensor.getIsWorked(), isWorked)) {
 			sendMessage(sensor, setBody("runStatus", isWorked, jsonObject));
+		}
+		if (!Objects.equals(sensor.getDust().getFrequency(), frequency)) {
+			sendMessage(sensor, setBody("frequency", frequency, jsonObject));
 		}
 	}
 
