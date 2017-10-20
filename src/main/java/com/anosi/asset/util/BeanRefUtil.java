@@ -8,7 +8,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,8 +30,13 @@ public class BeanRefUtil {
 		Class<?> cls = bean.getClass();
 		// 取出bean里的所有方法
 		Method[] methods = cls.getDeclaredMethods();
-		// 取出bean里的所有字段
-		Field[] fields = cls.getDeclaredFields();
+		// 取出bean里的所有字段，包括父类
+		List<Field> fields = new ArrayList<>();
+		Class<?> tempClass = cls;
+		while (tempClass != null) {// 当父类为null的时候说明到达了最上层的父类(Object类).
+			fields.addAll(Arrays.asList(tempClass.getDeclaredFields()));
+			tempClass = tempClass.getSuperclass(); // 得到父类,然后赋给自己
+		}
 		for (Field field : fields) {
 			String fieldName = field.getName();
 			if (valMap.containsKey(fieldName)) {

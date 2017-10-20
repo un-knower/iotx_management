@@ -76,12 +76,11 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 	 * 重写save,保存iotx的同时，将@Content标记的字段内容提取，存储到iotxContent中
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public Iotx save(Iotx iotx) {
+	public <S extends Iotx> S save(S iotx) {
 		// 根据经纬度获取位置,并保存
 		setIotxDistrict(iotx);
-		iotxDao.save(iotx);
+		iotx = iotxDao.save(iotx);
 
 		try {
 			iotxContentService.save(iotx);
@@ -231,7 +230,8 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		}
 		if (!bodyJson.isEmpty()) {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId",UUID.randomUUID().toString(),"type", "iotx", "serialNo", iotx.getSerialNo())));
+			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
+					"iotx", "serialNo", iotx.getSerialNo())));
 			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);

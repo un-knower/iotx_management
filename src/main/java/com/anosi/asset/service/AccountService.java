@@ -7,16 +7,6 @@ public interface AccountService extends BaseService<Account, Long> {
 	
 	public Account findByLoginId(String loginId);
 
-	/***
-	 * 
-	 * @param account
-	 * @param roles
-	 * @param roleFunctionGroups
-	 * @param selRolesFunctionNode
-	 * @return
-	 */
-	public Account save(Account account, String[] roles, String[] roleFunctionGroups, String[] selRolesFunctionNode);
-
 	/****
 	 * 将权限转化成zTree
 	 * @param id
@@ -32,8 +22,9 @@ public interface AccountService extends BaseService<Account, Long> {
 	 * @param roleFunctionGroups
 	 * @param selRolesFunctionNode
 	 * @return
+	 * @throws Exception 
 	 */
-	public Account save(Account account, String password, String[] roles,String[] roleFunctionGroups, String[] selRolesFunctionNode);
+	public Account save(Account account, String password, String[] roles,String[] roleFunctionGroups, String[] selRolesFunctionNode) throws Exception;
 
 	/***
 	 * 为account设置权限

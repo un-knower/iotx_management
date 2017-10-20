@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONArray;
 import com.anosi.asset.component.PasswordEncry;
@@ -28,10 +28,10 @@ import com.anosi.asset.service.RoleService;
 
 @Service("accountService")
 @Transactional
-public class AccountServiceImpl extends BaseServiceImpl<Account> implements AccountService{
-	
+public class AccountServiceImpl extends BaseServiceImpl<Account> implements AccountService {
+
 	private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
-	
+
 	@Autowired
 	private AccountDao accountDao;
 	@Autowired
@@ -44,50 +44,36 @@ public class AccountServiceImpl extends BaseServiceImpl<Account> implements Acco
 	private RoleFunctionBtnService roleFunctionBtnService;
 	@Autowired
 	private RoleFunctionGroupService roleFunctionGroupService;
-	
+
 	@Override
 	public BaseJPADao<Account> getRepository() {
 		return accountDao;
 	}
-	
+
 	@Override
 	public Account findByLoginId(String loginId) {
-		logger.debug("findByLoginId:{}",loginId);
+		logger.debug("findByLoginId:{}", loginId);
 		return this.accountDao.findByLoginId(loginId);
 	}
 
-	/***
-	 * 复写save方法
-	 * 
-	 */
 	@Override
 	public Account save(Account account, String password, String[] roles, String[] roleFunctionGroups,
-			String[] selRolesFunctionNode) {
-		account.setPassword(password);
-		try {
+			String[] selRolesFunctionNode) throws Exception {
+		if (StringUtils.isNoneBlank(password)) {
+			account.setPassword(password);
 			// 设置密码
 			PasswordEncry.encrypt(account);
-		} catch (Exception e) {
-			e.printStackTrace();
+			account = accountDao.save(account);
 		}
-		if (selRolesFunctionNode != null && selRolesFunctionNode.length != 0) {
-			return save(account, roles, roleFunctionGroups, selRolesFunctionNode);
-		} else {
-			return save(account);
-		}
-	}
 
-	@Override
-	public Account save(Account account, String[] roles, String[] roleFunctionGroups, String[] selRolesFunctionNode) {
-		account = save(account);
 		account.getRoleList().clear();
-
 		if (roles != null && roles.length != 0) {
 			for (String role : roles) {
 				account.getRoleList().add(roleService.getOne(Long.parseLong(role)));
 			}
 		}
-		
+
+		account.getRoleFunctionGroupList().clear();
 		if (roleFunctionGroups != null && roleFunctionGroups.length != 0) {
 			for (String group : roleFunctionGroups) {
 				account.getRoleFunctionGroupList().add(roleFunctionGroupService.getOne(Long.parseLong(group)));

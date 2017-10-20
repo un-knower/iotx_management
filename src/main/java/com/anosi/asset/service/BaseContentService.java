@@ -27,7 +27,7 @@ public interface BaseContentService<T, ID extends Serializable, OriginalBean> {
 	Page<T> findByContent(String content, Pageable pageable);
 	
 	/***
-	 * 获取iotx中标记的内容
+	 * 获取o中标记的内容
 	 * 
 	 * @param o
 	 * @return

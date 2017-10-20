@@ -98,7 +98,7 @@ public class InitData {
 				// 设置密码
 				PasswordEncry.encrypt(account);
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new CustomRunTimeException();
 			}
 			accountService.save(account);
 			account.getRoleList().add(roleService.findByRoleCode("admin"));

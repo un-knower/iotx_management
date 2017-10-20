@@ -72,10 +72,9 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 		return sensorDao;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@SensorSaveCache // 缓存
-	public Sensor save(Sensor sensor) {
+	public <S extends Sensor> S save(S sensor) {
 		sensor = sensorDao.save(sensor);
 
 		try {

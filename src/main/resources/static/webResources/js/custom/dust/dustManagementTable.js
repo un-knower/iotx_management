@@ -12,18 +12,18 @@ $(document).ready(function() {
 		
 		
 		 var colModel=[
-		               	{label:'序列号',name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
-		               	{label:'名称',name:'name',index:'name', width: '120', sortable:false, align: 'center'},
-						{label:'采集频率',name:'frequency',index:'frequency', width: '120', sortable:false, align: 'center'},
-						{label:'传感器数量',name:'sensorQuantity',index:'sensorQuantity', width: '120', sortable:false, align: 'center'},
-						{label:'种类',name:'type', index:'type',sortable: true, width:'120', align: 'center'},
-						{label:'电源种类',name:'powerType', index:'powerType',sortable: true, width:'120', align: 'center'},
-						{label:'配置文件编号',name:'configId', index:'configId',sortable: true, width:'120', align: 'center'},
-						{label:'所属iotx',name:'iotx.serialNo', index:'iotx.serialNo',sortable: true, width:'120', align: 'center'},
-						{label:'连接设备序列号',name:'device.serialNo', index:'device.serialNo',sortable: true, width:'120', align: 'center'},
-						{label:'状态',name:'isWorked', index:'isWorked',sortable: true, width:'120', align: 'center'},
+		               	{label:$.i18n.prop('dust.serialNo'),name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
+		               	{label:$.i18n.prop('dust.name'),name:'name',index:'name', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('dust.frequency'),name:'frequency',index:'frequency', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('dust.sensorQuantity'),name:'sensorQuantity',index:'sensorQuantity', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('dust.type'),name:'type', index:'type',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('dust.powerType'),name:'powerType', index:'powerType',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('dust.configId'),name:'configId', index:'configId',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('dust.iotx'),name:'iotx.serialNo', index:'iotx.serialNo',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('dust.device'),name:'device.serialNo', index:'device.serialNo',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('dust.isWorked'),name:'isWorked', index:'isWorked',sortable: true, width:'120', align: 'center'},
 						{
-			                label:'操作', name: 'operate', index: 'operate', width: 90, align:'center',
+			                label:$.i18n.prop('operate'), name: 'operate', index: 'operate', width: 90, align:'center',
 			                formatter: function (cellvalue, options, rowObject) {
 			                	var hrefUrl='/dust/management/detail/'+options.rowId+"/view";
 			                    var detail="<input value='详情' type='button' onclick='window.location.href=\""+hrefUrl+"\"' class='btn btn-small btn-primary btn-xs' style='background:#434A5D;border-color:#0192D7;color:white;border-radius:15px 15px;width:80px'/>";

@@ -33,25 +33,25 @@ $(document).ready(function() {
 
 		
 		 var colModel=[
-		               	{label:'iotx序列号',name:'iotxSN', index:'iotxSN', width:'120', sortable: false,align: 'center'},
-		               	{label:'微尘序列号',name:'dustSN', index:'dustSN', width:'120', sortable: false,align: 'center'},
-						{label:'传感器序列号',name:'sensorSN',index:'sensorSN', width: '120', sortable:false, align: 'center'},
-						{label:'设备序列号',name:'deviceSN',index:'deviceSN', width: '120', sortable:false, align: 'center'},
-						{label:'数值',name:'val', index:'val', width:'120', sortable: false,align: 'center'},
-						{label:'上限阈值',name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
-						{label:'下限阈值',name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
-						{label:'告警信息',name:'message', index:'message', width:'120', sortable: false,align: 'center'},
-						{label:'等级',name:'level', index:'level', width:'120', sortable: false,align: 'center'},
-						{label:'采集时间',name:'collectTime',index:'collectTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
+		               	{label:$.i18n.prop('iotxData.iotxSerialNo'),name:'iotxSN', index:'iotxSN', width:'120', sortable: false,align: 'center'},
+		               	{label:$.i18n.prop('iotxData.dustSerialNo'),name:'dustSN', index:'dustSN', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('iotxData.sensorSerialNo'),name:'sensorSN',index:'sensorSN', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('iotxData.deviceSerialNo'),name:'deviceSN',index:'deviceSN', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('iotxData.val'),name:'val', index:'val', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('iotxData.maxVal'),name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('iotxData.minVal'),name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('iotxData.message'),name:'message', index:'message', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('iotxData.level'),name:'level', index:'level', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('iotxData.collectTime'),name:'collectTime',index:'collectTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
 							formatter:'date', 
 							formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
 						},
-						{label:'确认时间',name:'closeTime',index:'closeTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
+						{label:$.i18n.prop('iotxData.closeTime'),name:'closeTime',index:'closeTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
 							formatter:'date', 
 							formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
 						},
 						{
-		                    label:'状态', name: 'operate', index: 'operate', width: 120, align:'center',
+		                    label:$.i18n.prop('operate'), name: 'operate', index: 'operate', width: 120, align:'center',
 		                    formatter: function (cellvalue, options, rowObject) {
 		                    	var detail;
 		                    	var closeTimeIndex=params['showAttributes'].split(",").indexOf('closeTime');

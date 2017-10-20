@@ -5,8 +5,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
@@ -16,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
@@ -56,10 +55,9 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 	 * 重写save,保存dust的同时，将@Content标记的字段内容提取，存储到dustContent中
 	 * 
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
-	public Dust save(Dust dust) {
-		dustDao.save(dust);
+	public <S extends Dust> S save(S dust) {
+		dust = dustDao.save(dust);
 
 		try {
 			dustContentService.save(dust);
@@ -121,7 +119,8 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 		}
 		if (!bodyJson.isEmpty()) {
 			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId",UUID.randomUUID().toString(),"type", "dust", "serialNo", dust.getSerialNo())));
+			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
+					"dust", "serialNo", dust.getSerialNo())));
 			jsonObject.put("body", bodyJson);
 			MqttMessage message = new MqttMessage();
 			message.setQos(2);

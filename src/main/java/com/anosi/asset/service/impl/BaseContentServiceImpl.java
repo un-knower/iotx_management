@@ -2,6 +2,9 @@ package com.anosi.asset.service.impl;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -26,8 +29,13 @@ public abstract class BaseContentServiceImpl<T extends BaseContent, ID extends S
 		StringBuilder sb = new StringBuilder();
 
 		Class<? extends Object> clazz = o.getClass();
-		// 获取所有字段
-		Field[] fields = clazz.getDeclaredFields();
+		// 取出bean里的所有字段，包括父类
+		List<Field> fields = new ArrayList<>();
+		Class<?> tempClass = clazz;
+		while (tempClass != null) {// 当父类为null的时候说明到达了最上层的父类(Object类).
+			fields.addAll(Arrays.asList(tempClass.getDeclaredFields()));
+			tempClass = tempClass.getSuperclass(); // 得到父类,然后赋给自己
+		}
 		for (Field field : fields) {
 			// 判断是否有Content注解
 			boolean fieldHasAnno = field.isAnnotationPresent(Content.class);
@@ -38,11 +46,11 @@ public abstract class BaseContentServiceImpl<T extends BaseContent, ID extends S
 				if (extractFields != null && extractFields.length != 0) {
 					// 如果自定义了extractFields
 					for (String extractField : extractFields) {
-						sb.append(PropertyUtil.getNestedProperty(o, extractField) + "\t");
+						sb.append(PropertyUtil.getNestedPropertyString(o, extractField) + "\t");
 					}
 				} else {
 					// 如果使用默认
-					sb.append(PropertyUtil.getNestedProperty(o, field.getName()) + "\t");
+					sb.append(PropertyUtil.getNestedPropertyString(o, field.getName()) + "\t");
 				}
 			}
 		}
@@ -54,7 +62,8 @@ public abstract class BaseContentServiceImpl<T extends BaseContent, ID extends S
 	}
 
 	public Page<T> findByContent(String companyName, String content, Pageable pageable) {
-		return getRepository().findByCompanyNameEqualsAndContentContaining(companyName, StringUtils.deleteWhitespace(content), pageable);
+		return getRepository().findByCompanyNameEqualsAndContentContaining(companyName,
+				StringUtils.deleteWhitespace(content), pageable);
 	}
 
 	public String convertContent(OriginalBean o) throws Exception {

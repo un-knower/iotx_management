@@ -13,16 +13,16 @@ $(document).ready(function() {
 		
 		
 		 var colModel=[
-		               	{label:'序列号',name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
-						{label:'所属微尘',name:'dust.serialNo',index:'dust.serialNo', width: '120', sortable:false, align: 'center'},
-						{label:'告警数量',name:'alarmQuantity', index:'alarmQuantity', width:'120', sortable: false,align: 'center'},
-						{label:'采集频率',name:'dust.frequency', index:'dust.frequency', width:'120', sortable: false,align: 'center'},
-						{label:'最大值',name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
-						{label:'最小值',name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
-						{label:'是否采集',name:'isWorked', index:'isWorked', width:'120', sortable: false,align: 'center'},
-						{label:'连接设备序列号',name:'dust.device.serialNo', index:'dust.device.serialNo', width:'120', sortable: false,align: 'center'},
+		               	{label:$.i18n.prop('sensor.serialNo'),name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('sensor.serialNo'),name:'dust.serialNo',index:'dust.serialNo', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('sensor.alarmQuantity'),name:'alarmQuantity', index:'alarmQuantity', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('dust.frequency'),name:'dust.frequency', index:'dust.frequency', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('sensor.maxVal'),name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('sensor.minVal'),name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('sensor.isWorked'),name:'isWorked', index:'isWorked', width:'120', sortable: false,align: 'center'},
+						{label:$.i18n.prop('dust.device'),name:'dust.device.serialNo', index:'dust.device.serialNo', width:'120', sortable: false,align: 'center'},
 						{
-		                    label:'操作', name: 'operate', index: 'operate', width: 50, align:'center',
+		                    label:$.i18n.prop('operate'), name: 'operate', index: 'operate', width: 50, align:'center',
 		                    formatter: function (cellvalue, options, rowObject) {
 		                    	var hrefUrl='/sensor/management/detail/'+options.rowId+"/view";
 		                        var detail="<input value='详情' type='button' onclick='window.location.href=\""+hrefUrl+"\"' class='btn btn-small btn-primary btn-xs' style='background:#434A5D;border-color:#0192D7;color:white;border-radius:15px 15px;width:60px'/>";

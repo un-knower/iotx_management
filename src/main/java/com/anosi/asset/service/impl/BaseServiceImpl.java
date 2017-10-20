@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.SessionComponent;
@@ -14,6 +15,7 @@ import com.anosi.asset.model.jpa.BaseEntity;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 
+@Transactional
 public abstract class BaseServiceImpl<T extends BaseEntity> {
 	
 	@Autowired

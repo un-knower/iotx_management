@@ -2,7 +2,6 @@ package com.anosi.asset.controller;
 
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -127,19 +127,16 @@ public class AccountController extends BaseController<Account> {
 	 * @return
 	 * @throws Exception
 	 */
+	@Transactional
 	@RequestMapping(value = "/account/save", method = RequestMethod.POST)
 	public JSONObject saveIotx(@ModelAttribute("account") Account account,
 			@RequestParam(name = "newPassword", required = false) String password,
-			@RequestParam(name = "role") String[] roles,
+			@RequestParam(name = "role", required = false) String[] roles,
 			@RequestParam(name = "roleFunctionGroup", required = false) String[] roleFunctionGroups,
 			String[] selRolesFunctionNode)
 			throws Exception {
 		logger.debug("saveOrUpdate account");
-		if (StringUtils.isBlank(password)) {
-			accountService.save(account,roles,roleFunctionGroups, selRolesFunctionNode);
-		} else {
-			accountService.save(account, password,roles,roleFunctionGroups, selRolesFunctionNode);
-		}
+		accountService.save(account, password,roles,roleFunctionGroups, selRolesFunctionNode);
 		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 

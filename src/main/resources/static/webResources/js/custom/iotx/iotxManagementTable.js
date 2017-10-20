@@ -12,16 +12,16 @@ $(document).ready(function() {
 		
 		
 		 var colModel=[
-		               	{label:'序列号',name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
-		               	{label:'所属公司',name:'company.name',index:'company.name', width: '120', sortable:false, align: 'center'},
-						{label:'安装地点',name:'installLocation',index:'installLocation', width: '120', sortable:false, align: 'center'},
-						{label:'微尘数量',name:'dustQuantity', index:'dustQuantity',sortable: true, width:'120', align: 'center'},
-						{label:'传感器数量',name:'sensorQuantity', index:'sensorQuantity',sortable: true, width:'120', align: 'center'},
-						{label:'告警数量',name:'alarmQuantity', index:'alarmQuantity',sortable: true, width:'120', align: 'center'},
-						{label:'开机时间',name:'openTime', index:'openTime',sortable: true, width:'120', align: 'center'},
-						{label:'状态',name:'status', index:'status',sortable: true, width:'120', align: 'center'},
+		               	{label:$.i18n.prop('iotx.serialNo'),name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
+		               	{label:$.i18n.prop('iotx.company'),name:'company.name',index:'company.name', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('iotx.installLocation'),name:'installLocation',index:'installLocation', width: '120', sortable:false, align: 'center'},
+						{label:$.i18n.prop('iotx.dustQuantity'),name:'dustQuantity', index:'dustQuantity',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('iotx.sensorQuantity'),name:'sensorQuantity', index:'sensorQuantity',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('iotx.alarmQuantity'),name:'alarmQuantity', index:'alarmQuantity',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('iotx.openTime'),name:'openTime', index:'openTime',sortable: true, width:'120', align: 'center'},
+						{label:$.i18n.prop('iotx.status'),name:'status', index:'status',sortable: true, width:'120', align: 'center'},
 						{
-			                label:'操作', name: 'operate', index: 'operate', width: 90, align:'center',
+			                label:$.i18n.prop('operate'), name: 'operate', index: 'operate', width: 90, align:'center',
 			                formatter: function (cellvalue, options, rowObject) {
 			                	var hrefUrl='/iotx/management/detail/'+options.rowId+"/view";
 			                    var detail="<input value='详情' type='button' onclick='window.location.href=\""+hrefUrl+"\"' class='btn btn-small btn-primary btn-xs' style='background:#434A5D;border-color:#0192D7;color:white;border-radius:15px 15px;width:80px'/>";
