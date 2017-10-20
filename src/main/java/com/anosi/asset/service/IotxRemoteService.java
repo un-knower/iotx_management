@@ -35,7 +35,7 @@ public interface IotxRemoteService {
 	
 	Dust save(Dust dust, InputStream is) throws Exception;
 
-	Sensor setValue(Sensor sensor, Map<String, Object> values);
+	Sensor setValue(Sensor sensor, Map<String, Object> values) throws Exception;
 
 	/***
 	 * 上传配置文件

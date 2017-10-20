@@ -1,5 +1,6 @@
 package com.anosi.asset.mqtt;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -109,8 +110,19 @@ public class MessageHandler {
 	private void handleConfigureCallBack(String topic, MqttMessage message) throws Exception {
 		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
 		JSONObject header = jsonMessage.getJSONObject("header");
+
+		JSONObject response = jsonMessage.getJSONObject("response");
+		Boolean status = response.getBoolean("status");
+		if (!status) {
+			// TODO 错误处理
+			return;
+		}
+
+		// 获取type和val
 		JSONObject body = jsonMessage.getJSONObject("body");
-		Map<String, Object> values = JSON.parseObject(body.toString());
+		Map<String, Object> values = new HashMap<>();
+		values.put(body.getString("type"), body.get("val"));
+
 		String serialNo = header.getString("serialNo");
 		switch (header.getString("type")) {
 		case "iotx":
@@ -133,7 +145,7 @@ public class MessageHandler {
 				sensor = new Sensor();
 			}
 			iotxRemoteService.setValue(sensor, values);
-			if(values.containsKey("frequency")){
+			if (values.containsKey("frequency")) {
 				sensor.getDust().setFrequency((Double) values.get("frequency"));
 			}
 			sensorService.save(sensor);

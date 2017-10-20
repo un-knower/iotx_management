@@ -224,25 +224,33 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 
 	@Override
 	public void remoteUpdate(Iotx iotx, Company company) {
-		JSONObject bodyJson = new JSONObject();
+		JSONObject jsonObject = new JSONObject();
+		// 设置header
+		jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
+				"iotx", "serialNo", iotx.getSerialNo())));
 		if (company != null && !Objects.equals(iotx.getCompany(), company)) {
-			bodyJson.put("companyName", company.getName());
+			sendMessage(iotx, setBody("companyName", company.getName(), jsonObject));
 		}
-		if (!bodyJson.isEmpty()) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
-					"iotx", "serialNo", iotx.getSerialNo())));
-			jsonObject.put("body", bodyJson);
-			MqttMessage message = new MqttMessage();
-			message.setQos(2);
-			message.setRetained(true);
-			message.setPayload(jsonObject.toString().getBytes());
-			try {
-				mqttServer.publish("/configure/" + iotx.getSerialNo(), message);
-			} catch (MqttException e) {
-				e.printStackTrace();
-				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
-			}
+	}
+
+	private JSONObject setBody(String type, Object val, JSONObject jsonObject) {
+		JSONObject bodyJson = new JSONObject();
+		bodyJson.put("type", type);
+		bodyJson.put("val", val);
+		jsonObject.put("body", bodyJson);
+		return jsonObject;
+	}
+
+	private void sendMessage(Iotx iotx, JSONObject jsonObject) {
+		MqttMessage message = new MqttMessage();
+		message.setQos(2);
+		message.setRetained(true);
+		message.setPayload(jsonObject.toString().getBytes());
+		try {
+			mqttServer.publish("/configure/" + iotx.getSerialNo(), message);
+		} catch (MqttException e) {
+			e.printStackTrace();
+			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 		}
 	}
 

@@ -36,8 +36,6 @@ import com.anosi.asset.service.SensorService;
 import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
-import groovy.json.JsonOutput;
-
 @Service("sensorService")
 @Transactional
 @CacheConfig(cacheNames = "sensor")
@@ -132,27 +130,32 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 
 	@Override
 	public void remoteUpdate(Sensor sensor, boolean isWorked) {
-		JSONObject bodyJson = new JSONObject();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
+				"sensor", "serialNo", sensor.getSerialNo())));
 		if (!Objects.equals(sensor.getIsWorked(), isWorked)) {
-			bodyJson.put("isWorked", isWorked);
+			sendMessage(sensor, setBody("runStatus", isWorked, jsonObject));
 		}
-		if (!bodyJson.isEmpty()) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header",
-					new JSONObject(ImmutableMap.of("uniqueId",UUID.randomUUID().toString(),"type", "sensor", "serialNo", sensor.getSerialNo())));
-			jsonObject.put("body", bodyJson);
-			//{"header":{"uniqueId":"uuid","type":"sensor","serialNo":"1234567ABC"},"body":{"isWorked":"true or false","frequency":"2.0"}}
-			logger.debug("json for sensor remoteUpdate:{}",JsonOutput.prettyPrint(jsonObject.toString()));
-			MqttMessage message = new MqttMessage();
-			message.setQos(2);
-			message.setRetained(true);
-			message.setPayload(jsonObject.toString().getBytes());
-			try {
-				mqttServer.publish("/configure/" + sensor.getDust().getIotx().getSerialNo(), message);
-			} catch (MqttException e) {
-				e.printStackTrace();
-				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
-			}
+	}
+
+	private JSONObject setBody(String type, Object val, JSONObject jsonObject) {
+		JSONObject bodyJson = new JSONObject();
+		bodyJson.put("type", type);
+		bodyJson.put("val", val);
+		jsonObject.put("body", bodyJson);
+		return jsonObject;
+	}
+
+	private void sendMessage(Sensor sensor, JSONObject jsonObject) {
+		MqttMessage message = new MqttMessage();
+		message.setQos(2);
+		message.setRetained(true);
+		message.setPayload(jsonObject.toString().getBytes());
+		try {
+			mqttServer.publish("/configure/" + sensor.getDust().getIotx().getSerialNo(), message);
+		} catch (MqttException e) {
+			e.printStackTrace();
+			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 		}
 	}
 

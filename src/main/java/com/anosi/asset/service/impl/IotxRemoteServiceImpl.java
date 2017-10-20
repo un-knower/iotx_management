@@ -80,8 +80,9 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	}
 
 	@Override
-	public Sensor setValue(Sensor sensor, Map<String, Object> values) {
-		return sensorService.save(setValue(sensor, values));
+	public Sensor setValue(Sensor sensor, Map<String, Object> values) throws Exception {
+		BeanRefUtil.setValue(sensor, values);
+		return sensorService.save(sensor);
 	}
 
 	@Override

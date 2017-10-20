@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.anosi.asset.model.elasticsearch.Content;
+import com.anosi.asset.util.BeanRefUtil.ExtraName;
 
 @Entity
 @Table(name = "sensor")
@@ -52,6 +53,7 @@ public class Sensor extends BaseEntity {
 
 	private String unit;
 
+	@ExtraName(name="runStatus")
 	private Boolean isWorked = false;
 
 	@Column(unique = true, nullable = false)

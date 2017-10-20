@@ -107,31 +107,38 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 
 	@Override
 	public void remoteUpdate(Dust dust, String name, Double frequency, boolean isWorked) {
-		JSONObject bodyJson = new JSONObject();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
+				"dust", "serialNo", dust.getSerialNo())));
 		if (!Objects.equals(dust.getName(), name)) {
-			bodyJson.put("name", name);
+			sendMessage(dust, setBody("name", name, jsonObject));
 		}
 		if (!Objects.equals(dust.getFrequency(), frequency)) {
-			bodyJson.put("frequency", frequency);
+			sendMessage(dust, setBody("frequency", frequency, jsonObject));
 		}
 		if (!Objects.equals(dust.getIsWorked(), isWorked)) {
-			bodyJson.put("isWorked", isWorked);
+			sendMessage(dust, setBody("isWorked", isWorked, jsonObject));
 		}
-		if (!bodyJson.isEmpty()) {
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
-					"dust", "serialNo", dust.getSerialNo())));
-			jsonObject.put("body", bodyJson);
-			MqttMessage message = new MqttMessage();
-			message.setQos(2);
-			message.setRetained(true);
-			message.setPayload(jsonObject.toString().getBytes());
-			try {
-				mqttServer.publish("/configure/" + dust.getIotx().getSerialNo(), message);
-			} catch (MqttException e) {
-				e.printStackTrace();
-				throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
-			}
+	}
+	
+	private JSONObject setBody(String type, Object val, JSONObject jsonObject) {
+		JSONObject bodyJson = new JSONObject();
+		bodyJson.put("type", type);
+		bodyJson.put("val", val);
+		jsonObject.put("body", bodyJson);
+		return jsonObject;
+	}
+	
+	private void sendMessage(Dust dust,JSONObject jsonObject){
+		MqttMessage message = new MqttMessage();
+		message.setQos(2);
+		message.setRetained(true);
+		message.setPayload(jsonObject.toString().getBytes());
+		try {
+			mqttServer.publish("/configure/" + dust.getIotx().getSerialNo(), message);
+		} catch (MqttException e) {
+			e.printStackTrace();
+			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 		}
 	}
 
