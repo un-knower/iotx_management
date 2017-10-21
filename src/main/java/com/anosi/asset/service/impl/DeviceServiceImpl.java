@@ -12,7 +12,7 @@ import com.anosi.asset.service.DeviceService;
 
 @Service("deviceService")
 @Transactional
-public class DeviceServiceImpl extends BaseServiceImpl<Device> implements DeviceService{
+public class DeviceServiceImpl extends BaseJPAServiceImpl<Device> implements DeviceService{
 
 	@Autowired
 	private DeviceDao deviceDao;

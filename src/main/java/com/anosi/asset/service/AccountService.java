@@ -3,7 +3,7 @@ package com.anosi.asset.service;
 import com.alibaba.fastjson.JSONArray;
 import com.anosi.asset.model.jpa.Account;
 
-public interface AccountService extends BaseService<Account, Long> {
+public interface AccountService extends BaseJPAService<Account> {
 	
 	public Account findByLoginId(String loginId);
 

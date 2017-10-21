@@ -27,7 +27,7 @@ public class DustContentServiceImpl extends BaseContentServiceImpl<DustContent, 
 	}
 
 	@Override
-	public DustContent save(Dust dust) throws Exception {
+	public DustContent saveContent(Dust dust) throws Exception {
 		String id = String.valueOf(dust.getId());
 		DustContent dustContent = dustContentDao.findOne(id);
 		if (dustContent == null) {
@@ -40,7 +40,7 @@ public class DustContentServiceImpl extends BaseContentServiceImpl<DustContent, 
 	}
 
 	@Override
-	public <S extends Dust> Iterable<DustContent> save(Iterable<S> obs) throws Exception {
+	public <S extends Dust> Iterable<DustContent> saveContent(Iterable<S> obs) throws Exception {
 		List<DustContent> dustContents = new ArrayList<>();
 		for (Dust dust : obs) {
 			String id = String.valueOf(dust.getId());

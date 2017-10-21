@@ -1,13 +1,8 @@
 package com.anosi.asset.dao.mongo;
 
-import java.math.BigInteger;
-
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.querydsl.QueryDslPredicateExecutor;
-
 import com.anosi.asset.model.mongo.IotxData;
 
-public interface IotxDataDao extends MongoRepository<IotxData, BigInteger>,QueryDslPredicateExecutor<IotxData>{
+public interface IotxDataDao extends BaseMongoDao<IotxData>{
 	
 	/***
 	 * 统计传感器的告警数量
