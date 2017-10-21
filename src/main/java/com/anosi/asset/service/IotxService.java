@@ -8,7 +8,7 @@ import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.Iotx;
 import com.querydsl.core.types.Predicate;
 
-public interface IotxService extends BaseService<Iotx, Long> {
+public interface IotxService extends BaseJPAService<Iotx> {
 
 	public Iotx setIotxDistrict(Iotx iotx);
 

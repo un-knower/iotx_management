@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.component.SessionComponent;
+import com.anosi.asset.dao.mongo.BaseMongoDao;
 import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.IotxDataContent;
@@ -30,7 +31,7 @@ import com.querydsl.core.types.Predicate;
 
 @Service("iotxDataService")
 @Transactional
-public class IotxDataServcieImpl implements IotxDataService {
+public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implements IotxDataService {
 
 	private static final Logger logger = LoggerFactory.getLogger(IotxDataServcieImpl.class);
 
@@ -40,6 +41,11 @@ public class IotxDataServcieImpl implements IotxDataService {
 	private IotxDataContentService iotxDataContentService;
 	@Autowired
 	private SessionComponent sessionComponent;
+
+	@Override
+	public BaseMongoDao<IotxData> getRepository() {
+		return iotxDataDao;
+	}
 
 	@Override
 	public Page<IotxData> findDynamicData(Predicate predicate, Double frequency, Integer timeUnit, Sort sort)
@@ -54,12 +60,6 @@ public class IotxDataServcieImpl implements IotxDataService {
 	}
 
 	@Override
-	public Page<IotxData> findAll(Predicate predicate, Pageable pageable) {
-		logger.debug("finAll by predicate:{}", predicate == null ? "is null" : predicate.toString());
-		return iotxDataDao.findAll(predicate, pageable);
-	}
-
-	@Override
 	public Long countBysensorSN(String sensorSN) {
 		return iotxDataDao.countBysensorSNEquals(sensorSN);
 	}
@@ -70,10 +70,10 @@ public class IotxDataServcieImpl implements IotxDataService {
 	}
 
 	@Override
-	public IotxData save(IotxData iotxData) {
+	public <S extends IotxData> S save(S iotxData) {
 		iotxData = iotxDataDao.save(iotxData);
 		try {
-			iotxDataContentService.save(iotxData);
+			iotxDataContentService.saveContent(iotxData);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
@@ -81,14 +81,14 @@ public class IotxDataServcieImpl implements IotxDataService {
 	}
 
 	@Override
-	public <S extends IotxData> Iterable<S> save(Iterable<S> iotxDatas) {
-		iotxDatas = iotxDataDao.save(iotxDatas);
+	public <S extends IotxData> List<S> save(Iterable<S> iotxDatas) {
+		List<S> iotxDataList = iotxDataDao.save(iotxDatas);
 		try {
-			iotxDataContentService.save(iotxDatas);
+			iotxDataContentService.saveContent(iotxDataList);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
-		return iotxDatas;
+		return iotxDataList;
 	}
 
 	@Override

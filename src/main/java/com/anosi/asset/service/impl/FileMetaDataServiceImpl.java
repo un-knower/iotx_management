@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.component.SessionComponent;
+import com.anosi.asset.dao.mongo.BaseMongoDao;
 import com.anosi.asset.dao.mongo.FileMetaDataDao;
 import com.anosi.asset.dao.mongo.GridFsDao;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.FileMetaDataService;
-import com.querydsl.core.types.Predicate;
 
 @Service("fileMetaDataService")
 @Transactional
-public class FileMetaDataServiceImpl implements FileMetaDataService{
-	
+public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> implements FileMetaDataService {
+
 	private static final Logger logger = LoggerFactory.getLogger(FileMetaDataServiceImpl.class);
 
 	@Autowired
@@ -34,45 +34,50 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 	private SessionComponent sessionComponent;
 	
 	@Override
-	public FileMetaData saveFile(String identification, String fileName,InputStream is,Long fileSize) throws Exception{
-		FileMetaData fileMetaData=new FileMetaData();
+	public BaseMongoDao<FileMetaData> getRepository() {
+		return fileMetaDataDao;
+	}
+
+	@Override
+	public FileMetaData saveFile(String identification, String fileName, InputStream is, Long fileSize)
+			throws Exception {
+		FileMetaData fileMetaData = new FileMetaData();
 		fileMetaData.setIdentification(identification);
-		fileMetaData.setUploader(sessionComponent.getCurrentUser()==null?identification:sessionComponent.getCurrentUser().getLoginId());
+		fileMetaData.setUploader(sessionComponent.getCurrentUser() == null ? identification
+				: sessionComponent.getCurrentUser().getLoginId());
 		fileMetaData.setUploadTime(new Date());
 		fileMetaData.setFileName(fileName);
 		fileMetaData.setFileSize(fileSize);
-		
+
 		return this.saveFileAndAttributes(fileMetaData, is);
 	}
-	
-	private FileMetaData saveFileAndAttributes(FileMetaData fileMetaData,InputStream in) throws Exception {
-		//gridfs存储文件
+
+	private FileMetaData saveFileAndAttributes(FileMetaData fileMetaData, InputStream in) throws Exception {
+		// gridfs存储文件
 		logger.info("upload file to gridfs");
-		Object id = gridFsDao.uploadFileToGridFS(in,fileMetaData.getFileName());
+		Object id = gridFsDao.uploadFileToGridFS(in, fileMetaData.getFileName());
 		fileMetaData.setObjectId(FileMetaData.ObjectIdToBigIntegerConverter((ObjectId) id));
 		fileMetaDataDao.save(fileMetaData);
 		return fileMetaData;
 	}
-	
-	
 
 	@Override
 	public void deleteFile(FileMetaData fileMetaData) {
-		ObjectId id=FileMetaData.BigIntegerToObjectIdConverter(fileMetaData.getObjectId());
+		ObjectId id = FileMetaData.BigIntegerToObjectIdConverter(fileMetaData.getObjectId());
 		fileMetaDataDao.delete(fileMetaData);
-		//gridfs删除文件
+		// gridfs删除文件
 		logger.info("delete file from gridfs");
 		gridFsDao.deleteFileFromGridFS(id);
 	}
 
 	@Override
-	public Page<FileMetaData> findByIdentification(String identification,Pageable pageable) {
-		return fileMetaDataDao.findByIdentification(identification,pageable);
+	public Page<FileMetaData> findByIdentification(String identification, Pageable pageable) {
+		return fileMetaDataDao.findByIdentification(identification, pageable);
 	}
-	
+
 	@Override
-	public Page<FileMetaData> findByUploader(String uploader,Pageable pageable) {
-		return fileMetaDataDao.findByUploader(uploader,pageable);
+	public Page<FileMetaData> findByUploader(String uploader, Pageable pageable) {
+		return fileMetaDataDao.findByUploader(uploader, pageable);
 	}
 
 	@Override
@@ -85,9 +90,4 @@ public class FileMetaDataServiceImpl implements FileMetaDataService{
 		return gridFsDao.getFileFromGridFS(FileMetaData.BigIntegerToObjectIdConverter(objectId));
 	}
 
-	@Override
-	public Page<FileMetaData> findAll(Predicate predicate, Pageable pageable) {
-		return fileMetaDataDao.findAll(predicate, pageable);
-	}
-	
 }

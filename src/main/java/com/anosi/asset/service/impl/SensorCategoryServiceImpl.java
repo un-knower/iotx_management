@@ -11,7 +11,7 @@ import com.anosi.asset.service.SensorCategoryService;
 
 @Service("sensorCategoryService")
 @Transactional
-public class SensorCategoryServiceImpl extends BaseServiceImpl<SensorCategory> implements SensorCategoryService{
+public class SensorCategoryServiceImpl extends BaseJPAServiceImpl<SensorCategory> implements SensorCategoryService{
 
 	@Autowired
 	private SensorCategoryDao sensorCategoryDao;

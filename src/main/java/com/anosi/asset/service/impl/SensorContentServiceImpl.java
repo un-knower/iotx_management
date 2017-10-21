@@ -27,7 +27,7 @@ public class SensorContentServiceImpl extends BaseContentServiceImpl<SensorConte
 	}
 
 	@Override
-	public SensorContent save(Sensor sensor) throws Exception {
+	public SensorContent saveContent(Sensor sensor) throws Exception {
 		String id = String.valueOf(sensor.getId());
 		SensorContent sensorContent = sensorContentDao.findOne(id);
 		if (sensorContent == null) {
@@ -40,7 +40,7 @@ public class SensorContentServiceImpl extends BaseContentServiceImpl<SensorConte
 	}
 
 	@Override
-	public <S extends Sensor> Iterable<SensorContent> save(Iterable<S> obs) throws Exception {
+	public <S extends Sensor> Iterable<SensorContent> saveContent(Iterable<S> obs) throws Exception {
 		List<SensorContent> sensorContents = new ArrayList<>();
 		for (Sensor sensor : obs) {
 			String id = String.valueOf(sensor.getId());

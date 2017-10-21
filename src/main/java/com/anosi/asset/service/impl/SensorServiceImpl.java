@@ -39,7 +39,7 @@ import com.querydsl.core.types.Predicate;
 @Service("sensorService")
 @Transactional
 @CacheConfig(cacheNames = "sensor")
-public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements SensorService {
+public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements SensorService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SensorServiceImpl.class);
 
@@ -76,7 +76,7 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 		sensor = sensorDao.save(sensor);
 
 		try {
-			sensorContentService.save(sensor);
+			sensorContentService.saveContent(sensor);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
@@ -92,7 +92,7 @@ public class SensorServiceImpl extends BaseServiceImpl<Sensor> implements Sensor
 		sensors = sensorDao.save(sensors);
 
 		try {
-			sensorContentService.save(sensors);
+			sensorContentService.saveContent(sensors);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}

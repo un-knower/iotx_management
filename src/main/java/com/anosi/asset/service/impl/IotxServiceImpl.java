@@ -49,7 +49,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 @Service("iotxService")
 @Transactional
-public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxService {
+public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxService {
 
 	private static final Logger logger = LoggerFactory.getLogger(IotxServiceImpl.class);
 
@@ -87,7 +87,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		iotx = iotxDao.save(iotx);
 
 		try {
-			iotxContentService.save(iotx);
+			iotxContentService.saveContent(iotx);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
@@ -106,7 +106,7 @@ public class IotxServiceImpl extends BaseServiceImpl<Iotx> implements IotxServic
 		iotxsWithDistrict = iotxDao.save(iotxsWithDistrict);
 
 		try {
-			iotxContentService.save(iotxsWithDistrict);
+			iotxContentService.saveContent(iotxsWithDistrict);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}

@@ -27,7 +27,7 @@ public class IotxContentServiceImpl extends BaseContentServiceImpl<IotxContent, 
 	}
 
 	@Override
-	public IotxContent save(Iotx iotx) throws Exception {
+	public IotxContent saveContent(Iotx iotx) throws Exception {
 		String id = String.valueOf(iotx.getId());
 		IotxContent iotxContent = iotxContentDao.findOne(id);
 		if (iotxContent == null) {
@@ -40,7 +40,7 @@ public class IotxContentServiceImpl extends BaseContentServiceImpl<IotxContent, 
 	}
 
 	@Override
-	public <S extends Iotx> Iterable<IotxContent> save(Iterable<S> obs) throws Exception {
+	public <S extends Iotx> Iterable<IotxContent> saveContent(Iterable<S> obs) throws Exception {
 		List<IotxContent> iotxContents = new ArrayList<>();
 		for (Iotx iotx : obs) {
 			String id = String.valueOf(iotx.getId());

@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.anosi.asset.model.jpa.Sensor;
 import com.querydsl.core.types.Predicate;
 
-public interface SensorService extends BaseService<Sensor, Long> {
+public interface SensorService extends BaseJPAService<Sensor> {
 
 	public Sensor findBySerialNo(String serialNo);
 

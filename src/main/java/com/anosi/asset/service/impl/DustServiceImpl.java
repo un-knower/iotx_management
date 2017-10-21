@@ -33,7 +33,7 @@ import com.querydsl.core.types.Predicate;
 
 @Service("dustService")
 @Transactional
-public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustService {
+public class DustServiceImpl extends BaseJPAServiceImpl<Dust> implements DustService {
 
 	private static final Logger logger = LoggerFactory.getLogger(DustServiceImpl.class);
 
@@ -60,7 +60,7 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 		dust = dustDao.save(dust);
 
 		try {
-			dustContentService.save(dust);
+			dustContentService.saveContent(dust);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}
@@ -76,7 +76,7 @@ public class DustServiceImpl extends BaseServiceImpl<Dust> implements DustServic
 		dusts = dustDao.save(dusts);
 
 		try {
-			dustContentService.save(dusts);
+			dustContentService.saveContent(dusts);
 		} catch (Exception e) {
 			throw new CustomRunTimeException(e.getMessage());
 		}

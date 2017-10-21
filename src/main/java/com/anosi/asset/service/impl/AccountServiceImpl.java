@@ -28,7 +28,7 @@ import com.anosi.asset.service.RoleService;
 
 @Service("accountService")
 @Transactional
-public class AccountServiceImpl extends BaseServiceImpl<Account> implements AccountService {
+public class AccountServiceImpl extends BaseJPAServiceImpl<Account> implements AccountService {
 
 	private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
