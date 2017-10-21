@@ -255,8 +255,8 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin> -->
-		
+			</plugin>
+		 -->
 		
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

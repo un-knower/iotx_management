@@ -38,7 +38,10 @@ public class AbstractDocument implements Serializable{
 	 * @return
 	 */
 	public String getStringId(){
-		return id.toString();
+		if(id!=null){
+			return id.toString();
+		}
+		return null;
 	}
 	
 }

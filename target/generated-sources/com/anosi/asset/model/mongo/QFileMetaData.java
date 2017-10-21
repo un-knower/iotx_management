@@ -32,6 +32,9 @@ public class QFileMetaData extends EntityPathBase<FileMetaData> {
 
     public final NumberPath<java.math.BigInteger> objectId = createNumber("objectId", java.math.BigInteger.class);
 
+    //inherited
+    public final StringPath stringId = _super.stringId;
+
     public final StringPath uploader = createString("uploader");
 
     public final DateTimePath<java.util.Date> uploadTime = createDateTime("uploadTime", java.util.Date.class);

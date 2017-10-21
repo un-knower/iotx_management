@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.mongo.BaseMongoDao;
 import com.anosi.asset.dao.mongo.FileMetaDataDao;
 import com.anosi.asset.dao.mongo.GridFsDao;
@@ -30,8 +29,6 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 	private FileMetaDataDao fileMetaDataDao;
 	@Autowired
 	private GridFsDao gridFsDao;
-	@Autowired
-	private SessionComponent sessionComponent;
 	
 	@Override
 	public BaseMongoDao<FileMetaData> getRepository() {

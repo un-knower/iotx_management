@@ -141,7 +141,7 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	private JSONObject setBody(String type, Object val, JSONObject jsonObject) {
 		JSONObject bodyJson = new JSONObject();
 		bodyJson.put("type", type);
-		bodyJson.put("val", val);
+		bodyJson.put("value", val);
 		jsonObject.put("body", bodyJson);
 		return jsonObject;
 	}
