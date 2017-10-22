@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
+import com.anosi.asset.component.MapComponent;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
 import com.anosi.asset.exception.CustomRunTimeException;
@@ -35,7 +36,6 @@ import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.mqtt.MqttServer;
-import com.anosi.asset.service.DistrictService;
 import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxService;
@@ -57,7 +57,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 	@Autowired
 	private IotxDataService iotxDataService;
 	@Autowired
-	private DistrictService districtService;
+	private MapComponent mapComponent;
 	@Autowired
 	private EntityManager entityManager;
 	@Autowired
@@ -132,8 +132,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 			throw new RuntimeException(i18nComponent.getMessage("iotx.latitude.cannot.null"));
 		}
 		JSONObject addressComponent = MapUtil.getAddressComponent(String.valueOf(longitude), String.valueOf(latitude));
-		District district = districtService.findByNameAndCity(addressComponent.getString("district"),
-				addressComponent.getString("city"));
+		District district = mapComponent.createMap(addressComponent);
 		iotx.setDistrict(district);
 		// 获取转换的百度坐标
 		JSONObject convertLocation = MapUtil.convertLocation(String.valueOf(longitude), String.valueOf(latitude));
@@ -157,24 +156,32 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 		List<Tuple> iotxTuples = null;
 
 		QIotx qIotxCustom = createQIotxCustom();
-		long countProvince = queryFactory.from(qIotxCustom).where(predicate).groupBy(qIotxCustom.district.city.province)
-				.fetchCount();
-		if (countProvince == 1) {
-			// 如果都是一个省，那么查看是否都是一个市
-			long countCity = queryFactory.from(qIotx).where(predicate).groupBy(qIotx.district.city).fetchCount();
-			if (countCity == 1) {
-				// 如果都是一个市，那么就按照区来统计数据
-				iotxTuples = queryFactory.select(qIotx.district.city.name, qIotx.count()).from(qIotx).where(predicate)
-						.groupBy(qIotx.district.city).fetch();
+		long countCountry = queryFactory.from(qIotxCustom).where(predicate)
+				.groupBy(qIotxCustom.district.city.province.country).fetchCount();
+		if (countCountry == 1) {
+			// 如果都是一个国家,那么查看是否都是一个省
+			long countProvince = queryFactory.from(qIotxCustom).where(predicate)
+					.groupBy(qIotxCustom.district.city.province).fetchCount();
+			if (countProvince == 1) {
+				// 如果都是一个省，那么查看是否都是一个市
+				long countCity = queryFactory.from(qIotx).where(predicate).groupBy(qIotx.district.city).fetchCount();
+				if (countCity == 1) {
+					// 如果都是一个市，那么就按照区来统计数据
+					iotxTuples = queryFactory.select(qIotx.district.name, qIotx.count()).from(qIotx).where(predicate)
+							.groupBy(qIotx.district).fetch();
+				} else {
+					// 如果是多个市，就按照市统计
+					iotxTuples = queryFactory.select(qIotx.district.city.name, qIotx.count()).from(qIotx)
+							.where(predicate).groupBy(qIotx.district.city).fetch();
+				}
 			} else {
-				// 如果是多个市，就按照市统计
-				iotxTuples = queryFactory.select(qIotx.district.name, qIotx.count()).from(qIotx).where(predicate)
-						.groupBy(qIotx.district).fetch();
+				// 如果是多个省，就按照省统计
+				iotxTuples = queryFactory.select(qIotxCustom.district.city.province.name, qIotx.count()).from(qIotx)
+						.where(predicate).groupBy(qIotxCustom.district.city.province).fetch();
 			}
 		} else {
-			// 如果是多个省，就按照省统计
-			iotxTuples = queryFactory.select(qIotxCustom.district.city.province.name, qIotx.count()).from(qIotx)
-					.where(predicate).groupBy(qIotxCustom.district.city.province).fetch();
+			iotxTuples = queryFactory.select(qIotxCustom.district.city.province.country.name, qIotx.count()).from(qIotx)
+					.where(predicate).groupBy(qIotxCustom.district.city.province.country).fetch();
 		}
 
 		JSONArray jsonArray = new JSONArray();
@@ -195,7 +202,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 		/***
 		 * 主要在于构造PathInits 需要有如下结构: map:{district:{city:{province:.....}}}
 		 */
-		PathInits inits = new PathInits("district.city.province");
+		PathInits inits = new PathInits("district.city.province.country");
 		QIotx iotx = new QIotx(Iotx.class, forVariable("iotx"), inits);
 		return iotx;
 	}
