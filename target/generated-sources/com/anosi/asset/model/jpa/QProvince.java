@@ -18,11 +18,15 @@ public class QProvince extends EntityPathBase<Province> {
 
     private static final long serialVersionUID = 1949707753L;
 
+    private static final PathInits INITS = PathInits.DIRECT2;
+
     public static final QProvince province = new QProvince("province");
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
     public final ListPath<City, QCity> cityList = this.<City, QCity>createList("cityList", City.class, QCity.class, PathInits.DIRECT2);
+
+    public final QCountry country;
 
     //inherited
     public final StringPath createBy = _super.createBy;
@@ -41,18 +45,25 @@ public class QProvince extends EntityPathBase<Province> {
 
     public final StringPath name = createString("name");
 
-    public final StringPath pid = createString("pid");
-
     public QProvince(String variable) {
-        super(Province.class, forVariable(variable));
+        this(Province.class, forVariable(variable), INITS);
     }
 
     public QProvince(Path<? extends Province> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QProvince(PathMetadata metadata) {
-        super(Province.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QProvince(PathMetadata metadata, PathInits inits) {
+        this(Province.class, metadata, inits);
+    }
+
+    public QProvince(Class<? extends Province> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.country = inits.isInitialized("country") ? new QCountry(forProperty("country")) : null;
     }
 
 }

@@ -48,8 +48,6 @@ public class InitData {
 	@Autowired
 	private InitRoleFunctionRelated initRoleFunctionRelated;
 	@Autowired
-	private InitCityRelated initCityRelated;
-	@Autowired
 	private MqttServer mqttServer;
 
 	@PostConstruct
@@ -63,9 +61,6 @@ public class InitData {
 				initAdmin();
 				initCompany();
 				initRoleFunctionRelated.initRoleFunctionRelated();
-				initCityRelated.initProvince();
-				initCityRelated.initCity();
-				initCityRelated.initDistrict();
 
 				// mqtt初始化连接
 				try {

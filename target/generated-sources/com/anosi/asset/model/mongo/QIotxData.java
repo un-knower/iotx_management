@@ -54,6 +54,9 @@ public class QIotxData extends EntityPathBase<IotxData> {
 
     public final StringPath sensorSN = createString("sensorSN");
 
+    //inherited
+    public final StringPath stringId = _super.stringId;
+
     public final StringPath unit = createString("unit");
 
     public final NumberPath<Double> val = createNumber("val", Double.class);

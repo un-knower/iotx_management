@@ -24,8 +24,6 @@ public class QCity extends EntityPathBase<City> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
-    public final StringPath cid = createString("cid");
-
     //inherited
     public final StringPath createBy = _super.createBy;
 
@@ -65,7 +63,7 @@ public class QCity extends EntityPathBase<City> {
 
     public QCity(Class<? extends City> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.province = inits.isInitialized("province") ? new QProvince(forProperty("province")) : null;
+        this.province = inits.isInitialized("province") ? new QProvince(forProperty("province"), inits.get("province")) : null;
     }
 
 }

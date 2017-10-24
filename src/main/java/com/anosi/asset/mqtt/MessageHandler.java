@@ -6,23 +6,24 @@ import java.util.Objects;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.Status;
+import com.anosi.asset.model.mongo.Message;
+import com.anosi.asset.model.mongo.Message.Type;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
+import com.anosi.asset.service.MessageService;
 import com.anosi.asset.service.SensorService;
 
 /***
@@ -49,7 +50,7 @@ public class MessageHandler {
 	@Autowired
 	private I18nComponent i18nComponent;
 	@Autowired
-	private MongoTemplate mongoTemplate;
+	private MessageService messageService;
 
 	/***
 	 * 进行消息是否处理过的校验
@@ -85,14 +86,16 @@ public class MessageHandler {
 	 */
 	private void handle(String topic, MqttMessage message) throws Exception {
 		// 将接收的消息持久化到mongodb
-		mongoTemplate.save(message, "mqttReceive");
+		Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
+		payLoad.setType(Type.RECEIVE);
+		messageService.save(payLoad);
 		// 按照topic分别处理消息
 		switch (topic) {
 		case "configureCallBack":
-			handleConfigureCallBack(topic, message);
+			handleConfigureCallBack(topic, payLoad);
 			break;
 		case "iotxStatus":
-			handleIotxStatus(topic, message);
+			handleIotxStatus(topic, payLoad);
 			break;
 		default:
 			break;
@@ -107,24 +110,19 @@ public class MessageHandler {
 	 *            内容格式:{header:{type:xxx,serialNo:xxx},body:{k1:v1,k2:v2}}
 	 * @throws Exception
 	 */
-	private void handleConfigureCallBack(String topic, MqttMessage message) throws Exception {
-		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
-		JSONObject header = jsonMessage.getJSONObject("header");
-
-		JSONObject response = jsonMessage.getJSONObject("response");
-		Boolean status = response.getBoolean("status");
+	private void handleConfigureCallBack(String topic, Message message) throws Exception {
+		Boolean status = message.getResponse().getStatus();
 		if (!status) {
 			// TODO 错误处理
 			return;
 		}
 
 		// 获取type和val
-		JSONObject body = jsonMessage.getJSONObject("body");
 		Map<String, Object> values = new HashMap<>();
-		values.put(body.getString("type"), body.get("val"));
+		values.put(message.getBody().getType(), message.getBody().getValue());
 
-		String serialNo = header.getString("serialNo");
-		switch (header.getString("type")) {
+		String serialNo = message.getHeader().getSerialNo();
+		switch (message.getHeader().getType()) {
 		case "iotx":
 			Iotx iotx = iotxService.findBySerialNo(serialNo);
 			iotxRemoteService.setValue(iotx, values);
@@ -162,12 +160,9 @@ public class MessageHandler {
 	 * @param message
 	 *            内容格式:{header:{serialNo:xxx},body:{status:xxx}}
 	 */
-	private void handleIotxStatus(String topic, MqttMessage message) {
-		JSONObject jsonMessage = JSON.parseObject(new String(message.getPayload()));
-		JSONObject header = jsonMessage.getJSONObject("header");
-		JSONObject body = jsonMessage.getJSONObject("body");
-		String status = body.getString("status");
-		String serialNo = header.getString("serialNo");
+	private void handleIotxStatus(String topic, Message message) {
+		String status = message.getBody().getValue().toString();
+		String serialNo = message.getHeader().getSerialNo();
 		Iotx iotx = iotxService.findBySerialNo(serialNo);
 		if ("offline".equals(status)) {
 			iotx.setStatus(Status.OFFLINE);

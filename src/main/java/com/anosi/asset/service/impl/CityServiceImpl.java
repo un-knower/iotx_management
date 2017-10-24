@@ -22,8 +22,8 @@ public class CityServiceImpl extends BaseJPAServiceImpl<City> implements CitySer
 	}
 
 	@Override
-	public City findByCID(String CID) {
-		return cityDao.findByCid(CID);
+	public City findByName(String name) {
+		return cityDao.findByName(name);
 	}
 
 }

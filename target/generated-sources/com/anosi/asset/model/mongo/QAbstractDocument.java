@@ -21,6 +21,8 @@ public class QAbstractDocument extends BeanPath<AbstractDocument> {
 
     public final NumberPath<java.math.BigInteger> id = createNumber("id", java.math.BigInteger.class);
 
+    public final StringPath stringId = createString("stringId");
+
     public QAbstractDocument(String variable) {
         super(AbstractDocument.class, forVariable(variable));
     }

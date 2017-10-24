@@ -34,6 +34,10 @@ public class Sensor extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 5359114601983561364L;
+	
+	private String name;// 命名规则,例如"tt3"
+
+	private String parameterDescribe;// 描述,例如出水口温度
 
 	@Content
 	private String serialNo;
@@ -50,7 +54,7 @@ public class Sensor extends BaseEntity {
 
 	@Content
 	private Double minVal;
-
+	
 	private String unit;
 
 	@ExtraName(name="runStatus")
@@ -121,6 +125,22 @@ public class Sensor extends BaseEntity {
 
 	public void setIsWorked(Boolean isWorked) {
 		this.isWorked = isWorked;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getParameterDescribe() {
+		return parameterDescribe;
+	}
+
+	public void setParameterDescribe(String parameterDescribe) {
+		this.parameterDescribe = parameterDescribe;
 	}
 
 	@Override
