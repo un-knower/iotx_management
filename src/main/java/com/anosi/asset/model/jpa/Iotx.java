@@ -30,7 +30,7 @@ public class Iotx extends BaseEntity {
 
 	@Content
 	// @JSONField(name="serial_no")
-	@ExtraName(name="unique_id")
+	@ExtraName(name = "unique_id")
 	private String serialNo;
 
 	private String cpu;
@@ -303,6 +303,16 @@ public class Iotx extends BaseEntity {
 	public String getInstallLocation() {
 		return district.getCity().getProvince().getName() + "-" + district.getCity().getName() + "-"
 				+ district.getName();
+	}
+
+	/***
+	 * 获取所属设备
+	 * 
+	 * @return
+	 */
+	@Transient
+	public Device getDevice() {
+		return dustList.get(0).getDevice();
 	}
 
 	@Override

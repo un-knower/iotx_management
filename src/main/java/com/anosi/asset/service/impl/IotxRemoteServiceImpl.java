@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
@@ -15,10 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.exception.CustomRunTimeException;
+import com.anosi.asset.model.jpa.Device;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.service.CompanyService;
+import com.anosi.asset.service.DeviceService;
 import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.FileMetaDataService;
 import com.anosi.asset.service.IotxRemoteService;
@@ -39,6 +44,12 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	private SensorService sensorService;
 	@Autowired
 	private FileMetaDataService fileMetaDataService;
+	@Autowired
+	private DeviceService deviceService;
+	@Autowired
+	private CompanyService companyService;
+	@Autowired
+	private I18nComponent i18nComponent;
 
 	/***
 	 * 将上传的ini文件处理成map
@@ -71,7 +82,27 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 
 	@Override
 	public Iotx save(Iotx iotx, InputStream is) throws Exception {
-		return iotxService.save(setValue(iotx, convertStreamToMap(is, "system_conf")));
+		Map<String, Object> map = new HashMap<>();
+		Ini ini = new Ini(is);
+		Section se = ini.get("system_conf");
+		for (Entry<String, String> entry : se.entrySet()) {
+			map.put(entry.getKey(), entry.getValue());
+		}
+		iotx = iotxService.save(setValue(iotx, map));
+		
+		// 获取deviceSN,创建虚拟的dust进行关联
+		Section section = ini.get("user_conf");
+		Device device = new Device();
+		device.setCompany(companyService.findByName(i18nComponent.getMessage("goaland")));
+		device.setSerialNo(section.get("device_no"));
+		deviceService.save(device);
+
+		Dust inventedDust = new Dust();
+		inventedDust.setSerialNo(UUID.randomUUID().toString());
+		inventedDust.setIotx(iotx);
+		inventedDust.setDevice(device);
+		dustService.save(inventedDust);
+		return iotx;
 	}
 
 	@Override

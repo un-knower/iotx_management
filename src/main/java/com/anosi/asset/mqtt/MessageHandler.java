@@ -3,6 +3,7 @@ package com.anosi.asset.mqtt;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,6 +142,15 @@ public class MessageHandler {
 			// 如果是新增sensor
 			if (sensor == null) {
 				sensor = new Sensor();
+				// 为sensor创建虚拟的dust
+				Dust inventedDust = new Dust();
+				// serialNo规定为iotxSN_sensor地址
+				Iotx singleIotx = iotxService.findBySerialNo(serialNo.split("_")[0]);
+				inventedDust.setSerialNo(UUID.randomUUID().toString());
+				inventedDust.setIotx(singleIotx);
+				inventedDust.setDevice(singleIotx.getDevice());
+				dustService.save(inventedDust);
+				sensor.setDust(inventedDust);
 			}
 			iotxRemoteService.setValue(sensor, values);
 			if (values.containsKey("frequency")) {

@@ -101,10 +101,18 @@ public class InitData {
 	}
 
 	private void initCompany() {
-		String companyName = i18nComponent.getMessage("anosi");
+		/*String companyName = i18nComponent.getMessage("anosi");
 		if (companyService.findByName(companyName) == null) {
 			Company company = new Company();
 			company.setName(companyName);
+			companyService.save(company);
+			Account account = this.accountService.findByLoginId("admin");
+			account.setCompany(company);
+		}*/
+		String goaland = i18nComponent.getMessage("goaland");
+		if (companyService.findByName(goaland) == null) {
+			Company company = new Company();
+			company.setName(goaland);
 			companyService.save(company);
 			Account account = this.accountService.findByLoginId("admin");
 			account.setCompany(company);
