@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.anosi.asset.model.elasticsearch.Content;
 import com.anosi.asset.util.BeanRefUtil.ExtraName;
@@ -34,7 +35,7 @@ public class Sensor extends BaseEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = 5359114601983561364L;
-	
+
 	private String name;// 命名规则,例如"tt3"
 
 	private String parameterDescribe;// 描述,例如出水口温度
@@ -52,12 +53,14 @@ public class Sensor extends BaseEntity {
 	@Content
 	private Double maxVal;
 
+	private DataType dataType;
+
 	@Content
 	private Double minVal;
-	
+
 	private String unit;
 
-	@ExtraName(name="runStatus")
+	@ExtraName(name = "runStatus")
 	private Boolean isWorked = false;
 
 	@Column(unique = true, nullable = false)
@@ -126,7 +129,7 @@ public class Sensor extends BaseEntity {
 	public void setIsWorked(Boolean isWorked) {
 		this.isWorked = isWorked;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -141,6 +144,24 @@ public class Sensor extends BaseEntity {
 
 	public void setParameterDescribe(String parameterDescribe) {
 		this.parameterDescribe = parameterDescribe;
+	}
+
+	public DataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(DataType dataType) {
+		this.dataType = dataType;
+	}
+
+	/***
+	 * 获取plc地址
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getPlc() {
+		return serialNo.split("_")[1];
 	}
 
 	@Override
@@ -168,6 +189,10 @@ public class Sensor extends BaseEntity {
 			return true;
 		}
 		return true;
+	}
+
+	public static enum DataType {
+		INT, REAL;
 	}
 
 }
