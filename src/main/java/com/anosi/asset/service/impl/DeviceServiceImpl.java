@@ -22,4 +22,9 @@ public class DeviceServiceImpl extends BaseJPAServiceImpl<Device> implements Dev
 		return deviceDao;
 	}
 
+	@Override
+	public Device findBySerialNo(String serialNo) {
+		return deviceDao.findBySerialNo(serialNo);
+	}
+
 }

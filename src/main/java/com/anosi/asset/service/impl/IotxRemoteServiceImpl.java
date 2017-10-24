@@ -3,6 +3,7 @@ package com.anosi.asset.service.impl;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -11,6 +12,7 @@ import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
 import org.ini4j.Profile.Section;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +32,7 @@ import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.service.SensorService;
 import com.anosi.asset.util.BeanRefUtil;
+import com.anosi.asset.util.URLConncetUtil;
 import com.google.common.collect.ImmutableMap;
 
 @Service("iotxRemoteService")
@@ -50,6 +53,12 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	private CompanyService companyService;
 	@Autowired
 	private I18nComponent i18nComponent;
+	@Value("${remote.protocol}")
+	private String protocol;
+	@Value("${remote.host}")
+	private String host;
+	@Value("${remote.port}")
+	private String port;
 
 	/***
 	 * 将上传的ini文件处理成map
@@ -89,19 +98,34 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 			map.put(entry.getKey(), entry.getValue());
 		}
 		iotx = iotxService.save(setValue(iotx, map));
-		
+
 		// 获取deviceSN,创建虚拟的dust进行关联
 		Section section = ini.get("user_conf");
-		Device device = new Device();
-		device.setCompany(companyService.findByName(i18nComponent.getMessage("goaland")));
-		device.setSerialNo(section.get("device_no"));
-		deviceService.save(device);
+		String serialNo = section.get("device_no");
+		Device device = deviceService.findBySerialNo(serialNo);
+		if (device == null) {
+			device = new Device();
+			device.setCompany(companyService.findByName(i18nComponent.getMessage("goaland")));
+			device.setSerialNo(section.get("device_no"));
+			deviceService.save(device);
+		}
 
-		Dust inventedDust = new Dust();
-		inventedDust.setSerialNo(UUID.randomUUID().toString());
-		inventedDust.setIotx(iotx);
-		inventedDust.setDevice(device);
-		dustService.save(inventedDust);
+		if (iotx.getDevice() == null) {
+			Dust inventedDust = new Dust();
+			inventedDust.setSerialNo(UUID.randomUUID().toString());
+			inventedDust.setIotx(iotx);
+			inventedDust.setDevice(device);
+			dustService.save(inventedDust);
+		} else {
+			List<Dust> dustList = iotx.getDustList();
+			for (Dust dust : dustList) {
+				dust.setDevice(device);
+			}
+		}
+
+		// 请求高澜项目,为设备设置坐标
+		URLConncetUtil.sendPost(protocol + "://" + host + ":" + port + "/" + "/device/setDistrict",
+				"deviceSN=" + serialNo + "&longitude=" + iotx.getLongitude() + "&latitude=" + iotx.getLatitude());
 		return iotx;
 	}
 

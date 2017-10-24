@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
+import org.springframework.util.CollectionUtils;
 
 import com.anosi.asset.model.elasticsearch.Content;
 import com.anosi.asset.util.BeanRefUtil.ExtraName;
@@ -312,6 +313,9 @@ public class Iotx extends BaseEntity {
 	 */
 	@Transient
 	public Device getDevice() {
+		if(CollectionUtils.isEmpty(dustList)){
+			return null;
+		}
 		return dustList.get(0).getDevice();
 	}
 
