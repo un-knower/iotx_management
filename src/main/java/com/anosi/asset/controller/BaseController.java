@@ -25,8 +25,8 @@ import com.anosi.asset.util.JsonUtil;
 import com.anosi.asset.util.StringUtil;
 
 @RestController
-public class BaseController<T> extends GlobalController<T>{
-	
+public class BaseController<T> extends GlobalController<T> {
+
 	@Autowired
 	protected JqgridUtil<T> jqgridUtil;
 	@Autowired
@@ -38,6 +38,7 @@ public class BaseController<T> extends GlobalController<T>{
 
 	/***
 	 * 注册date
+	 * 
 	 * @param request
 	 * @param binder
 	 */
@@ -47,31 +48,33 @@ public class BaseController<T> extends GlobalController<T>{
 		dateFormat.setLenient(false);
 		binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
 	}
-	
+
 	/***
 	 * 注册double
+	 * 
 	 * @param request
 	 * @param binder
 	 */
 	@InitBinder
 	protected void initDouble(ServletRequestDataBinder binder) {
-		binder.registerCustomEditor(Double.class,new CustomNumberEditor(Double.class,true));
+		binder.registerCustomEditor(Double.class, new CustomNumberEditor(Double.class, true));
 	}
-	
+
 	/***
 	 * 在每个controller调用前，将menuId加入session
+	 * 
 	 * @param id
 	 * @param model
 	 */
 	@ModelAttribute
-	public void setMenuIdIntoSession(@RequestParam(value = "menuId", required = false) String menuId){
-		if(StringUtils.isNoneBlank(menuId)){
-			Subject currentUser = SecurityUtils.getSubject();  
+	public void setMenuIdIntoSession(@RequestParam(value = "menuId", required = false) String menuId) {
+		if (StringUtils.isNoneBlank(menuId)) {
+			Subject currentUser = SecurityUtils.getSubject();
 			Session session = currentUser.getSession();
 			session.setAttribute("menuId", menuId);
 		}
 	}
-	
+
 	/****
 	 * 根据showType将数据转为指定格式的json
 	 * 
@@ -101,5 +104,5 @@ public class BaseController<T> extends GlobalController<T>{
 	enum ShowType {
 		GRID, REMOTE
 	}
-	
+
 }
