@@ -115,9 +115,13 @@ public class MqttServer {
 		token.waitForCompletion();
 		logger.debug("message is published completely! " + token.isComplete());
 		// 发送成功后持久化到mongodb
-		Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
-		payLoad.setType(Type.SEND);
-		messageService.save(payLoad);
+		try {
+			Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
+			payLoad.setType(Type.SEND);
+			messageService.save(payLoad);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/***
