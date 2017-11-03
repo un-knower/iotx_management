@@ -29,7 +29,6 @@ import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.DustContentService;
 import com.anosi.asset.service.DustService;
 import com.google.common.collect.ImmutableMap;
-import com.querydsl.core.types.Predicate;
 
 @Service("dustService")
 @Transactional
@@ -84,7 +83,7 @@ public class DustServiceImpl extends BaseJPAServiceImpl<Dust> implements DustSer
 	}
 
 	@Override
-	public Page<Dust> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
+	public Page<Dust> findByContentSearch(String content, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
 		Page<DustContent> dustContents;
 		// 防止sort报错，只获取pageable的页数和size
@@ -97,7 +96,7 @@ public class DustServiceImpl extends BaseJPAServiceImpl<Dust> implements DustSer
 		}
 		List<Long> ids = dustContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());
-		return findAll(QDust.dust.id.in(ids).and(predicate), pageable);
+		return findAll(QDust.dust.id.in(ids), contentPage);
 	}
 
 	@Override

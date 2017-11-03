@@ -12,7 +12,7 @@ $(document).ready(function() {
 		
 		
 		 var colModel=[
-		               	{label:$.i18n.prop('iotx.serialNo'),name:'serialNo', index:'serialNo', width:'120', sortable: false,align: 'center'},
+		               	{label:$.i18n.prop('iotx.serialNo'),name:'serialNo', index:'serialNo', width:'120', align: 'center'},
 		               	{label:$.i18n.prop('iotx.company'),name:'company.name',index:'company.name', width: '120', sortable:false, align: 'center'},
 						{label:$.i18n.prop('iotx.installLocation'),name:'installLocation',index:'installLocation', width: '120', sortable:false, align: 'center'},
 						{label:$.i18n.prop('iotx.dustQuantity'),name:'dustQuantity', index:'dustQuantity',sortable: true, width:'120', align: 'center'},

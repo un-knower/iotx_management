@@ -89,6 +89,7 @@ public class InitData {
 			account.setName("admin");
 			account.setLoginId("admin");
 			account.setPassword("123456");
+			account.getRoleList().add(roleService.findByRoleCode("admin"));
 			try {
 				// 设置密码
 				PasswordEncry.encrypt(account);
@@ -96,7 +97,6 @@ public class InitData {
 				throw new CustomRunTimeException();
 			}
 			accountService.save(account);
-			account.getRoleList().add(roleService.findByRoleCode("admin"));
 		}
 	}
 

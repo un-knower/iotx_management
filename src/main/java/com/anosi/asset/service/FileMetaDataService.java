@@ -2,10 +2,12 @@ package com.anosi.asset.service;
 
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.anosi.asset.bean.FileMetaDataBean;
 import com.anosi.asset.model.mongo.FileMetaData;
 
 public interface FileMetaDataService extends BaseMongoService<FileMetaData> {
@@ -25,6 +27,15 @@ public interface FileMetaDataService extends BaseMongoService<FileMetaData> {
 	public FileMetaData saveFile(String identification, String fileName, InputStream is, Long fileSize)
 			throws Exception;
 
+	/****
+	 * 保存文件(批量形式)
+	 * 
+	 * @param fileMetaDataBeans
+	 * @return
+	 * @throws Exception
+	 */
+	public List<FileMetaData> saveFile(List<FileMetaDataBean> fileMetaDataBeans) throws Exception;
+
 	/***
 	 * 删除文件和文件属性
 	 * 
@@ -34,10 +45,19 @@ public interface FileMetaDataService extends BaseMongoService<FileMetaData> {
 
 	public Page<FileMetaData> findByIdentification(String identification, Pageable pageable);
 
+	public List<FileMetaData> findByIdentification(String identification);
+
+	/***
+	 * 批量更新Identification
+	 * 
+	 * @param lastIdentification
+	 * @param nowIdentification
+	 * @return
+	 */
+	List<FileMetaData> updateIdentification(String lastIdentification, String nowIdentification);
+
 	public FileMetaData findByObjectId(BigInteger objectId);
 
 	public InputStream getFileByObjectId(BigInteger objectId);
-
-	Page<FileMetaData> findByUploader(String uploader, Pageable pageable);
 
 }

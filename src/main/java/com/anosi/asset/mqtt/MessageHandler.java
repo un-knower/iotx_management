@@ -85,17 +85,16 @@ public class MessageHandler {
 	 * @throws Exception
 	 */
 	private void handle(String topic, MqttMessage message) throws Exception {
-		// 将接收的消息持久化到mongodb
-		Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
-		payLoad.setType(Type.RECEIVE);
-		messageService.save(payLoad);
 		// 按照topic分别处理消息
 		switch (topic) {
-		case "configureCallBack":
-			handleConfigureCallBack(topic, payLoad);
+		case "configure/callBack":
+			handleConfigureCallBack(topic, message);
 			break;
-		case "iotxStatus":
-			handleIotxStatus(topic, payLoad);
+		case "configure/status":
+			handleIotxStatus(topic, message);
+			break;
+		case "configure/sensor":
+			handleConfigureSensor(topic, message);
 			break;
 		default:
 			break;
@@ -110,8 +109,13 @@ public class MessageHandler {
 	 *            内容格式:{header:{type:xxx,serialNo:xxx},body:{k1:v1,k2:v2}}
 	 * @throws Exception
 	 */
-	private void handleConfigureCallBack(String topic, Message message) throws Exception {
-		Boolean status = message.getResponse().getStatus();
+	private void handleConfigureCallBack(String topic, MqttMessage message) throws Exception {
+		// 将接收的消息持久化到mongodb
+		Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
+		payLoad.setType(Type.RECEIVE);
+		messageService.save(payLoad);
+		
+		Boolean status = payLoad.getResponse().getStatus();
 		if (!status) {
 			// TODO 错误处理
 			return;
@@ -119,10 +123,10 @@ public class MessageHandler {
 
 		// 获取type和val
 		Map<String, Object> values = new HashMap<>();
-		values.put(message.getBody().getType(), message.getBody().getValue());
+		values.put(payLoad.getBody().getType(), payLoad.getBody().getValue());
 
-		String serialNo = message.getHeader().getSerialNo();
-		switch (message.getHeader().getType()) {
+		String serialNo = payLoad.getHeader().getSerialNo();
+		switch (payLoad.getHeader().getType()) {
 		case "iotx":
 			Iotx iotx = iotxService.findBySerialNo(serialNo);
 			iotxRemoteService.setValue(iotx, values);
@@ -152,7 +156,7 @@ public class MessageHandler {
 			break;
 		}
 	}
-
+	
 	/***
 	 * 根据消息来设置iotx是否在线
 	 * 
@@ -160,15 +164,30 @@ public class MessageHandler {
 	 * @param message
 	 *            内容格式:{header:{serialNo:xxx},body:{status:xxx}}
 	 */
-	private void handleIotxStatus(String topic, Message message) {
-		String status = message.getBody().getValue().toString();
-		String serialNo = message.getHeader().getSerialNo();
+	private void handleIotxStatus(String topic, MqttMessage message) {
+		// 将接收的消息持久化到mongodb
+		Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
+		payLoad.setType(Type.RECEIVE);
+		messageService.save(payLoad);
+		
+		String status = payLoad.getBody().getValue().toString();
+		String serialNo = payLoad.getHeader().getSerialNo();
 		Iotx iotx = iotxService.findBySerialNo(serialNo);
 		if ("offline".equals(status)) {
 			iotx.setStatus(Status.OFFLINE);
 		} else if ("online".equals(status)) {
 			iotx.setStatus(Status.ONLINE);
 		}
+	}
+	
+	/***
+	 * 处理传感器元数据
+	 * 
+	 * @param topic
+	 * @param message
+	 */
+	private void handleConfigureSensor(String topic, MqttMessage message) {
+		
 	}
 
 }

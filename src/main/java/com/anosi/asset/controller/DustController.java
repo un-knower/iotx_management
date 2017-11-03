@@ -103,7 +103,7 @@ public class DustController extends BaseController<Dust>{
 
 		Page<Dust> dusts;
 		if(StringUtils.isNoneBlank(searchContent)){
-			dusts = dustService.findByContentSearch(searchContent, predicate, pageable);
+			dusts = dustService.findByContentSearch(searchContent, pageable);
 		}else{
 			dusts = dustService.findAll(predicate, pageable);
 		}

@@ -116,7 +116,7 @@ public class SensorController extends BaseController<Sensor> {
 
 		Page<Sensor> sensors;
 		if (StringUtils.isNoneBlank(searchContent)) {
-			sensors = sensorService.findByContentSearch(searchContent, predicate, pageable);
+			sensors = sensorService.findByContentSearch(searchContent, pageable);
 		} else {
 			sensors = sensorService.findAll(predicate, pageable);
 		}

@@ -118,9 +118,9 @@ public class IotxDataController extends BaseController<IotxData> {
 		Page<IotxData> iotxDatas;
 		if (StringUtils.isNoneBlank(searchContent)) {
 			if (isAlarm != null) {
-				iotxDatas = iotxDataService.findByContentSearch(searchContent, isAlarm, predicate, pageable);
+				iotxDatas = iotxDataService.findByContentSearch(searchContent, isAlarm, pageable);
 			} else {
-				iotxDatas = iotxDataService.findByContentSearch(searchContent, predicate, pageable);
+				iotxDatas = iotxDataService.findByContentSearch(searchContent, pageable);
 			}
 		} else {
 			iotxDatas = iotxDataService.findAll(predicate, pageable);

@@ -208,7 +208,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 	}
 
 	@Override
-	public Page<Iotx> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
+	public Page<Iotx> findByContentSearch(String content, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
 		Page<IotxContent> iotxContents;
 		// 防止sort报错，只获取pageable的页数和size
@@ -221,7 +221,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 		}
 		List<Long> ids = iotxContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());
-		return findAll(QIotx.iotx.id.in(ids).and(predicate), pageable);
+		return findAll(QIotx.iotx.id.in(ids), contentPage);
 	}
 
 	@Override
