@@ -13,22 +13,20 @@ public interface IotxDataService extends BaseMongoService<IotxData>{
 	 * 根据模糊搜索的content,获取到iotxDataContent,进而获取到iotxData
 	 * 
 	 * @param content
-	 * @param predicate
 	 * @param pageable
 	 * @return
 	 */
-	public Page<IotxData> findByContentSearch(String content, Predicate predicate, Pageable pageable);
+	public Page<IotxData> findByContentSearch(String content, Pageable pageable);
 
 	/****
 	 * 重载
 	 * 
 	 * @param content
 	 * @param isAlarm
-	 * @param predicate
 	 * @param pageable
 	 * @return
 	 */
-	public Page<IotxData> findByContentSearch(String content, Boolean isAlarm, Predicate predicate, Pageable pageable);
+	public Page<IotxData> findByContentSearch(String content, Boolean isAlarm, Pageable pageable);
 
 	/***
 	 * 获取动态线图上的数据

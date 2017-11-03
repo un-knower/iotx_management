@@ -18,11 +18,10 @@ public interface IotxService extends BaseJPAService<Iotx> {
 	 * 根据模糊搜索的content,获取到iotxContent,进而获取到iotx
 	 * 
 	 * @param content
-	 * @param predicate
 	 * @param pageable
 	 * @return
 	 */
-	public Page<Iotx> findByContentSearch(String content, Predicate predicate,Pageable pageable);
+	public Page<Iotx> findByContentSearch(String content, Pageable pageable);
 
 	public Iotx findBySerialNo(String serialNo);
 

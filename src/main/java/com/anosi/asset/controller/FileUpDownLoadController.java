@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.bean.FileMetaDataBean;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.FileMetaDataService;
@@ -52,14 +55,17 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 		logger.debug("identification:{}", identification);
 		JSONObject jsonObject = new JSONObject();
 		if (multipartFiles != null && multipartFiles.length > 0) {
+			List<FileMetaDataBean> fileMetaDataBeans = new ArrayList<>();
 			for (MultipartFile multipartFile : multipartFiles) {
 				logger.debug("is uploading");
-				try {
-					this.fileMetaDataService.saveFile(identification, multipartFile.getOriginalFilename(),
-							multipartFile.getInputStream(), multipartFile.getSize());
-				} catch (Exception e) {
-					throw new CustomRunTimeException("upload fail");
-				}
+				FileMetaDataBean fileMetaDataBean = new FileMetaDataBean(identification,
+						multipartFile.getOriginalFilename(), multipartFile.getInputStream(), multipartFile.getSize());
+				fileMetaDataBeans.add(fileMetaDataBean);
+			}
+			try {
+				this.fileMetaDataService.saveFile(fileMetaDataBeans);
+			} catch (Exception e) {
+				throw new CustomRunTimeException("upload fail");
 			}
 			jsonObject.put("result", "upload success");
 		} else {

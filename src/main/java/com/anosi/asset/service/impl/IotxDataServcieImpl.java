@@ -92,7 +92,7 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 	}
 
 	@Override
-	public Page<IotxData> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
+	public Page<IotxData> findByContentSearch(String content, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
 		Page<IotxDataContent> iotxDataContents;
 		// 防止sort报错，只获取pageable的页数和size
@@ -106,11 +106,11 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 		}
 		List<BigInteger> ids = iotxDataContents.getContent().stream().map(c -> new BigInteger(c.getId()))
 				.collect(Collectors.toList());
-		return findAll(QIotxData.iotxData.id.in(ids).and(predicate), pageable);
+		return findAll(QIotxData.iotxData.id.in(ids), contentPage);
 	}
 
 	@Override
-	public Page<IotxData> findByContentSearch(String content, Boolean isAlarm, Predicate predicate, Pageable pageable) {
+	public Page<IotxData> findByContentSearch(String content, Boolean isAlarm, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
 		Page<IotxDataContent> iotxDataContents;
 		// 防止sort报错，只获取pageable的页数和size
@@ -124,7 +124,7 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 		}
 		List<BigInteger> ids = iotxDataContents.getContent().stream().map(c -> new BigInteger(c.getId()))
 				.collect(Collectors.toList());
-		return findAll(QIotxData.iotxData.id.in(ids).and(predicate), pageable);
+		return findAll(QIotxData.iotxData.id.in(ids), contentPage);
 	}
 
 	@Override

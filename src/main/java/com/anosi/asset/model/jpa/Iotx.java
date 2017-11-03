@@ -302,7 +302,8 @@ public class Iotx extends BaseEntity {
 	 */
 	@Transient
 	public String getInstallLocation() {
-		return district.getCity().getProvince().getName() + "-" + district.getCity().getName() + "-"
+		return district.getCity().getProvince().getCountry().getName() + "-"
+				+ district.getCity().getProvince().getName() + "-" + district.getCity().getName() + "-"
 				+ district.getName();
 	}
 

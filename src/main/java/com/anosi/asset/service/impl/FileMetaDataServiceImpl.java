@@ -2,7 +2,9 @@ package com.anosi.asset.service.impl;
 
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.anosi.asset.bean.FileMetaDataBean;
 import com.anosi.asset.dao.mongo.BaseMongoDao;
 import com.anosi.asset.dao.mongo.FileMetaDataDao;
 import com.anosi.asset.dao.mongo.GridFsDao;
@@ -29,7 +32,7 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 	private FileMetaDataDao fileMetaDataDao;
 	@Autowired
 	private GridFsDao gridFsDao;
-	
+
 	@Override
 	public BaseMongoDao<FileMetaData> getRepository() {
 		return fileMetaDataDao;
@@ -38,6 +41,20 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 	@Override
 	public FileMetaData saveFile(String identification, String fileName, InputStream is, Long fileSize)
 			throws Exception {
+		return fileMetaDataDao.save(createFileMetaData(identification, fileName, is, fileSize));
+	}
+
+	public List<FileMetaData> saveFile(List<FileMetaDataBean> fileMetaDataBeans) throws Exception {
+		List<FileMetaData> fileMetaDatas = new ArrayList<>();
+		for (FileMetaDataBean fileMetaDataBean : fileMetaDataBeans) {
+			fileMetaDatas.add(createFileMetaData(fileMetaDataBean.getIdentification(), fileMetaDataBean.getFileName(),
+					fileMetaDataBean.getIs(), fileMetaDataBean.getFileSize()));
+		}
+		return fileMetaDataDao.save(fileMetaDatas);
+	}
+
+	private FileMetaData createFileMetaData(String identification, String fileName, InputStream is, Long fileSize)
+			throws Exception {
 		FileMetaData fileMetaData = new FileMetaData();
 		fileMetaData.setIdentification(identification);
 		fileMetaData.setUploader(sessionComponent.getCurrentUser() == null ? identification
@@ -45,8 +62,8 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 		fileMetaData.setUploadTime(new Date());
 		fileMetaData.setFileName(fileName);
 		fileMetaData.setFileSize(fileSize);
-
-		return this.saveFileAndAttributes(fileMetaData, is);
+		this.saveFileAndAttributes(fileMetaData, is);
+		return fileMetaData;
 	}
 
 	private FileMetaData saveFileAndAttributes(FileMetaData fileMetaData, InputStream in) throws Exception {
@@ -54,7 +71,6 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 		logger.info("upload file to gridfs");
 		Object id = gridFsDao.uploadFileToGridFS(in, fileMetaData.getFileName());
 		fileMetaData.setObjectId(FileMetaData.ObjectIdToBigIntegerConverter((ObjectId) id));
-		fileMetaDataDao.save(fileMetaData);
 		return fileMetaData;
 	}
 
@@ -73,11 +89,6 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 	}
 
 	@Override
-	public Page<FileMetaData> findByUploader(String uploader, Pageable pageable) {
-		return fileMetaDataDao.findByUploader(uploader, pageable);
-	}
-
-	@Override
 	public FileMetaData findByObjectId(BigInteger objectId) {
 		return fileMetaDataDao.findByObjectId(objectId);
 	}
@@ -85,6 +96,21 @@ public class FileMetaDataServiceImpl extends BaseMongoServiceImpl<FileMetaData> 
 	@Override
 	public InputStream getFileByObjectId(BigInteger objectId) {
 		return gridFsDao.getFileFromGridFS(FileMetaData.BigIntegerToObjectIdConverter(objectId));
+	}
+
+	@Override
+	public List<FileMetaData> findByIdentification(String identification) {
+		return fileMetaDataDao.findByIdentification(identification);
+	}
+
+	@Override
+	public List<FileMetaData> updateIdentification(String lastIdentification, String nowIdentification) {
+		List<FileMetaData> fileMetaDatas = fileMetaDataDao.findByIdentification(lastIdentification);
+		for (FileMetaData fileMetaData : fileMetaDatas) {
+			fileMetaData.setIdentification(nowIdentification);
+		}
+		fileMetaDataDao.save(fileMetaDatas);
+		return fileMetaDatas;
 	}
 
 }

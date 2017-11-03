@@ -112,7 +112,7 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	}
 
 	@Override
-	public Page<Sensor> findByContentSearch(String content, Predicate predicate, Pageable pageable) {
+	public Page<Sensor> findByContentSearch(String content, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
 		Page<SensorContent> sensorContents;
 		// 防止sort报错，只获取pageable的页数和size
@@ -125,7 +125,7 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 		}
 		List<Long> ids = sensorContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
 				.collect(Collectors.toList());
-		return findAll(QSensor.sensor.id.in(ids).and(predicate), pageable);
+		return findAll(QSensor.sensor.id.in(ids), contentPage);
 	}
 
 	@Override

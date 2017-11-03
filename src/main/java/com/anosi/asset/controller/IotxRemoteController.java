@@ -237,7 +237,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	public String fileUpload(@RequestParam("file_upload") MultipartFile multipartFile,
 			@PathVariable String identification) throws Exception {
 		if(multipartFile==null){
-			return new JSONObject(ImmutableMap.of("result", "file is null")).toString();
+			return new JSONObject(ImmutableMap.of("result", "error","message", "file is null")).toString();
 		}
 		return iotxRemoteService.fileUpload(multipartFile, identification);
 	}

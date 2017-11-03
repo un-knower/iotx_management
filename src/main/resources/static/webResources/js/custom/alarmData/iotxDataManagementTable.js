@@ -33,37 +33,37 @@ $(document).ready(function() {
 
 		
 		 var colModel=[
-		               	{label:$.i18n.prop('iotxData.iotxSerialNo'),name:'iotxSN', index:'iotxSN', width:'120', sortable: false,align: 'center'},
-		               	{label:$.i18n.prop('iotxData.dustSerialNo'),name:'dustSN', index:'dustSN', width:'120', sortable: false,align: 'center'},
-						{label:$.i18n.prop('iotxData.sensorSerialNo'),name:'sensorSN',index:'sensorSN', width: '120', sortable:false, align: 'center'},
-						{label:$.i18n.prop('iotxData.deviceSerialNo'),name:'deviceSN',index:'deviceSN', width: '120', sortable:false, align: 'center'},
-						{label:$.i18n.prop('iotxData.val'),name:'val', index:'val', width:'120', sortable: false,align: 'center'},
-						{label:$.i18n.prop('iotxData.maxVal'),name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
-						{label:$.i18n.prop('iotxData.minVal'),name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
-						{label:$.i18n.prop('iotxData.message'),name:'message', index:'message', width:'120', sortable: false,align: 'center'},
-						{label:$.i18n.prop('iotxData.level'),name:'level', index:'level', width:'120', sortable: false,align: 'center'},
-						{label:$.i18n.prop('iotxData.collectTime'),name:'collectTime',index:'collectTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
-							formatter:'date', 
-							formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
-						},
-						{label:$.i18n.prop('iotxData.closeTime'),name:'closeTime',index:'closeTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
-							formatter:'date', 
-							formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
-						},
-						{
-		                    label:$.i18n.prop('operate'), name: 'operate', index: 'operate', width: 120, align:'center',
-		                    formatter: function (cellvalue, options, rowObject) {
-		                    	var detail;
-		                    	var closeTimeIndex=params['showAttributes'].split(",").indexOf('closeTime');
-		                    	if(rowObject[closeTimeIndex]==null){
-		                    		detail="<img id='open0' height='35' width='35' src='/webResources/img/icon/uncomfirm.png'/>&nbsp;&nbsp;&nbsp;<button  class='btn btn-small btn-primary btn-xs' style='margin:4px;' id='fileId5' confirm='"+options.rowId+"'>确认</button>"
-		                    	}else{
-		                    		detail="<img id='open1' height='35' width='35' src='/webResources/img/icon/confirm.png'>&nbsp;&nbsp;&nbsp;<button  class='btn btn-small btn-primary btn-xs' style='margin:4px;' id='fileId5' >确认</button>" 
-		                    	}
-		                        return detail;
-		                    },
-		                },
-		    	   	  ];
+           	{label:$.i18n.prop('iotxData.iotxSerialNo'),name:'iotxSN', index:'iotxSN', width:'120', sortable: false,align: 'center'},
+           	{label:$.i18n.prop('iotxData.dustSerialNo'),name:'dustSN', index:'dustSN', width:'120', sortable: false,align: 'center'},
+			{label:$.i18n.prop('iotxData.sensorSerialNo'),name:'sensorSN',index:'sensorSN', width: '120', sortable:false, align: 'center'},
+			{label:$.i18n.prop('iotxData.deviceSerialNo'),name:'deviceSN',index:'deviceSN', width: '120', sortable:false, align: 'center'},
+			{label:$.i18n.prop('iotxData.val'),name:'val', index:'val', width:'120', sortable: false,align: 'center'},
+			{label:$.i18n.prop('iotxData.maxVal'),name:'maxVal', index:'maxVal', width:'120', sortable: false,align: 'center'},
+			{label:$.i18n.prop('iotxData.minVal'),name:'minVal', index:'minVal', width:'120', sortable: false,align: 'center'},
+			{label:$.i18n.prop('iotxData.message'),name:'message', index:'message', width:'120', sortable: false,align: 'center'},
+			{label:$.i18n.prop('iotxData.level'),name:'level', index:'level', width:'120', sortable: false,align: 'center'},
+			{label:$.i18n.prop('iotxData.collectTime'),name:'collectTime',index:'collectTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
+				formatter:'date', 
+				formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
+			},
+			{label:$.i18n.prop('iotxData.closeTime'),name:'closeTime',index:'closeTime',collectTime:'minVal', width:'120', sortable: false,align: 'center',
+				formatter:'date', 
+				formatoptions:{srcformat: 'Y-m-d H:i:s', newformat: 'Y-m-d H:i:s'}
+			},
+			{
+                label:$.i18n.prop('operate'), name: 'operate', index: 'operate', width: 120, align:'center',
+                formatter: function (cellvalue, options, rowObject) {
+                	var detail;
+                	var closeTimeIndex=params['showAttributes'].split(",").indexOf('closeTime');
+                	if(rowObject[closeTimeIndex]==null){
+                		detail="<img id='open0' height='35' width='35' src='/webResources/img/icon/uncomfirm.png'/>&nbsp;&nbsp;&nbsp;<button  class='btn btn-small btn-primary btn-xs' style='margin:4px;' id='fileId5' confirm='"+options.rowId+"'>确认</button>"
+                	}else{
+                		detail="<img id='open1' height='35' width='35' src='/webResources/img/icon/confirm.png'>&nbsp;&nbsp;&nbsp;<button  class='btn btn-small btn-primary btn-xs' style='margin:4px;' id='fileId5' >确认</button>" 
+                	}
+                    return detail;
+                },
+            },
+	   	  ];
 		 
 		 var myGrid = jQuery("#iotxDataTable");
 		 var myPager = jQuery("#iotxDataPager");
