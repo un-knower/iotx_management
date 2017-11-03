@@ -3,7 +3,7 @@ package com.anosi.asset.model.elasticsearch;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
-@Document(indexName = "iotxGoaland", type = "sensorContent")
+@Document(indexName = "iotxgoaland", type = "sensorContent")
 @Setting(settingPath = "elasticsearch-analyser.json")
 public class SensorContent extends BaseContent{
 

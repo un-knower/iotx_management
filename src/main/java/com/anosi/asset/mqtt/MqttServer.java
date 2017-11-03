@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.anosi.asset.model.mongo.Message;
 import com.anosi.asset.model.mongo.Message.Type;
 import com.anosi.asset.service.MessageService;
@@ -47,12 +48,11 @@ public class MqttServer {
 
 	private MqttClient client;
 
-	private MqttConnectOptions options = new MqttConnectOptions();
-
 	public void connect() throws MqttSecurityException, MqttException {
 		if (client != null && client.isConnected()) {
 			return;
 		}
+		MqttConnectOptions options = new MqttConnectOptions();
 		client = new MqttClient(this.serverURIs, this.clientId, new MemoryPersistence());
 		options.setCleanSession(false);
 		options.setUserName(userName);
@@ -119,7 +119,7 @@ public class MqttServer {
 			Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
 			payLoad.setType(Type.SEND);
 			messageService.save(payLoad);
-		} catch (Exception e) {
+		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}

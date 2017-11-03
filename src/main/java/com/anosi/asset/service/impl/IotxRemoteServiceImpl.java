@@ -97,6 +97,9 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 		for (Entry<String, String> entry : se.entrySet()) {
 			map.put(entry.getKey(), entry.getValue());
 		}
+		String gps = map.get("gps").toString();
+		map.put("longitude", gps.split(",")[0]);
+		map.put("latitude", gps.split(",")[1]);
 		iotx = iotxService.save(setValue(iotx, map));
 
 		// 获取deviceSN,创建虚拟的dust进行关联
@@ -143,11 +146,12 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	@Override
 	public String fileUpload(MultipartFile multipartFile, String identification) {
 		try {
-			save(iotxService.findBySerialNo(identification) == null ? iotxService.findBySerialNo(identification)
+			save(iotxService.findBySerialNo(identification) != null ? iotxService.findBySerialNo(identification)
 					: new Iotx(), new ByteArrayInputStream(IOUtils.toByteArray(multipartFile.getInputStream())));// 流复用
 			fileMetaDataService.saveFile(identification, multipartFile.getOriginalFilename(),
 					multipartFile.getInputStream(), multipartFile.getSize());
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new CustomRunTimeException("upload fail");
 		}
 		return new JSONObject(ImmutableMap.of("result", "success")).toString();

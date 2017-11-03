@@ -4,7 +4,7 @@ package com.anosi.asset.model.elasticsearch;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
-@Document(indexName = "iotxGoaland", type = "iotxContent")
+@Document(indexName = "iotxgoaland", type = "iotxContent")
 @Setting(settingPath = "elasticsearch-analyser.json")
 public class IotxContent extends BaseContent{
 

@@ -32,5 +32,13 @@ public interface AccountService extends BaseJPAService<Account> {
 	 * @param selRolesFunctionNode
 	 */
 	public void resolveRoleFunction(Account account, String[] selRolesFunctionNode);
+
+	/***
+	 * 远程添加account
+	 * 
+	 * @param loginId
+	 * @param password
+	 */
+	public void save(String loginId, String password);
 	
 }

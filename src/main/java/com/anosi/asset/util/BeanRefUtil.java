@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.NumberUtils;
 
 public class BeanRefUtil {
 
@@ -39,29 +40,53 @@ public class BeanRefUtil {
 		}
 		for (Field field : fields) {
 			String fieldName = field.getName();
-			if (valMap.containsKey(fieldName)) {
-				String typeName = field.getType().getSimpleName();
-				// 判断是否存在这个属性的set方法
-				String fieldSetName = parSetName(fieldName);
-				if (!checkSetMet(methods, fieldSetName)) {
-					continue;
-				}
-				Method fieldSetMet = cls.getMethod(fieldSetName, field.getType());
 
-				Object value = null;
-				boolean fieldHasAnno = field.isAnnotationPresent(ExtraName.class);
-				if (fieldHasAnno) {
+			Object value = null;
+			boolean fieldHasAnno = field.isAnnotationPresent(ExtraName.class);
+			if (fieldHasAnno) {
+				String extraName = field.getAnnotation(ExtraName.class).name();
+				if (valMap.containsKey(extraName)) {
 					value = valMap.get(field.getAnnotation(ExtraName.class).name());
 				} else {
-					value = valMap.get(fieldName);
+					continue;
 				}
 
-				if (Objects.equals("Date", typeName)) {
-					value = new Date((long) value);
+			} else {
+				if (valMap.containsKey(fieldName)) {
+					value = valMap.get(fieldName);
+				} else {
+					continue;
 				}
-				fieldSetMet.invoke(bean, value);
+			}
+
+			String typeName = field.getType().getSimpleName();
+			// 判断是否存在这个属性的set方法
+			String fieldSetName = parSetName(fieldName);
+			if (!checkSetMet(methods, fieldSetName)) {
+				continue;
+			}
+			Method fieldSetMet = cls.getMethod(fieldSetName, field.getType());
+
+			fieldSetMet.invoke(bean, convertValue(typeName, value));
+		}
+	}
+
+	/***
+	 * 转换value
+	 * 
+	 * @param typeName
+	 * @param value
+	 * @return
+	 */
+	private static Object convertValue(String typeName, Object value) {
+		if (Objects.equals("Date", typeName)) {
+			value = new Date(Long.parseLong(value.toString()));
+		} else if (Objects.equals("Double", typeName) || Objects.equals("double", typeName)) {
+			if (value instanceof String) {
+				value = NumberUtils.parseNumber((String) value, Double.class);
 			}
 		}
+		return value;
 	}
 
 	/**

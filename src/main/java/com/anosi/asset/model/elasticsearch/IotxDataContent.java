@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 
-@Document(indexName = "iotxGoaland", type = "iotxDataContent")
+@Document(indexName = "iotxgoaland", type = "iotxDataContent")
 @Setting(settingPath = "elasticsearch-analyser.json")
 public class IotxDataContent extends BaseContent {
 

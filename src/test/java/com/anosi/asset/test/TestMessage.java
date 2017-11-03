@@ -21,7 +21,7 @@ public class TestMessage {
 		header.setSerialNo("abc123");
 		message.setHeader(header);
 		body.setType("value");
-		body.setValue("1.0");
+		body.setVal("1.0");
 		message.setBody(body);
 		response.setStatus(true);
 		message.setResponse(response);

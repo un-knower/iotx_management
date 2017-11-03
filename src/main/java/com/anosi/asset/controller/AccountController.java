@@ -129,7 +129,7 @@ public class AccountController extends BaseController<Account> {
 	 */
 	@Transactional
 	@RequestMapping(value = "/account/save", method = RequestMethod.POST)
-	public JSONObject saveIotx(@ModelAttribute("account") Account account,
+	public JSONObject saveAccount(@ModelAttribute("account") Account account,
 			@RequestParam(name = "newPassword", required = false) String password,
 			@RequestParam(name = "role", required = false) String[] roles,
 			@RequestParam(name = "roleFunctionGroup", required = false) String[] roleFunctionGroups,
@@ -137,6 +137,21 @@ public class AccountController extends BaseController<Account> {
 			throws Exception {
 		logger.debug("saveOrUpdate account");
 		accountService.save(account, password,roles,roleFunctionGroups, selRolesFunctionNode);
+		return new JSONObject(ImmutableMap.of("result", "success"));
+	}
+	
+	/***
+	 * 远程添加account
+	 * 
+	 * @param loginId
+	 * @param password
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/account/save/remote", method = RequestMethod.POST)
+	public JSONObject saveAccountRemote(@RequestParam(value="loginId")String loginId,
+			@RequestParam(value="password")String password)throws Exception {
+		accountService.save(loginId, password);
 		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 

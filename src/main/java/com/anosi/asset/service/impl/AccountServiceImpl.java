@@ -15,6 +15,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.anosi.asset.component.PasswordEncry;
 import com.anosi.asset.dao.jpa.AccountDao;
 import com.anosi.asset.dao.jpa.BaseJPADao;
+import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Privilege;
 import com.anosi.asset.model.jpa.RoleFunction;
@@ -136,6 +137,21 @@ public class AccountServiceImpl extends BaseJPAServiceImpl<Account> implements A
 					(list1, list2) -> list1.addAll(list2));
 		}
 		return roleFunctionService.parseToTree(roleFunctions, roleFunctionBtns);
+	}
+
+	@Override
+	public void save(String loginId, String password) {
+		Account account = new Account();
+		account.setName(loginId);
+		account.setLoginId(loginId);
+		account.setPassword(password);
+		try {
+			// 设置密码
+			PasswordEncry.encrypt(account);
+		} catch (Exception e) {
+			throw new CustomRunTimeException();
+		}
+		accountDao.save(account);
 	}
 
 }

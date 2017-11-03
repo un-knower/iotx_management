@@ -36,11 +36,14 @@ public class Sensor extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 5359114601983561364L;
 
+	@ExtraName(name = "sensor_name")
 	private String name;// 命名规则,例如"tt3"
 
+	@ExtraName(name = "description")
 	private String parameterDescribe;// 描述,例如出水口温度
 
 	@Content
+	@ExtraName(name = "sensor_no")
 	private String serialNo;
 
 	private Dust dust;
@@ -51,16 +54,19 @@ public class Sensor extends BaseEntity {
 	private Long alarmQuantity;
 
 	@Content
+	@ExtraName(name = "max_limit")
 	private Double maxVal;
 
-	private DataType dataType;
-
 	@Content
+	@ExtraName(name = "min_limit")
 	private Double minVal;
 
 	private String unit;
 
-	@ExtraName(name = "runStatus")
+	@ExtraName(name="runStatus")
+	private DataType dataType;
+
+	@ExtraName(name = "is_used")
 	private Boolean isWorked = false;
 
 	@Column(unique = true, nullable = false)

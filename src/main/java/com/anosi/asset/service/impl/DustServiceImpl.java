@@ -61,6 +61,7 @@ public class DustServiceImpl extends BaseJPAServiceImpl<Dust> implements DustSer
 		try {
 			dustContentService.saveContent(dust);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new CustomRunTimeException(e.getMessage());
 		}
 		return dust;

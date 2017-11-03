@@ -134,10 +134,10 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 		jsonObject.put("header", new JSONObject(ImmutableMap.of("uniqueId", UUID.randomUUID().toString(), "type",
 				"sensor", "serialNo", sensor.getSerialNo())));
 		if (!Objects.equals(sensor.getIsWorked(), isWorked)) {
-			sendMessage(sensor, setBody("runStatus", isWorked, jsonObject));
+			sendMessage(sensor, setBody("is_used", isWorked, jsonObject));
 		}
 		if (!Objects.equals(sensor.getDust().getFrequency(), frequency)) {
-			sendMessage(sensor, setBody("frequency", frequency, jsonObject));
+			sendMessage(sensor, setBody("job_time", frequency, jsonObject));
 		}
 	}
 
