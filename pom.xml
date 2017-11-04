@@ -33,6 +33,22 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+        	<id>nexus</id>
+        	<name>Team Nexus Repository</name>
+        	<url>http://10.2.1.56:8081/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>maven-central</id>
+            <name>maven-central</name>
+            <url>http://10.2.1.56:8081/repository/maven-central/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
  	</repositories>
 
 	<properties>
@@ -233,6 +249,22 @@
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
 			<version>3.2.1</version>
+		</dependency>
+		<!-- hibernate search -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-search-orm</artifactId>
+		    <version>5.6.1.Final</version>
+		</dependency>
+		<dependency>
+	        <groupId>org.hibernate</groupId>
+	        <artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
+		<!-- IK -->
+		<dependency>
+			<groupId>com.lucene</groupId>
+			<artifactId>ikAnalyzer</artifactId>
+			<version>6.5.0</version>
 		</dependency>
 	</dependencies>
 

@@ -10,6 +10,9 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+
 @Entity
 @Table(name = "company")
 public class Company extends BaseEntity {
@@ -19,10 +22,12 @@ public class Company extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 2865898828588906144L;
 
+	@Field
 	private String name;
 
 	private String address;
 
+	@ContainedIn
 	private List<Iotx> iotxList = new ArrayList<>();
 
 	private List<Account> accountList = new ArrayList<>();

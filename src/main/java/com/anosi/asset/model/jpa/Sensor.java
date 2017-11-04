@@ -9,11 +9,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.wltea.analyzer.lucene.IKAnalyzer;
+
 import com.anosi.asset.model.elasticsearch.Content;
 import com.anosi.asset.util.BeanRefUtil.ExtraName;
 
 @Entity
 @Table(name = "sensor")
+@Indexed
+@Analyzer(impl = IKAnalyzer.class)
 /*
  * @NamedEntityGraphs({
  * 
@@ -36,16 +44,20 @@ public class Sensor extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 5359114601983561364L;
 
+	@Field
 	@ExtraName(name = "sensor_name")
 	private String name;// 命名规则,例如"tt3"
 
+	@Field
 	@ExtraName(name = "description")
 	private String parameterDescribe;// 描述,例如出水口温度
 
+	@Field
 	@Content
 	@ExtraName(name = "sensor_no")
 	private String serialNo;
 
+	@IndexedEmbedded
 	private Dust dust;
 
 	@Content(extractFields = { "sensorCategory.name" })
