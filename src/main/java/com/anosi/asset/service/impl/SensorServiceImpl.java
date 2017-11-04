@@ -152,7 +152,7 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 		message.setRetained(true);
 		message.setPayload(jsonObject.toString().getBytes());
 		try {
-			mqttServer.publish("/configure/" + sensor.getDust().getIotx().getSerialNo(), message);
+			mqttServer.publish("configure/" + sensor.getDust().getIotx().getSerialNo(), message);
 		} catch (MqttException e) {
 			e.printStackTrace();
 			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));

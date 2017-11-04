@@ -134,7 +134,7 @@ public class DustServiceImpl extends BaseJPAServiceImpl<Dust> implements DustSer
 		message.setRetained(true);
 		message.setPayload(jsonObject.toString().getBytes());
 		try {
-			mqttServer.publish("/configure/" + dust.getIotx().getSerialNo(), message);
+			mqttServer.publish("configure/" + dust.getIotx().getSerialNo(), message);
 		} catch (MqttException e) {
 			e.printStackTrace();
 			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
