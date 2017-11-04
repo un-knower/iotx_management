@@ -9,6 +9,9 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+
 @Entity
 @Table(name = "country")
 public class Country extends BaseEntity{
@@ -18,8 +21,10 @@ public class Country extends BaseEntity{
 	 */
 	private static final long serialVersionUID = 6101034944487546261L;
 
+	@Field
 	private String name;
 	
+	@ContainedIn
 	private List<Province> provinceList = new ArrayList<>();
 
 	public String getName() {

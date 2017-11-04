@@ -15,12 +15,20 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.anosi.asset.model.elasticsearch.Content;
 import com.anosi.asset.util.BeanRefUtil.ExtraName;
 
 @Entity
 @Table(name = "iotx")
+@Indexed
+@Analyzer(impl = IKAnalyzer.class)
 public class Iotx extends BaseEntity {
 
 	/**
@@ -28,6 +36,7 @@ public class Iotx extends BaseEntity {
 	 */
 	private static final long serialVersionUID = -2480716502123174880L;
 
+	@Field
 	@Content
 	// @JSONField(name="serial_no")
 	@ExtraName(name = "unique_id")
@@ -43,7 +52,6 @@ public class Iotx extends BaseEntity {
 
 	private String version;
 
-	@Content
 	private Date openTime;
 
 	private Long continueTime;
@@ -54,8 +62,10 @@ public class Iotx extends BaseEntity {
 
 	private Long alarmQuantity;
 
+	@ContainedIn
 	private List<Dust> dustList = new ArrayList<>();
 
+	@IndexedEmbedded
 	@Content(extractFields = { "company.name" })
 	private Company company;
 
@@ -73,6 +83,7 @@ public class Iotx extends BaseEntity {
 
 	private Double baiduLatitude;// 纬度
 
+	@IndexedEmbedded
 	@Content(extractFields = { "district.name", "district.city.name", "district.city.province.name" })
 	private District district;// 所属区县
 

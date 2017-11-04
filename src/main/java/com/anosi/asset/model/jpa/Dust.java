@@ -12,11 +12,19 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.anosi.asset.model.elasticsearch.Content;
 
 @Entity
 @Table(name = "dust")
+@Indexed
+@Analyzer(impl = IKAnalyzer.class)
 public class Dust extends BaseEntity {
 
 	/**
@@ -24,9 +32,11 @@ public class Dust extends BaseEntity {
 	 */
 	private static final long serialVersionUID = -4198486870068912965L;
 
+	@Field
 	@Content
 	private String name;
 
+	@Field
 	@Content
 	private String serialNo;
 
@@ -34,16 +44,20 @@ public class Dust extends BaseEntity {
 	
 	private Long sensorQuantity;
 
+	@Field
 	@Content
 	private String type;
 
+	@Field
 	@Content
 	private String powerType;
 
 	private String configId;
 
+	@IndexedEmbedded
 	private Iotx iotx;
 
+	@ContainedIn
 	private List<Sensor> sensorList = new ArrayList<>();
 	
 	private Device device;

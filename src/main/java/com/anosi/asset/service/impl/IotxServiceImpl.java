@@ -7,7 +7,6 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
@@ -17,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,14 +27,12 @@ import com.anosi.asset.component.MapComponent;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
 import com.anosi.asset.exception.CustomRunTimeException;
-import com.anosi.asset.model.elasticsearch.IotxContent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.mqtt.MqttServer;
-import com.anosi.asset.service.IotxContentService;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.util.MapUtil;
@@ -61,8 +57,6 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 	@Autowired
 	private EntityManager entityManager;
 	@Autowired
-	private IotxContentService iotxContentService;
-	@Autowired
 	private I18nComponent i18nComponent;
 	@Autowired
 	private MqttServer mqttServer;
@@ -81,12 +75,6 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 		// 根据经纬度获取位置,并保存
 		setIotxDistrict(iotx);
 		iotx = iotxDao.save(iotx);
-
-		try {
-			iotxContentService.saveContent(iotx);
-		} catch (Exception e) {
-			throw new CustomRunTimeException(e.getMessage());
-		}
 		return iotx;
 	}
 
@@ -100,13 +88,6 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 			setIotxDistrict(iotx);
 		}
 		iotxsWithDistrict = iotxDao.save(iotxsWithDistrict);
-
-		try {
-			iotxContentService.saveContent(iotxsWithDistrict);
-		} catch (Exception e) {
-			throw new CustomRunTimeException(e.getMessage());
-		}
-
 		return iotxs;
 	}
 
@@ -210,18 +191,12 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 	@Override
 	public Page<Iotx> findByContentSearch(String content, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
-		Page<IotxContent> iotxContents;
-		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
-		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
 		if (account.isAdmin()) {
-			iotxContents = iotxContentService.findByContent(content, contentPage);
+			return iotxDao.findBySearchContent(entityManager, content, pageable);
 		} else {
-			iotxContents = iotxContentService.findByContent(account.getCompany().getName(), content, contentPage);
+			return iotxDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getName());
 		}
-		List<Long> ids = iotxContents.getContent().stream().map(c -> Long.parseLong(c.getId()))
-				.collect(Collectors.toList());
-		return findAll(QIotx.iotx.id.in(ids), contentPage);
 	}
 
 	@Override

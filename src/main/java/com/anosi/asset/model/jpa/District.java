@@ -10,6 +10,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.IndexedEmbedded;
+
 @Entity
 @Table(name = "district")
 public class District extends BaseEntity{
@@ -19,10 +23,13 @@ public class District extends BaseEntity{
 	 */
 	private static final long serialVersionUID = 7555992276120785280L;
 	
+	@Field
 	private String name;
 
+	@IndexedEmbedded
 	private City city;
 	
+	@ContainedIn
 	private List<Iotx> iotxList = new ArrayList<Iotx>();
 
 	public String getName() {
