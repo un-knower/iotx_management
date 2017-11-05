@@ -2,6 +2,7 @@ package com.anosi.asset.model.jpa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 
@@ -24,6 +26,9 @@ public class Company extends BaseEntity {
 
 	@Field
 	private String name;
+	
+	@Field(analyze = Analyze.NO)
+	private String code = UUID.randomUUID().toString();
 
 	private String address;
 
@@ -76,6 +81,14 @@ public class Company extends BaseEntity {
 
 	public void setDeviceList(List<Device> deviceList) {
 		this.deviceList = deviceList;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 }

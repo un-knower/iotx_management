@@ -54,7 +54,7 @@ public class DustServiceImpl extends BaseJPAServiceImpl<Dust> implements DustSer
 		if (SessionComponent.isAdmin()) {
 			return dustDao.findBySearchContent(entityManager, content, pageable);
 		} else {
-			return dustDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getName());
+			return dustDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getCode());
 		}
 	}
 
