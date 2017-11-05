@@ -50,6 +50,8 @@ public class DustController extends BaseController<Dust>{
 				model.addAttribute("predicate", QDust.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
 			} else if (SessionComponent.isAdmin() && companyId != null) {
 				model.addAttribute("predicate", QDust.dust.iotx.company.id.eq(companyId).and(predicate));
+			} else {
+				model.addAttribute("predicate", predicate);
 			}
 		}
 	}

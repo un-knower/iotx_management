@@ -62,6 +62,8 @@ public class SensorController extends BaseController<Sensor> {
 				PathInits inits = new PathInits("district.city.province");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate", sensor.dust.iotx.company.id.eq(companyId).and(predicate));
+			} else {
+				model.addAttribute("predicate", predicate);
 			}
 		}
 	}
