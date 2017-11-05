@@ -29,14 +29,14 @@ public interface IotxDao extends BaseJPADao<Iotx>, QuerydslBinderCustomizer<QIot
 	}
 
 	default public Page<Iotx> findBySearchContent(EntityManager entityManager, String searchContent, Pageable pageable,
-			String companyName) {
+			String companyCode) {
 		SupplyQuery supplyQuery = (queryBuilder) -> {
 			return queryBuilder.bool()
 					.must(queryBuilder.keyword()
 							.onFields("serialNo", "company.name", "district.name", "district.city.name",
 									"district.city.province.name")
 							.matching(searchContent).createQuery())
-					.must(new TermQuery(new Term("company.name", companyName))).createQuery();
+					.must(new TermQuery(new Term("company.code", companyCode))).createQuery();
 		};
 		return findBySearchContent(entityManager, searchContent, pageable, Iotx.class, supplyQuery, "");
 	}

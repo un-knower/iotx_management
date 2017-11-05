@@ -85,7 +85,7 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 		if (SessionComponent.isAdmin()) {
 			return sensorDao.findBySearchContent(entityManager, content, pageable);
 		} else {
-			return sensorDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getName());
+			return sensorDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getCode());
 		}
 	}
 

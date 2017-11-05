@@ -21,12 +21,12 @@ public interface DustDao extends BaseJPADao<Dust> {
 	}
 
 	default public Page<Dust> findBySearchContent(EntityManager entityManager, String searchContent, Pageable pageable,
-			String companyName) {
+			String companyCode) {
 		SupplyQuery supplyQuery = (queryBuilder) -> {
 			return queryBuilder.bool()
 					.must(queryBuilder.keyword().onFields("name", "serialNo", "type", "powerType", "iotx.company.name")
 							.matching(searchContent).createQuery())
-					.must(new TermQuery(new Term("iotx.company.name", companyName))).createQuery();
+					.must(new TermQuery(new Term("iotx.company.code", companyCode))).createQuery();
 		};
 		return findBySearchContent(entityManager, searchContent, pageable, Dust.class, supplyQuery, "");
 	}

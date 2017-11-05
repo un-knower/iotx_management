@@ -23,13 +23,13 @@ public interface SensorDao extends BaseJPADao<Sensor> {
 	}
 
 	default public Page<Sensor> findBySearchContent(EntityManager entityManager, String searchContent,
-			Pageable pageable, String companyName) {
+			Pageable pageable, String companyCode) {
 		SupplyQuery supplyQuery = (queryBuilder) -> {
 			return queryBuilder.bool()
 					.must(queryBuilder.keyword()
 							.onFields("name", "parameterDescribe", "serialNo", "dust.iotx.company.name")
 							.matching(searchContent).createQuery())
-					.must(new TermQuery(new Term("dust.iotx.company.name", companyName))).createQuery();
+					.must(new TermQuery(new Term("dust.iotx.company.code", companyCode))).createQuery();
 		};
 		return findBySearchContent(entityManager, searchContent, pageable, Sensor.class, supplyQuery, "");
 	}

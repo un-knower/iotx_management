@@ -200,7 +200,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 		if (SessionComponent.isAdmin()) {
 			return iotxDao.findBySearchContent(entityManager, content, pageable);
 		} else {
-			return iotxDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getName());
+			return iotxDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getCode());
 		}
 	}
 
