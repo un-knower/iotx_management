@@ -1,5 +1,7 @@
 package com.anosi.asset.controller;
 
+import java.util.Date;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -99,12 +101,20 @@ public class IotxController extends BaseController<Iotx> {
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
-			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
+			@RequestParam(value = "searchContent", required = false) String searchContent,
+			@RequestParam(value = "beginTime", required = false) Date beginTime,
+			@RequestParam(value = "endTime", required = false) Date endTime) throws Exception {
 		logger.info("find iotx");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
 		Page<Iotx> iotxs;
+		if (beginTime != null) {
+			predicate = QIotx.iotx.openTime.after(beginTime).and(predicate);
+		}
+		if (endTime != null) {
+			predicate = QIotx.iotx.openTime.before(endTime).and(predicate);
+		}
 		if (StringUtils.isNoneBlank(searchContent)) {
 			iotxs = iotxService.findByContentSearch(searchContent, pageable);
 		} else {

@@ -21,6 +21,7 @@ import com.anosi.asset.model.jpa.Privilege;
 import com.anosi.asset.model.jpa.RoleFunction;
 import com.anosi.asset.model.jpa.RoleFunctionBtn;
 import com.anosi.asset.service.AccountService;
+import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.PrivilegeService;
 import com.anosi.asset.service.RoleFunctionBtnService;
 import com.anosi.asset.service.RoleFunctionGroupService;
@@ -45,7 +46,9 @@ public class AccountServiceImpl extends BaseJPAServiceImpl<Account> implements A
 	private RoleFunctionBtnService roleFunctionBtnService;
 	@Autowired
 	private RoleFunctionGroupService roleFunctionGroupService;
-
+	@Autowired
+	private CompanyService companyService;
+	
 	@Override
 	public BaseJPADao<Account> getRepository() {
 		return accountDao;
@@ -151,6 +154,7 @@ public class AccountServiceImpl extends BaseJPAServiceImpl<Account> implements A
 		} catch (Exception e) {
 			throw new CustomRunTimeException();
 		}
+		account.setCompany(companyService.findByName(i18nComponent.getMessage("goaland")));
 		accountDao.save(account);
 	}
 

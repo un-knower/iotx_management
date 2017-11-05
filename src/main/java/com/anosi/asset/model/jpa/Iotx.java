@@ -73,7 +73,7 @@ public class Iotx extends BaseEntity {
 	private NetworkCategory networkCategory;
 
 	@Content(extractFields = { "status.status" })
-	private Status status;
+	private Status status = Status.ONLINE;
 
 	private Double longitude;// 经度
 
