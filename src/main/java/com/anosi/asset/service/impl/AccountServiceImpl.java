@@ -48,7 +48,7 @@ public class AccountServiceImpl extends BaseJPAServiceImpl<Account> implements A
 	private RoleFunctionGroupService roleFunctionGroupService;
 	@Autowired
 	private CompanyService companyService;
-	
+
 	@Override
 	public BaseJPADao<Account> getRepository() {
 		return accountDao;
@@ -155,7 +155,17 @@ public class AccountServiceImpl extends BaseJPAServiceImpl<Account> implements A
 			throw new CustomRunTimeException();
 		}
 		account.setCompany(companyService.findByName(i18nComponent.getMessage("goaland")));
+		account.getRoleList().add(roleService.findByRoleCode("admin"));
 		accountDao.save(account);
+		// 设置所有权限
+		List<RoleFunction> roleFunctions = roleFunctionService.findAll();
+		for (RoleFunction roleFunction : roleFunctions) {
+			Privilege privilege = new Privilege();
+			privilege.setRoleFunction(roleFunction);
+			privilege.setAccount(account);
+			privilegeService.save(privilege);
+			roleFunction.getRoleFunctionBtnList().forEach(btn -> privilege.getRoleFunctionBtnList().add(btn));
+		}
 	}
 
 }
