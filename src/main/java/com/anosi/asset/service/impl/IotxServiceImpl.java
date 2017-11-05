@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.MapComponent;
+import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.jpa.BaseJPADao;
 import com.anosi.asset.dao.jpa.IotxDao;
 import com.anosi.asset.exception.CustomRunTimeException;
@@ -196,7 +197,7 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 	public Page<Iotx> findByContentSearch(String content, Pageable pageable) {
 		Account account = sessionComponent.getCurrentUser();
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
-		if (account.isAdmin()) {
+		if (SessionComponent.isAdmin()) {
 			return iotxDao.findBySearchContent(entityManager, content, pageable);
 		} else {
 			return iotxDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getName());

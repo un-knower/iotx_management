@@ -118,11 +118,4 @@ public class Account extends BaseEntity {
 		return this.loginId + this.salt;
 	}
 	
-	@Transient
-	public boolean isAdmin(){
-		Role role = new Role();
-		role.setRoleCode("admin");
-		return roleList.contains(role);
-	}
-
 }
