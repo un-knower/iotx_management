@@ -98,7 +98,7 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
 		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
-		if (account.isAdmin()) {
+		if (SessionComponent.isAdmin()) {
 			iotxDataContents = iotxDataContentService.findByContent(content, contentPage);
 		} else {
 			iotxDataContents = iotxDataContentService.findByContent(account.getCompany().getName(), content,
@@ -116,7 +116,7 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 		// 防止sort报错，只获取pageable的页数和size
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
 		Pageable contentPage = new PageRequest(pageable.getPageNumber(), pageable.getPageSize());
-		if (account.isAdmin()) {
+		if (SessionComponent.isAdmin()) {
 			iotxDataContents = iotxDataContentService.findByContentAndAlarm(content, isAlarm, contentPage);
 		} else {
 			iotxDataContents = iotxDataContentService.findByContentAndAlarmAndCompanyName(content, isAlarm,
