@@ -46,7 +46,7 @@ spring:
         search:
           default:
             directory_provider: filesystem
-            indexBase: g:/hibernateSearch/
+            indexBase: g:/hibernateSearch/iotx/
     open-in-view: true
     
   #redis

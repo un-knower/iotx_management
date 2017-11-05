@@ -60,6 +60,8 @@ public class IotxDataController extends BaseController<IotxData> {
 			} else if (SessionComponent.isAdmin() && companyId != null) {
 				model.addAttribute("predicate",
 						QIotxData.iotxData.companyName.eq(companyService.getOne(companyId).getName()).and(predicate));
+			} else {
+				model.addAttribute("predicate", predicate);
 			}
 		}
 	}

@@ -26,7 +26,7 @@ class InitRoleRelated {
 		// 初始化前，需要判断是否在数据库中存在
 		// 闭包
 		roles.role.each{role->
-			checkRole(role.@code.toString(), role.@name.toString())
+			checkRole(role.@roleCode.toString(), role.@name.toString())
 		}
 		
 	}

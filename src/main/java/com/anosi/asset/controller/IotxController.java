@@ -51,6 +51,8 @@ public class IotxController extends BaseController<Iotx> {
 				model.addAttribute("predicate", QIotx.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
 			} else if (SessionComponent.isAdmin() && companyId != null) {
 				model.addAttribute("predicate", QIotx.iotx.company.id.eq(companyId).and(predicate));
+			} else {
+				model.addAttribute("predicate", predicate);
 			}
 		}
 	}
