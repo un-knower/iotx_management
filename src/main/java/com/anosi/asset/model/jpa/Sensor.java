@@ -115,7 +115,7 @@ public class Sensor extends BaseEntity {
 		this.sensorCategory = sensorCategory;
 	}
 
-	@Formula("(select COUNT(*) from alarmData a where a.sensor_id=id)")
+	@Formula("(select COUNT(*) from alarm_data a where a.sensor_id=id)")
 	public Long getAlarmQuantity() {
 		return alarmQuantity;
 	}

@@ -23,6 +23,8 @@ import com.anosi.asset.dao.jpa.RoleDao;
 import com.anosi.asset.dao.jpa.RoleFunctionDao;
 import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.model.jpa.Account;
+import com.anosi.asset.model.jpa.AlarmData;
+import com.anosi.asset.model.jpa.AlarmData.Level;
 import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.Device;
 import com.anosi.asset.model.jpa.Dust;
@@ -35,6 +37,7 @@ import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
 import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.model.mongo.IotxData;
+import com.anosi.asset.service.AlarmDataService;
 import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.DeviceService;
 import com.anosi.asset.service.DustService;
@@ -73,6 +76,8 @@ public class InitTestData {
 	private DeviceService deivceService;
 	@Autowired
 	private IotxDataService iotxDataService;
+	@Autowired
+	private AlarmDataService alarmDataService;
 
 	@Test
 	@Rollback(false)
@@ -212,6 +217,7 @@ public class InitTestData {
 	}
 
 	@Test
+	@Rollback(false)
 	public void initIotxData() {
 		Sensor sensor = sensorService.getOne((long) 1);
 
@@ -226,11 +232,25 @@ public class InitTestData {
 		iotxData2.setMessage("发生一级告警");
 		iotxDataService.save(iotxData2);
 		
+		AlarmData alarmData = new AlarmData();
+		alarmData.setSensor(sensor);
+		alarmData.setVal(iotxData2.getVal());
+		alarmData.setCollectTime(iotxData2.getCollectTime());
+		alarmData.setLevel(Level.ALARM_1);
+		alarmDataService.save(alarmData);
+		
 		IotxData iotxData3 = new IotxData();
 		iotxData3 = setCommonValue(iotxData3, sensor);
 		iotxData3.setVal((double) 100);
 		iotxData3.setMessage("发生二级告警");
 		iotxDataService.save(iotxData3);
+		
+		AlarmData alarmData2 = new AlarmData();
+		alarmData2.setSensor(sensor);
+		alarmData2.setVal(iotxData3.getVal());
+		alarmData2.setCollectTime(iotxData3.getCollectTime());
+		alarmData2.setLevel(Level.ALARM_2);
+		alarmDataService.save(alarmData2);
 	}
 
 	private IotxData setCommonValue(IotxData iotxData, Sensor sensor) {
