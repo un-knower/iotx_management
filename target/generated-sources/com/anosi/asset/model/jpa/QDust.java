@@ -24,6 +24,8 @@ public class QDust extends EntityPathBase<Dust> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
+    public final NumberPath<Long> alarmQuantity = createNumber("alarmQuantity", Long.class);
+
     public final StringPath configId = createString("configId");
 
     //inherited

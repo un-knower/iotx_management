@@ -35,7 +35,6 @@ import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.CompanyService;
-import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.util.MapUtil;
 import com.google.common.collect.ImmutableMap;
@@ -52,8 +51,6 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 
 	@Autowired
 	private IotxDao iotxDao;
-	@Autowired
-	private IotxDataService iotxDataService;
 	@Autowired
 	private MapComponent mapComponent;
 	@Autowired
@@ -100,10 +97,6 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 	public Page<Iotx> findAll(Predicate predicate, Pageable pageable) {
 		logger.debug("finAll by predicate:{}", predicate == null ? "is null" : predicate.toString());
 		Page<Iotx> iotxPage = iotxDao.findAll(predicate, pageable);
-		// 查询每个iotx的告警数量
-		for (Iotx iotx : iotxPage) {
-			iotx.setAlarmQuantity(iotxDataService.countByiotxSN(iotx.getSerialNo()));
-		}
 		return iotxPage;
 	}
 

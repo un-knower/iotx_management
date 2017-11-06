@@ -63,6 +63,8 @@ public class Dust extends BaseEntity {
 	private Device device;
 	
 	private Boolean isWorked = false;
+	
+	private Long alarmQuantity;
 
 	public String getName() {
 		return name;
@@ -115,6 +117,15 @@ public class Dust extends BaseEntity {
 
 	public void setSensorQuantity(Long sensorQuantity) {
 		this.sensorQuantity = sensorQuantity;
+	}
+	
+	@Formula("(select COUNT(*) from alarmData a left join sensor s on a.sensor_id=s.id where s.dust_id=id)")
+	public Long getAlarmQuantity() {
+		return alarmQuantity;
+	}
+
+	public void setAlarmQuantity(Long alarmQuantity) {
+		this.alarmQuantity = alarmQuantity;
 	}
 
 	public String getType() {

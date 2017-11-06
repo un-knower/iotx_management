@@ -1,11 +1,9 @@
 package com.anosi.asset.controller;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
@@ -22,11 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
-import com.anosi.asset.model.mongo.QIotxData;
-import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorService;
 import com.querydsl.core.types.Predicate;
@@ -39,12 +34,10 @@ public class IotxDataController extends BaseController<IotxData> {
 	@Autowired
 	private IotxDataService iotxDataService;
 	@Autowired
-	private CompanyService companyService;
-	@Autowired
 	private SensorService sensorService;
 
 	/***
-	 * 在所有关于查询dust的请求之前，为查询条件中添加公司
+	 * 在所有关于查询的请求之前，为查询条件中添加公司
 	 * 
 	 * @param companyId
 	 * @param model
@@ -54,15 +47,7 @@ public class IotxDataController extends BaseController<IotxData> {
 			@RequestParam(value = "companyId", required = false) Long companyId, Model model) {
 		Account account = sessionComponent.getCurrentUser();
 		if (account != null) {
-			if (!SessionComponent.isAdmin()) {
-				model.addAttribute("predicate",
-						QIotxData.iotxData.companyName.eq(account.getCompany().getName()).and(predicate));
-			} else if (SessionComponent.isAdmin() && companyId != null) {
-				model.addAttribute("predicate",
-						QIotxData.iotxData.companyName.eq(companyService.getOne(companyId).getName()).and(predicate));
-			} else {
-				model.addAttribute("predicate", predicate);
-			}
+			model.addAttribute("predicate", predicate);
 		}
 	}
 
@@ -98,10 +83,6 @@ public class IotxDataController extends BaseController<IotxData> {
 	 * @param predicate
 	 * @param showAttributes
 	 * @param rowId
-	 * @param searchContent
-	 *            是否有用到模糊搜索
-	 * @param isAlarm
-	 *            是否搜索告警数据
 	 * @return
 	 * @throws Exception
 	 */
@@ -110,25 +91,12 @@ public class IotxDataController extends BaseController<IotxData> {
 	public JSONObject findIotxDataManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
-			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
-			@RequestParam(value = "searchContent", required = false) String searchContent,
-			@RequestParam(value = "isAlarm", required = false) Boolean isAlarm) throws Exception {
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find iotxData");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
-		Page<IotxData> iotxDatas;
-		if (StringUtils.isNoneBlank(searchContent)) {
-			if (isAlarm != null) {
-				iotxDatas = iotxDataService.findByContentSearch(searchContent, isAlarm, pageable);
-			} else {
-				iotxDatas = iotxDataService.findByContentSearch(searchContent, pageable);
-			}
-		} else {
-			iotxDatas = iotxDataService.findAll(predicate, pageable);
-		}
-
-		return parseToJson(iotxDatas, rowId, showAttributes, showType);
+		return parseToJson(iotxDataService.findAll(predicate, pageable), rowId, showAttributes, showType);
 	}
 
 	/***

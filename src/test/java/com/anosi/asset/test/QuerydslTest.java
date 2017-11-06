@@ -75,7 +75,6 @@ public class QuerydslTest {
 		Method method = clazz.getSuperclass().getDeclaredMethod("where",Array.newInstance(Predicate.class, 0).getClass());
 		Object objs = Array.newInstance(Predicate.class, 2);
         Array.set(objs, 0, qIotxData.val.eq(99.0));
-        Array.set(objs, 1, qIotxData.maxVal.eq(60.0));
         @SuppressWarnings("unchecked")
 		SpringDataMongodbQuery<IotxData> invoke = (SpringDataMongodbQuery<IotxData>) method.invoke(mongodbQuery, objs);
         IotxData iotxData =invoke.fetchFirst();

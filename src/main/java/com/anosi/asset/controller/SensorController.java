@@ -59,7 +59,7 @@ public class SensorController extends BaseController<Sensor> {
 				model.addAttribute("predicate",
 						sensor.dust.iotx.company.id.eq(account.getCompany().getId()).and(predicate));
 			} else if (SessionComponent.isAdmin() && companyId != null) {
-				PathInits inits = new PathInits("district.city.province");
+				PathInits inits = new PathInits("dust.iotx.company");
 				QSensor sensor = new QSensor(Sensor.class, forVariable("sensor"), inits);
 				model.addAttribute("predicate", sensor.dust.iotx.company.id.eq(companyId).and(predicate));
 			} else {

@@ -27,7 +27,6 @@ import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.mqtt.MqttServer;
-import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorService;
 import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
@@ -42,8 +41,6 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	@Autowired
 	private SensorDao sensorDao;
 	@Autowired
-	private IotxDataService iotxDataService;
-	@Autowired
 	private I18nComponent i18nComponent;
 	@Autowired
 	private MqttServer mqttServer;
@@ -54,10 +51,6 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	public Page<Sensor> findAll(Predicate predicate, Pageable pageable) {
 		logger.debug("finAll by predicate:{}", predicate == null ? "is null" : predicate.toString());
 		Page<Sensor> sensorPage = sensorDao.findAll(predicate, pageable);
-		// 为每个传感器设置告警数量
-		for (Sensor sensor : sensorPage) {
-			sensor.setAlarmQuantity(iotxDataService.countBysensorSN(sensor.getSerialNo()));
-		}
 		return sensorPage;
 	}
 

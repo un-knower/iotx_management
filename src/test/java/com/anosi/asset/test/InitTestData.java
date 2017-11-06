@@ -35,7 +35,6 @@ import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.jpa.Iotx.NetworkCategory;
 import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.model.mongo.IotxData;
-import com.anosi.asset.model.mongo.IotxData.Level;
 import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.DeviceService;
 import com.anosi.asset.service.DustService;
@@ -219,36 +218,23 @@ public class InitTestData {
 		IotxData iotxData = new IotxData();
 		iotxData = setCommonValue(iotxData, sensor);
 		iotxData.setVal((double) 30);
-		iotxData.setLevel(Level.NORMAL);
 		iotxDataService.save(iotxData);
 		
 		IotxData iotxData2 = new IotxData();
 		iotxData2 = setCommonValue(iotxData2, sensor);
 		iotxData2.setVal((double) 60);
-		iotxData2.setLevel(Level.ALARM_1);
-		iotxData2.setAlarm(true);
 		iotxData2.setMessage("发生一级告警");
 		iotxDataService.save(iotxData2);
 		
 		IotxData iotxData3 = new IotxData();
 		iotxData3 = setCommonValue(iotxData3, sensor);
 		iotxData3.setVal((double) 100);
-		iotxData3.setLevel(Level.ALARM_2);
-		iotxData3.setAlarm(true);
 		iotxData3.setMessage("发生二级告警");
 		iotxDataService.save(iotxData3);
 	}
 
 	private IotxData setCommonValue(IotxData iotxData, Sensor sensor) {
 		iotxData.setSensorSN(sensor.getSerialNo());
-		iotxData.setDustSN(sensor.getDust().getSerialNo());
-		iotxData.setDeviceSN(sensor.getDust().getSerialNo());
-		iotxData.setIotxSN(sensor.getDust().getIotx().getSerialNo());
-		iotxData.setCompanyName(sensor.getDust().getIotx().getCompany().getName());
-		iotxData.setMaxVal(sensor.getMaxVal());// 50
-		iotxData.setMinVal(sensor.getMinVal());// 20
-		iotxData.setBaiduLongitude(sensor.getDust().getIotx().getBaiduLongitude());
-		iotxData.setBaiduLatitude(sensor.getDust().getIotx().getBaiduLatitude());
 		iotxData.setCollectTime(new Date());
 		return iotxData;
 	}

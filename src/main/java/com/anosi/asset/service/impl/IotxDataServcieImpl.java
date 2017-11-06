@@ -60,16 +60,6 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 	}
 
 	@Override
-	public Long countBysensorSN(String sensorSN) {
-		return iotxDataDao.countBysensorSNEquals(sensorSN);
-	}
-
-	@Override
-	public Long countByiotxSN(String iotxSN) {
-		return iotxDataDao.countByiotxSNEquals(iotxSN);
-	}
-
-	@Override
 	public <S extends IotxData> S save(S iotxData) {
 		iotxData = iotxDataDao.save(iotxData);
 		try {

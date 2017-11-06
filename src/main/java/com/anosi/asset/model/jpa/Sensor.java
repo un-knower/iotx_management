@@ -1,14 +1,19 @@
 package com.anosi.asset.model.jpa;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Formula;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -80,6 +85,8 @@ public class Sensor extends BaseEntity {
 
 	@ExtraName(name = "is_used")
 	private Boolean isWorked = false;
+	
+	private List<AlarmData> alarmDataList= new ArrayList<>();
 
 	@Column(unique = true, nullable = false)
 	public String getSerialNo() {
@@ -108,6 +115,7 @@ public class Sensor extends BaseEntity {
 		this.sensorCategory = sensorCategory;
 	}
 
+	@Formula("(select COUNT(*) from alarmData a where a.sensor_id=id)")
 	public Long getAlarmQuantity() {
 		return alarmQuantity;
 	}
@@ -162,6 +170,15 @@ public class Sensor extends BaseEntity {
 
 	public void setParameterDescribe(String parameterDescribe) {
 		this.parameterDescribe = parameterDescribe;
+	}
+	
+	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "sensor", targetEntity = AlarmData.class)
+	public List<AlarmData> getAlarmDataList() {
+		return alarmDataList;
+	}
+
+	public void setAlarmDataList(List<AlarmData> alarmDataList) {
+		this.alarmDataList = alarmDataList;
 	}
 
 	public DataType getDataType() {
