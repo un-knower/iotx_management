@@ -36,8 +36,6 @@ public class IotxDataContentServiceImpl extends BaseContentServiceImpl<IotxDataC
 			iotxDataContent = new IotxDataContent();
 			iotxDataContent.setId(id);
 		}
-		iotxDataContent.setCompanyName(iotxData.getCompanyName());
-		iotxDataContent.setAlarmStatus(iotxData.isAlarm());
 		iotxDataContent = setCommonContent(iotxDataContent, iotxData);
 		return iotxDataContentDao.save(iotxDataContent);
 	}
@@ -64,8 +62,6 @@ public class IotxDataContentServiceImpl extends BaseContentServiceImpl<IotxDataC
 				iotxDataContent = new IotxDataContent();
 				iotxDataContent.setId(id);
 			}
-			iotxDataContent.setCompanyName(iotxData.getCompanyName());
-			iotxDataContent.setAlarmStatus(iotxData.isAlarm());
 			iotxDataContent = setCommonContent(iotxDataContent, iotxData);
 			iotxDataContents.add(iotxDataContent);
 		}

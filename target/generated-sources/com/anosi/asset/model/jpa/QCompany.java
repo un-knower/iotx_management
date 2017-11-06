@@ -26,6 +26,8 @@ public class QCompany extends EntityPathBase<Company> {
 
     public final StringPath address = createString("address");
 
+    public final StringPath code = createString("code");
+
     //inherited
     public final StringPath createBy = _super.createBy;
 

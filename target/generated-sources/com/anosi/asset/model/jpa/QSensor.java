@@ -24,6 +24,8 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
+    public final ListPath<AlarmData, QAlarmData> alarmDataList = this.<AlarmData, QAlarmData>createList("alarmDataList", AlarmData.class, QAlarmData.class, PathInits.DIRECT2);
+
     public final NumberPath<Long> alarmQuantity = createNumber("alarmQuantity", Long.class);
 
     //inherited
@@ -48,6 +50,10 @@ public class QSensor extends EntityPathBase<Sensor> {
     public final NumberPath<Double> maxVal = createNumber("maxVal", Double.class);
 
     public final NumberPath<Double> minVal = createNumber("minVal", Double.class);
+
+    public final StringPath name = createString("name");
+
+    public final StringPath parameterDescribe = createString("parameterDescribe");
 
     public final QSensorCategory sensorCategory;
 

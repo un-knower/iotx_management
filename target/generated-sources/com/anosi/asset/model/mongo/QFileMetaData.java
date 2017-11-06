@@ -25,6 +25,8 @@ public class QFileMetaData extends EntityPathBase<FileMetaData> {
 
     public final NumberPath<Long> fileSize = createNumber("fileSize", Long.class);
 
+    public final StringPath fileSizeH = createString("fileSizeH");
+
     //inherited
     public final NumberPath<java.math.BigInteger> id = _super.id;
 
@@ -34,6 +36,8 @@ public class QFileMetaData extends EntityPathBase<FileMetaData> {
 
     //inherited
     public final StringPath stringId = _super.stringId;
+
+    public final StringPath stringObjectId = createString("stringObjectId");
 
     public final StringPath uploader = createString("uploader");
 

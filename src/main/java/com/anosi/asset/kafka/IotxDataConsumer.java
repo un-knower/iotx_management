@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.IotxData;
-import com.anosi.asset.model.mongo.IotxData.Level;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorService;
 
@@ -66,27 +63,9 @@ public class IotxDataConsumer {
 	 */
 	private void handleIotxData(String content) {
 		IotxData iotxData = JSON.parseObject(content, IotxData.class);
-		// 完善属性
-		completeAttribute(iotxData);
 		// 进行连续性比对
-		checkIsContinuously(iotxData.getSensorSN() + "ForIotxDataContinuous", checkValue(iotxData));
+		//checkIsContinuously(iotxData.getSensorSN() + "ForIotxDataContinuous", checkValue(iotxData));
 		iotxDataService.save(iotxData);
-	}
-
-	/***
-	 * 完善属性
-	 * 
-	 * @param iotxData
-	 */
-	private void completeAttribute(IotxData iotxData) {
-		if (StringUtils.isNotBlank(iotxData.getSensorSN())) {
-			Sensor sensor = sensorService.findBySerialNo(iotxData.getSensorSN());
-			iotxData.setMaxVal(sensor.getMaxVal());
-			iotxData.setMinVal(sensor.getMinVal());
-			iotxData.setIotxSN(sensor.getDust().getIotx().getSerialNo());
-			iotxData.setCompanyName(sensor.getDust().getIotx().getCompany().getName());
-			iotxData.setCategory(sensor.getSensorCategory().getName());
-		}
 	}
 
 	/***
@@ -95,7 +74,7 @@ public class IotxDataConsumer {
 	 * @param iotxData
 	 * @return
 	 */
-	private String checkValue(IotxData iotxData) {
+	/*private String checkValue(IotxData iotxData) {
 		Double val = iotxData.getVal();
 		Double maxVal = iotxData.getMaxVal();
 		Double minVal = iotxData.getMinVal();
@@ -117,7 +96,7 @@ public class IotxDataConsumer {
 
 		iotxData.setLevel(level);
 		return level.getLevel();
-	}
+	}*/
 
 	/***
 	 * 判断是否同侧连续告警

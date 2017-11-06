@@ -42,8 +42,4 @@ public interface IotxDataService extends BaseMongoService<IotxData>{
 	 */
 	Page<IotxData> findDynamicData(Predicate predicate, Double frequency, Integer timeUnit, Sort sort) throws Exception;
 
-	Long countBysensorSN(String sensorSN);
-
-	Long countByiotxSN(String iotxSN);
-
 }

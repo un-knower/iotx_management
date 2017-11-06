@@ -21,43 +21,17 @@ public class QIotxData extends EntityPathBase<IotxData> {
 
     public final QAbstractDocument _super = new QAbstractDocument(this);
 
-    public final BooleanPath alarm = createBoolean("alarm");
-
-    public final NumberPath<Double> baiduLatitude = createNumber("baiduLatitude", Double.class);
-
-    public final NumberPath<Double> baiduLongitude = createNumber("baiduLongitude", Double.class);
-
-    public final StringPath category = createString("category");
-
-    public final DateTimePath<java.util.Date> closeTime = createDateTime("closeTime", java.util.Date.class);
-
     public final DateTimePath<java.util.Date> collectTime = createDateTime("collectTime", java.util.Date.class);
-
-    public final StringPath companyName = createString("companyName");
-
-    public final StringPath deviceSN = createString("deviceSN");
-
-    public final StringPath dustSN = createString("dustSN");
 
     //inherited
     public final NumberPath<java.math.BigInteger> id = _super.id;
 
-    public final StringPath iotxSN = createString("iotxSN");
-
-    public final EnumPath<IotxData.Level> level = createEnum("level", IotxData.Level.class);
-
-    public final NumberPath<Double> maxVal = createNumber("maxVal", Double.class);
-
     public final StringPath message = createString("message");
-
-    public final NumberPath<Double> minVal = createNumber("minVal", Double.class);
 
     public final StringPath sensorSN = createString("sensorSN");
 
     //inherited
     public final StringPath stringId = _super.stringId;
-
-    public final StringPath unit = createString("unit");
 
     public final NumberPath<Double> val = createNumber("val", Double.class);
 
