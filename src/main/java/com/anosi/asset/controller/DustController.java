@@ -25,6 +25,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.QDust;
 import com.anosi.asset.service.DustService;
+import com.anosi.asset.util.StringUtil;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -54,6 +55,23 @@ public class DustController extends BaseController<Dust>{
 				model.addAttribute("predicate", predicate);
 			}
 		}
+	}
+	
+	/***
+	 * 根据条件查询某个dust
+	 * 
+	 * @param showType
+	 * @param predicate
+	 * @param showAttributes
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/dust/management/data/one", method = RequestMethod.GET)
+	public JSONObject findDustManageDataOne(@QuerydslPredicate(root = Dust.class) Predicate predicate,
+			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+		logger.info("find dust one");
+		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
+				dustService.findOne(predicate));
 	}
 	
 	/***
