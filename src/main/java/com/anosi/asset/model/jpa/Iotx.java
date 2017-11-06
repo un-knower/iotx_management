@@ -61,6 +61,8 @@ public class Iotx extends BaseEntity {
 	private Long sensorQuantity;
 
 	private Long alarmQuantity;
+	
+	private Long unConfirmAlarmQuantity;
 
 	@ContainedIn
 	private List<Dust> dustList = new ArrayList<>();
@@ -219,6 +221,15 @@ public class Iotx extends BaseEntity {
 
 	public void setAlarmQuantity(Long alarmQuantity) {
 		this.alarmQuantity = alarmQuantity;
+	}
+	
+	@Formula("(select COUNT(*) from alarm_data a left join sensor s on a.sensor_id=s.id left join dust d on s.dust_id = d.id where d.iotx_id=id and a.collect_time is null)")
+	public Long getUnConfirmAlarmQuantity() {
+		return unConfirmAlarmQuantity;
+	}
+
+	public void setUnConfirmAlarmQuantity(Long unConfirmAlarmQuantity) {
+		this.unConfirmAlarmQuantity = unConfirmAlarmQuantity;
 	}
 
 	@Transient
