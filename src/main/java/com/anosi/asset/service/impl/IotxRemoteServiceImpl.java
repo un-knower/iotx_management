@@ -12,13 +12,13 @@ import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
 import org.ini4j.Profile.Section;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
+import com.anosi.asset.component.RemoteComponent;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Device;
 import com.anosi.asset.model.jpa.Dust;
@@ -53,12 +53,8 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	private CompanyService companyService;
 	@Autowired
 	private I18nComponent i18nComponent;
-	@Value("${remote.protocol}")
-	private String protocol;
-	@Value("${remote.host}")
-	private String host;
-	@Value("${remote.port}")
-	private String port;
+	@Autowired
+	private RemoteComponent remoteComponent;
 
 	/***
 	 * 将上传的ini文件处理成map
@@ -127,7 +123,7 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 		}
 
 		// 请求高澜项目,为设备设置坐标
-		URLConncetUtil.sendPost(protocol + "://" + host + ":" + port + "/" + "/device/setDistrict",
+		URLConncetUtil.sendPost(remoteComponent.getFullPath("/device/setDistrict"),
 				"deviceSN=" + serialNo + "&longitude=" + iotx.getLongitude() + "&latitude=" + iotx.getLatitude());
 		return iotx;
 	}
