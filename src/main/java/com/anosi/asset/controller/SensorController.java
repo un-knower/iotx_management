@@ -29,6 +29,7 @@ import com.anosi.asset.model.jpa.QSensor;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.service.SensorCategoryService;
 import com.anosi.asset.service.SensorService;
+import com.anosi.asset.util.StringUtil;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -66,6 +67,23 @@ public class SensorController extends BaseController<Sensor> {
 				model.addAttribute("predicate", predicate);
 			}
 		}
+	}
+	
+	/***
+	 * 根据条件查询某个sensor
+	 * 
+	 * @param showType
+	 * @param predicate
+	 * @param showAttributes
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/sensor/management/data/one", method = RequestMethod.GET)
+	public JSONObject findSensorManageDataOne(@QuerydslPredicate(root = Sensor.class) Predicate predicate,
+			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+		logger.info("find sensor one");
+		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
+				sensorService.findOne(predicate));
 	}
 
 	/***

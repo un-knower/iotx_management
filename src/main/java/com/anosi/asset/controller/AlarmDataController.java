@@ -24,6 +24,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.AlarmData;
 import com.anosi.asset.model.jpa.QAlarmData;
 import com.anosi.asset.service.AlarmDataService;
+import com.anosi.asset.util.StringUtil;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathInits;
 
@@ -59,6 +60,23 @@ public class AlarmDataController extends BaseController<AlarmData> {
 				model.addAttribute("predicate", predicate);
 			}
 		}
+	}
+	
+	/***
+	 * 根据条件查询某个alarmData
+	 * 
+	 * @param showType
+	 * @param predicate
+	 * @param showAttributes
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/alarmData/management/data/one", method = RequestMethod.GET)
+	public JSONObject findAlarmDataManageDataOne(@QuerydslPredicate(root = AlarmData.class) Predicate predicate,
+			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+		logger.info("find alarmData one");
+		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
+				alarmDataService.findOne(predicate));
 	}
 
 	/***

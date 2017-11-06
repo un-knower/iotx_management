@@ -28,6 +28,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.service.IotxService;
+import com.anosi.asset.util.StringUtil;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -58,6 +59,24 @@ public class IotxController extends BaseController<Iotx> {
 			}
 		}
 	}
+	
+	/***
+	 * 根据条件查询某个iox
+	 * 
+	 * @param showType
+	 * @param predicate
+	 * @param showAttributes
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/iotx/management/data/one", method = RequestMethod.GET)
+	public JSONObject findIotxManageDataOne(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
+			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+		logger.info("find iotx one");
+		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
+				iotxService.findOne(predicate));
+	}
+
 
 	/***
 	 * 进入iotx管理地图页面
