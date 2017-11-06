@@ -212,7 +212,7 @@ public class Iotx extends BaseEntity {
 		this.sensorQuantity = sensorQuantity;
 	}
 
-	@Formula("(select COUNT(*) from alarmData a left join sensor s on a.sensor_id=s.id left join dust d on s.dust_id = d.id where d.iotx_id=id)")
+	@Formula("(select COUNT(*) from alarm_data a left join sensor s on a.sensor_id=s.id left join dust d on s.dust_id = d.id where d.iotx_id=id)")
 	public Long getAlarmQuantity() {
 		return alarmQuantity;
 	}
