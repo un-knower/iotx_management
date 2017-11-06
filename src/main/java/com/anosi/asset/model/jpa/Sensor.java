@@ -126,7 +126,7 @@ public class Sensor extends BaseEntity {
 		this.alarmQuantity = alarmQuantity;
 	}
 	
-	@Formula("(select COUNT(*) from alarm_data a where a.sensor_id=id and a.collect_time is null)")
+	@Formula("(select COUNT(*) from alarm_data a where a.sensor_id=id and a.close_time is null)")
 	public Long getUnConfirmAlarmQuantity() {
 		return unConfirmAlarmQuantity;
 	}
