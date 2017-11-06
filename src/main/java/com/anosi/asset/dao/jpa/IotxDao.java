@@ -17,7 +17,14 @@ public interface IotxDao extends BaseJPADao<Iotx>, QuerydslBinderCustomizer<QIot
 
 	@Override
 	default public void customize(QuerydslBindings bindings, QIotx qIotx) {
-		bindings.bind(qIotx.serialNo).first((path, value) -> path.containsIgnoreCase(value));
+		bindings.bind(qIotx.serialNo).first((path, value) -> {
+			if (value.startsWith("like$")) {
+				value = value.replace("like$", "");
+				return path.startsWithIgnoreCase(value);
+			} else {
+				return path.eq(value);
+			}
+		});
 	}
 
 	public Iotx findBySerialNo(String serialNo);
