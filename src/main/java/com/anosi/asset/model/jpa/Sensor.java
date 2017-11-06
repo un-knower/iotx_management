@@ -69,6 +69,8 @@ public class Sensor extends BaseEntity {
 	private SensorCategory sensorCategory;
 
 	private Long alarmQuantity;
+	
+	private Long unConfirmAlarmQuantity;
 
 	@Content
 	@ExtraName(name = "max_limit")
@@ -122,6 +124,15 @@ public class Sensor extends BaseEntity {
 
 	public void setAlarmQuantity(Long alarmQuantity) {
 		this.alarmQuantity = alarmQuantity;
+	}
+	
+	@Formula("(select COUNT(*) from alarm_data a where a.sensor_id=id and a.collect_time is null)")
+	public Long getUnConfirmAlarmQuantity() {
+		return unConfirmAlarmQuantity;
+	}
+
+	public void setUnConfirmAlarmQuantity(Long unConfirmAlarmQuantity) {
+		this.unConfirmAlarmQuantity = unConfirmAlarmQuantity;
 	}
 
 	public Double getMaxVal() {

@@ -65,6 +65,8 @@ public class Dust extends BaseEntity {
 	private Boolean isWorked = false;
 	
 	private Long alarmQuantity;
+	
+	private Long unConfirmAlarmQuantity;
 
 	public String getName() {
 		return name;
@@ -126,6 +128,15 @@ public class Dust extends BaseEntity {
 
 	public void setAlarmQuantity(Long alarmQuantity) {
 		this.alarmQuantity = alarmQuantity;
+	}
+	
+	@Formula("(select COUNT(*) from alarm_data a left join sensor s on a.sensor_id=s.id where s.dust_id=id and a.collect_time is null)")
+	public Long getUnConfirmAlarmQuantity() {
+		return unConfirmAlarmQuantity;
+	}
+
+	public void setUnConfirmAlarmQuantity(Long unConfirmAlarmQuantity) {
+		this.unConfirmAlarmQuantity = unConfirmAlarmQuantity;
 	}
 
 	public String getType() {
