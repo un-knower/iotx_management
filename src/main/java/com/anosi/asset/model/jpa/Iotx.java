@@ -24,6 +24,7 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.anosi.asset.model.elasticsearch.Content;
 import com.anosi.asset.util.BeanRefUtil.ExtraName;
+import com.google.common.base.CharMatcher;
 
 @Entity
 @Table(name = "iotx")
@@ -44,9 +45,15 @@ public class Iotx extends BaseEntity {
 
 	private String cpu;
 
+	private Double usedCpuPer = 0.0;
+
 	private String memory;
 
+	private Double usedMemoryPer = 0.0;
+
 	private String hardDisk;
+
+	private Double usedHardDiskPer = 0.0;
 
 	private String mac;
 
@@ -54,14 +61,12 @@ public class Iotx extends BaseEntity {
 
 	private Date openTime;
 
-	private Long continueTime;
-
 	private Long dustQuantity;
 
 	private Long sensorQuantity;
 
 	private Long alarmQuantity;
-	
+
 	private Long unConfirmAlarmQuantity;
 
 	@ContainedIn
@@ -172,12 +177,84 @@ public class Iotx extends BaseEntity {
 		this.memory = memory;
 	}
 
+	/***
+	 * 获取空闲内存的字符串形式
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getFreeMemory() {
+		double fullMemory = Double.parseDouble(CharMatcher.digit().retainFrom(memory));// 返回总量
+		String unit = CharMatcher.javaLetter().retainFrom(memory);// 返回单位
+		return fullMemory * (1 - usedMemoryPer) + unit;
+	}
+
+	/***
+	 * 获取使用内存的字符串形式
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getUsedMemory() {
+		double fullMemory = Double.parseDouble(CharMatcher.digit().retainFrom(memory));// 返回总量
+		String unit = CharMatcher.javaLetter().retainFrom(memory);// 返回单位
+		return fullMemory * usedMemoryPer + unit;
+	}
+
 	public String getHardDisk() {
 		return hardDisk;
 	}
 
 	public void setHardDisk(String hardDisk) {
 		this.hardDisk = hardDisk;
+	}
+
+	/***
+	 * 获取空闲硬盘的字符串形式
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getFreeHardDisk() {
+		double fullHardDisk = Double.parseDouble(CharMatcher.digit().retainFrom(hardDisk));// 返回总量
+		String unit = CharMatcher.javaLetter().retainFrom(hardDisk);// 返回单位
+		return fullHardDisk * (1 - usedHardDiskPer) + unit;
+	}
+
+	/***
+	 * 获取使用硬盘的字符串形式
+	 * 
+	 * @return
+	 */
+	@Transient
+	public String getUsedHardDisk() {
+		double fullHardDisk = Double.parseDouble(CharMatcher.digit().retainFrom(hardDisk));// 返回总量
+		String unit = CharMatcher.javaLetter().retainFrom(hardDisk);// 返回单位
+		return fullHardDisk * usedHardDiskPer + unit;
+	}
+
+	public Double getUsedCpuPer() {
+		return usedCpuPer;
+	}
+
+	public void setUsedCpuPer(Double usedCpuPer) {
+		this.usedCpuPer = usedCpuPer;
+	}
+
+	public Double getUsedMemoryPer() {
+		return usedMemoryPer;
+	}
+
+	public void setUsedMemoryPer(Double usedMemoryPer) {
+		this.usedMemoryPer = usedMemoryPer;
+	}
+
+	public Double getUsedHardDiskPer() {
+		return usedHardDiskPer;
+	}
+
+	public void setUsedHardDiskPer(Double usedHardDiskPer) {
+		this.usedHardDiskPer = usedHardDiskPer;
 	}
 
 	public String getMac() {
@@ -222,7 +299,7 @@ public class Iotx extends BaseEntity {
 	public void setAlarmQuantity(Long alarmQuantity) {
 		this.alarmQuantity = alarmQuantity;
 	}
-	
+
 	@Formula("(select COUNT(*) from alarm_data a left join sensor s on a.sensor_id=s.id left join dust d on s.dust_id = d.id where d.iotx_id=id and a.close_time is null)")
 	public Long getUnConfirmAlarmQuantity() {
 		return unConfirmAlarmQuantity;
@@ -234,11 +311,7 @@ public class Iotx extends BaseEntity {
 
 	@Transient
 	public Long getContinueTime() {
-		return continueTime;
-	}
-
-	public void setContinueTime(Long continueTime) {
-		this.continueTime = continueTime;
+		return System.currentTimeMillis() - openTime.getTime();
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Company.class)
