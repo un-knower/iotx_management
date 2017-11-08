@@ -59,6 +59,8 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     public final StringPath serialNo = createString("serialNo");
 
+    public final NumberPath<Long> unConfirmAlarmQuantity = createNumber("unConfirmAlarmQuantity", Long.class);
+
     public final StringPath unit = createString("unit");
 
     public QSensor(String variable) {

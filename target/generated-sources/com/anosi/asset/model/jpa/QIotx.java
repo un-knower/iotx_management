@@ -75,6 +75,14 @@ public class QIotx extends EntityPathBase<Iotx> {
 
     public final EnumPath<Iotx.Status> status = createEnum("status", Iotx.Status.class);
 
+    public final NumberPath<Long> unConfirmAlarmQuantity = createNumber("unConfirmAlarmQuantity", Long.class);
+
+    public final NumberPath<Double> usedCpuPer = createNumber("usedCpuPer", Double.class);
+
+    public final NumberPath<Double> usedHardDiskPer = createNumber("usedHardDiskPer", Double.class);
+
+    public final NumberPath<Double> usedMemoryPer = createNumber("usedMemoryPer", Double.class);
+
     public final StringPath version = createString("version");
 
     public QIotx(String variable) {

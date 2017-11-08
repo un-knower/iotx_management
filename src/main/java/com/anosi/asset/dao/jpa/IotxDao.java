@@ -11,6 +11,7 @@ import org.springframework.data.querydsl.binding.QuerydslBindings;
 
 import com.anosi.asset.dao.hibernateSearch.SupplyQuery;
 import com.anosi.asset.model.jpa.Iotx;
+import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.model.jpa.QIotx;
 
 public interface IotxDao extends BaseJPADao<Iotx>, QuerydslBinderCustomizer<QIotx> {
@@ -47,5 +48,7 @@ public interface IotxDao extends BaseJPADao<Iotx>, QuerydslBinderCustomizer<QIot
 		};
 		return findBySearchContent(entityManager, searchContent, pageable, Iotx.class, supplyQuery, "");
 	}
+
+	public Long countByCompanyIdEqualsAndStatusEquals(Long companyId, Status status);
 
 }

@@ -41,6 +41,8 @@ public class QCompany extends EntityPathBase<Company> {
 
     public final ListPath<Iotx, QIotx> iotxList = this.<Iotx, QIotx>createList("iotxList", Iotx.class, QIotx.class, PathInits.DIRECT2);
 
+    public final ListPath<IotxStatusPer, QIotxStatusPer> iotxStatusPerList = this.<IotxStatusPer, QIotxStatusPer>createList("iotxStatusPerList", IotxStatusPer.class, QIotxStatusPer.class, PathInits.DIRECT2);
+
     //inherited
     public final StringPath lastModifiedBy = _super.lastModifiedBy;
 

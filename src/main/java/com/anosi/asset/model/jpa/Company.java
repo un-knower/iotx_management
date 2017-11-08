@@ -38,6 +38,8 @@ public class Company extends BaseEntity {
 	private List<Account> accountList = new ArrayList<>();
 
 	private List<Device> deviceList = new ArrayList<>();
+	
+	private List<IotxStatusPer> iotxStatusPerList = new ArrayList<>();
 
 	@Column(unique = true, nullable = false)
 	public String getName() {
@@ -91,4 +93,13 @@ public class Company extends BaseEntity {
 		this.code = code;
 	}
 
+	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "company", targetEntity = IotxStatusPer.class)
+	public List<IotxStatusPer> getIotxStatusPerList() {
+		return iotxStatusPerList;
+	}
+
+	public void setIotxStatusPerList(List<IotxStatusPer> iotxStatusPerList) {
+		this.iotxStatusPerList = iotxStatusPerList;
+	}
+	
 }

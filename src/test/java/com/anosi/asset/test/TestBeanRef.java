@@ -1,5 +1,6 @@
 package com.anosi.asset.test;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -23,6 +24,15 @@ public class TestBeanRef {
 		Iotx iotx = new Iotx();
 		BeanRefUtil.setValue(iotx, map);
 		System.out.println(iotx.getOpenTime());
+	}
+	
+	@Test
+	public void testDate(){
+		Calendar ca = Calendar.getInstance();//得到一个Calendar的实例 
+		ca.setTime(new Date()); //设置时间为当前时间 
+		ca.add(Calendar.DATE, -1); //年份减1 
+		Date lastDate = ca.getTime(); //结果
+		System.out.println(lastDate);
 	}
 	
 }
