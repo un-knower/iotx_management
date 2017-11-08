@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,15 +34,13 @@ public class IotxStatusPerServiceImpl extends BaseJPAServiceImpl<IotxStatusPer> 
 		return iotxStatusPerDao;
 	}
 
-	/***
-	 * 每天0点保存前一天的iotx在线离线数量
-	 */
-	@Scheduled(cron="*/10 * * * * *")
+	@Override
 	public void saveIotxStatusPerTimer() {
 		List<Company> companys = companyService.findAll();
 		List<IotxStatusPer> iotxStatusPers = companys.stream().map(company -> {
 			IotxStatusPer iotxStatusPer = new IotxStatusPer();
-
+			
+			iotxStatusPer.setCompany(company);
 			// 按照公司获取在线和离线的数量
 			iotxStatusPer.setOnline(iotxService.countByCompanyAndStatus(company.getId(), Status.ONLINE));
 			iotxStatusPer.setOffline(iotxService.countByCompanyAndStatus(company.getId(), Status.OFFLINE));
