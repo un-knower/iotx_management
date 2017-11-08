@@ -71,7 +71,7 @@ public class IotxController extends BaseController<Iotx> {
 	 */
 	@RequestMapping(value = "/iotx/management/data/one", method = RequestMethod.GET)
 	public JSONObject findIotxManageDataOne(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+			@RequestParam(value = "showAttributes", required = false) String showAttributes) throws Exception {
 		logger.info("find iotx one");
 		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
 				iotxService.findOne(predicate));
@@ -120,7 +120,7 @@ public class IotxController extends BaseController<Iotx> {
 	@RequestMapping(value = "/iotx/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findIotxManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
 			@RequestParam(value = "searchContent", required = false) String searchContent,
 			@RequestParam(value = "beginTime", required = false) Date beginTime,

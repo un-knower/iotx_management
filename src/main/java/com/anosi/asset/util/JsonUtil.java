@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.exception.CustomRunTimeException;
@@ -48,10 +49,21 @@ public class JsonUtil<T> {
 	 */
 	public JSONObject parseAttributesToJson(String[] attributes, T t) throws Exception {
 		JSONObject jsonObject = new JSONObject();
+		if (t == null) {
+			return jsonObject;
+		}
+		if (attributes == null) {
+			return JSON.parseObject(JSON.toJSONString(t));
+		}
 		for (String attribute : attributes) {
-			if(attribute.contains("*.")){
+			if (attribute.contains("*.")) {
 				jsonObject.put(attribute.split("\\*.", 2)[0], PropertyUtil.getNestedProperty(t, attribute));
-			}else{
+			} else if (attribute.endsWith("*")) {
+				// 如果以"*"结果,代表获取这个bean下的所有属性
+				// key为attribute去掉结尾的*
+				jsonObject.put(attribute.substring(0, attribute.length() - 1),
+						PropertyUtil.getNestedProperty(t, attribute));
+			} else {
 				jsonObject.put(attribute, PropertyUtil.getNestedProperty(t, attribute));
 			}
 		}

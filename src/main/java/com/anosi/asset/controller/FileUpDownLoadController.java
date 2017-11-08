@@ -121,7 +121,7 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 			@PathVariable ShowType showType,
 			@PageableDefault(sort = {
 					"uploadTime" }, direction = Sort.Direction.DESC, page = 0, value = 20) Pageable pageable,
-			@RequestParam(value = "showAttributes") String showAttributes,
+			@RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("to view file list");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
