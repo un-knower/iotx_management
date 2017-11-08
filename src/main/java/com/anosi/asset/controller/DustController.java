@@ -68,7 +68,7 @@ public class DustController extends BaseController<Dust>{
 	 */
 	@RequestMapping(value = "/dust/management/data/one", method = RequestMethod.GET)
 	public JSONObject findDustManageDataOne(@QuerydslPredicate(root = Dust.class) Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+			@RequestParam(value = "showAttributes", required = false) String showAttributes) throws Exception {
 		logger.info("find dust one");
 		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
 				dustService.findOne(predicate));
@@ -114,7 +114,7 @@ public class DustController extends BaseController<Dust>{
 	@RequestMapping(value = "/dust/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findDustManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
 			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
 		logger.info("find dust");

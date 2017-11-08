@@ -73,7 +73,7 @@ public class AlarmDataController extends BaseController<AlarmData> {
 	 */
 	@RequestMapping(value = "/alarmData/management/data/one", method = RequestMethod.GET)
 	public JSONObject findAlarmDataManageDataOne(@QuerydslPredicate(root = AlarmData.class) Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+			@RequestParam(value = "showAttributes", required = false) String showAttributes) throws Exception {
 		logger.info("find alarmData one");
 		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
 				alarmDataService.findOne(predicate));
@@ -94,7 +94,7 @@ public class AlarmDataController extends BaseController<AlarmData> {
 	@RequestMapping(value = "/alarmData/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findAlarmDataManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find iotxData");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());

@@ -80,7 +80,7 @@ public class SensorController extends BaseController<Sensor> {
 	 */
 	@RequestMapping(value = "/sensor/management/data/one", method = RequestMethod.GET)
 	public JSONObject findSensorManageDataOne(@QuerydslPredicate(root = Sensor.class) Predicate predicate,
-			@RequestParam(value = "showAttributes") String showAttributes) throws Exception {
+			@RequestParam(value = "showAttributes", required = false) String showAttributes) throws Exception {
 		logger.info("find sensor one");
 		return jsonUtil.parseAttributesToJson(StringUtil.splitAttributes(showAttributes),
 				sensorService.findOne(predicate));
@@ -127,7 +127,7 @@ public class SensorController extends BaseController<Sensor> {
 	@RequestMapping(value = "/sensor/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findSensorManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
 			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
 		logger.info("find sensor");

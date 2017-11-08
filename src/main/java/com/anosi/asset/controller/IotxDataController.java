@@ -90,7 +90,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	@RequestMapping(value = "/iotxData/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findIotxDataManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find iotxData");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
@@ -117,7 +117,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	public JSONObject dynamicData(
 			@RequestParam(value = "timeUnit", required = false, defaultValue = "360") Integer timeUnit,
 			@SortDefault(value = "collectTime", direction = Direction.DESC) Sort sort,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes") String showAttributes,
+			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "sensorSN") String sensorSN) throws Exception {
 		logger.info("find dynamicData");
 
