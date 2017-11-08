@@ -63,6 +63,8 @@ public class QDust extends EntityPathBase<Dust> {
 
     public final StringPath type = createString("type");
 
+    public final NumberPath<Long> unConfirmAlarmQuantity = createNumber("unConfirmAlarmQuantity", Long.class);
+
     public QDust(String variable) {
         this(Dust.class, forVariable(variable), INITS);
     }

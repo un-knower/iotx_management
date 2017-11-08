@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.alibaba.fastjson.JSONArray;
 import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.Iotx;
+import com.anosi.asset.model.jpa.Iotx.Status;
 import com.querydsl.core.types.Predicate;
 
 public interface IotxService extends BaseJPAService<Iotx> {
@@ -32,4 +33,13 @@ public interface IotxService extends BaseJPAService<Iotx> {
 	 * @param company
 	 */
 	public void remoteUpdate(Iotx iotx, Company company);
+	
+	/***
+	 * 根据公司和在线离线状态进行count
+	 * 
+	 * @param companyId
+	 * @param status
+	 * @return
+	 */
+	public Long countByCompanyAndStatus(Long companyId, Status status);
 }

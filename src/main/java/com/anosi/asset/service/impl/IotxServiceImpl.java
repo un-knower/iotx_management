@@ -32,6 +32,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.District;
 import com.anosi.asset.model.jpa.Iotx;
+import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.mqtt.MqttServer;
 import com.anosi.asset.service.CompanyService;
@@ -232,6 +233,11 @@ public class IotxServiceImpl extends BaseJPAServiceImpl<Iotx> implements IotxSer
 			e.printStackTrace();
 			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 		}
+	}
+
+	@Override
+	public Long countByCompanyAndStatus(Long companyId, Status status) {
+		return iotxDao.countByCompanyIdEqualsAndStatusEquals(companyId, status);
 	}
 
 }
