@@ -1,5 +1,6 @@
 package com.anosi.asset.service.impl;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -13,9 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.cache.annotation.SensorEvictCache;
@@ -26,7 +31,10 @@ import com.anosi.asset.dao.jpa.SensorDao;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.mqtt.MqttServer;
+import com.anosi.asset.service.IotxDataService;
+import com.anosi.asset.service.IotxService;
 import com.anosi.asset.service.SensorService;
 import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
@@ -46,6 +54,10 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	private MqttServer mqttServer;
 	@Autowired
 	private EntityManager entityManager;
+	@Autowired
+	private IotxService iotxService;
+	@Autowired
+	private IotxDataService iotxDataService;
 
 	@Override
 	public Page<Sensor> findAll(Predicate predicate, Pageable pageable) {
@@ -72,13 +84,18 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	}
 
 	@Override
-	public Page<Sensor> findByContentSearch(String content, Pageable pageable) {
+	public Page<Sensor> findByContentSearch(String content, Pageable pageable, Long iotxId) {
 		Account account = sessionComponent.getCurrentUser();
 		logger.debug("page:{},size:{}", pageable.getPageNumber(), pageable.getPageSize());
+		String iotxSN = null;
+		if (iotxId != null) {
+			iotxSN = iotxService.getOne(iotxId).getSerialNo();
+		}
 		if (SessionComponent.isAdmin()) {
-			return sensorDao.findBySearchContent(entityManager, content, pageable);
+			return sensorDao.findBySearchContent(entityManager, content, pageable, iotxSN);
 		} else {
-			return sensorDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getCode());
+			return sensorDao.findBySearchContent(entityManager, content, pageable, account.getCompany().getCode(),
+					iotxSN);
 		}
 	}
 
@@ -114,6 +131,20 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 			e.printStackTrace();
 			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.send.fail"));
 		}
+	}
+
+	@Override
+	public Page<Sensor> setActualValue(Page<Sensor> sensors) {
+		PageRequest pageRequest = new PageRequest(0, 1, new Sort(Direction.DESC, "collectTime"));// 只取一条
+		sensors.getContent().forEach(sensor -> {
+			List<IotxData> iotxDatas = iotxDataService.findBySensorSN(sensor.getSerialNo(), pageRequest).getContent();
+			if (!CollectionUtils.isEmpty(iotxDatas)) {
+				Double actualVal = iotxDatas.get(0).getVal();
+				logger.debug("sensor:{},actualVal:{}", sensor.getSerialNo(), actualVal);
+				sensor.setActualValue(actualVal);
+			}
+		});
+		return sensors;
 	}
 
 }

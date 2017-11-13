@@ -16,6 +16,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
 import org.springframework.util.CollectionUtils;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
@@ -38,21 +39,21 @@ public class Iotx extends BaseEntity {
 	 */
 	private static final long serialVersionUID = -2480716502123174880L;
 
-	@Field
+	@Field(analyze = Analyze.NO)
 	@Content
 	// @JSONField(name="serial_no")
 	@ExtraName(name = "unique_id")
 	private String serialNo;
 
-	private String cpu;
+	private String cpu = "0mhz";
 
 	private Double usedCpuPer = 0.0;
 
-	private String memory;
+	private String memory = "0GB";
 
 	private Double usedMemoryPer = 0.0;
 
-	private String hardDisk;
+	private String hardDisk = "0GB";
 
 	private Double usedHardDiskPer = 0.0;
 
@@ -410,7 +411,7 @@ public class Iotx extends BaseEntity {
 	 */
 	@Transient
 	public Device getDevice() {
-		if(CollectionUtils.isEmpty(dustList)){
+		if (CollectionUtils.isEmpty(dustList)) {
 			return null;
 		}
 		return dustList.get(0).getDevice();

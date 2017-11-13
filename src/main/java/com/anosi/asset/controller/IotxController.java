@@ -69,6 +69,7 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
+	@RequiresPermissions({ "iotxManagement:view"})
 	@RequestMapping(value = "/iotx/management/data/one", method = RequestMethod.GET)
 	public JSONObject findIotxManageDataOne(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
 			@RequestParam(value = "showAttributes", required = false) String showAttributes) throws Exception {

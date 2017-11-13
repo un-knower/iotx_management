@@ -39,17 +39,21 @@ public class IotxStatusPerServiceImpl extends BaseJPAServiceImpl<IotxStatusPer> 
 		List<Company> companys = companyService.findAll();
 		List<IotxStatusPer> iotxStatusPers = companys.stream().map(company -> {
 			IotxStatusPer iotxStatusPer = new IotxStatusPer();
-			
+
 			iotxStatusPer.setCompany(company);
 			// 按照公司获取在线和离线的数量
 			iotxStatusPer.setOnline(iotxService.countByCompanyAndStatus(company.getId(), Status.ONLINE));
 			iotxStatusPer.setOffline(iotxService.countByCompanyAndStatus(company.getId(), Status.OFFLINE));
 
 			// 获取前一天
-			Calendar ca = Calendar.getInstance();// 得到一个Calendar的实例
-			ca.setTime(new Date()); // 设置时间为当前时间
-			ca.add(Calendar.DATE, -1); // 年份减1
-			Date lastDate = ca.getTime(); // 结果
+			Calendar cal = Calendar.getInstance();// 得到一个Calendar的实例
+			cal.setTime(new Date()); // 设置时间为当前时间
+			cal.add(Calendar.DATE, -1); // 日期减1
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			Date lastDate = cal.getTime();
 			iotxStatusPer.setCountDate(lastDate);
 
 			return iotxStatusPer;

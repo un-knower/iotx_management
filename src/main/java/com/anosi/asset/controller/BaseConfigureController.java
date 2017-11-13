@@ -22,8 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
+import com.anosi.asset.model.jpa.AlarmData;
 import com.anosi.asset.model.jpa.BaseEntity;
 import com.anosi.asset.model.mongo.IotxData;
+import com.anosi.asset.service.AlarmDataService;
 import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxDataService;
@@ -53,6 +55,8 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 	private SensorService sensorService;
 	@Autowired
 	private IotxDataService iotxDataService;
+	@Autowired
+	private AlarmDataService alarmDataService;
 
 	/***
 	 * 进入远程update iotx的页面
@@ -151,6 +155,37 @@ public class BaseConfigureController extends BaseController<BaseEntity> {
 		logger.debug("sensor configure");
 		sensorService.remoteUpdate(sensorService.getOne(id), isWorked, frequency);
 		return new JSONObject(ImmutableMap.of("result", "success"));
+	}
+
+	/****
+	 * 在执行update前，先获取持久化的alarmData对象
+	 * 
+	 * @param id
+	 * @param model
+	 * 
+	 */
+	@ModelAttribute
+	public void getIotxData(@RequestParam(value = "alarmDataId", required = false) Long id, Model model) {
+		if (id != null) {
+			model.addAttribute("alarmData", alarmDataService.getOne(id));
+		}
+	}
+
+	/***
+	 * 修改alarmData
+	 * 
+	 * @param sensor
+	 * @param result
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/alarmData/save", method = RequestMethod.POST)
+	public JSONObject save(@ModelAttribute("alarmData") AlarmData alarmData) throws Exception {
+		logger.debug("saveOrUpdate alarmData");
+		JSONObject jsonObject = new JSONObject();
+		alarmDataService.save(alarmData);
+		jsonObject.put("result", "success");
+		return jsonObject;
 	}
 
 	/****

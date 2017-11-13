@@ -68,7 +68,7 @@ public class SensorController extends BaseController<Sensor> {
 			}
 		}
 	}
-	
+
 	/***
 	 * 根据条件查询某个sensor
 	 * 
@@ -127,18 +127,24 @@ public class SensorController extends BaseController<Sensor> {
 	@RequestMapping(value = "/sensor/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findSensorManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
+			@ModelAttribute Predicate predicate,
+			@RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
-			@RequestParam(value = "searchContent", required = false) String searchContent) throws Exception {
+			@RequestParam(value = "searchContent", required = false) String searchContent,
+			@RequestParam(value = "iotxId", required = false) Long iotxId,
+			@RequestParam(value = "actual", required = false, defaultValue = "false") boolean actual) throws Exception {
 		logger.info("find sensor");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
 		Page<Sensor> sensors;
 		if (StringUtils.isNoneBlank(searchContent)) {
-			sensors = sensorService.findByContentSearch(searchContent, pageable);
+			sensors = sensorService.findByContentSearch(searchContent, pageable, iotxId);
 		} else {
 			sensors = sensorService.findAll(predicate, pageable);
+		}
+		if (actual) {
+			sensors = sensorService.setActualValue(sensors);
 		}
 
 		return parseToJson(sensors, rowId, showAttributes, showType);

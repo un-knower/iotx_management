@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -57,7 +58,7 @@ public class Sensor extends BaseEntity {
 	@ExtraName(name = "description")
 	private String parameterDescribe;// 描述,例如出水口温度
 
-	@Field
+	@Field(analyze = Analyze.NO)
 	@Content
 	@ExtraName(name = "sensor_no")
 	private String serialNo;
@@ -69,7 +70,7 @@ public class Sensor extends BaseEntity {
 	private SensorCategory sensorCategory;
 
 	private Long alarmQuantity;
-	
+
 	private Long unConfirmAlarmQuantity;
 
 	@Content
@@ -82,13 +83,15 @@ public class Sensor extends BaseEntity {
 
 	private String unit;
 
-	@ExtraName(name="runStatus")
+	@ExtraName(name = "runStatus")
 	private DataType dataType;
 
 	@ExtraName(name = "is_used")
 	private Boolean isWorked = false;
-	
-	private List<AlarmData> alarmDataList= new ArrayList<>();
+
+	private List<AlarmData> alarmDataList = new ArrayList<>();
+
+	private Double actualValue = 0.0;// 实时值
 
 	@Column(unique = true, nullable = false)
 	public String getSerialNo() {
@@ -125,7 +128,7 @@ public class Sensor extends BaseEntity {
 	public void setAlarmQuantity(Long alarmQuantity) {
 		this.alarmQuantity = alarmQuantity;
 	}
-	
+
 	@Formula("(select COUNT(*) from alarm_data a where a.sensor_id=id and a.close_time is null)")
 	public Long getUnConfirmAlarmQuantity() {
 		return unConfirmAlarmQuantity;
@@ -182,7 +185,7 @@ public class Sensor extends BaseEntity {
 	public void setParameterDescribe(String parameterDescribe) {
 		this.parameterDescribe = parameterDescribe;
 	}
-	
+
 	@OneToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY, mappedBy = "sensor", targetEntity = AlarmData.class)
 	public List<AlarmData> getAlarmDataList() {
 		return alarmDataList;
@@ -208,6 +211,15 @@ public class Sensor extends BaseEntity {
 	@Transient
 	public String getPlc() {
 		return serialNo.split("_")[1];
+	}
+
+	@Transient
+	public Double getActualValue() {
+		return actualValue;
+	}
+
+	public void setActualValue(Double actualValue) {
+		this.actualValue = actualValue;
 	}
 
 	@Override

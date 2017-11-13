@@ -217,6 +217,7 @@ public class InitTestData {
 	}
 
 	@Test
+	@Rollback(false)
 	public void initIotxData() {
 		Sensor sensor = sensorService.getOne((long) 1);
 

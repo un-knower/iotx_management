@@ -30,7 +30,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
-import com.anosi.asset.model.jpa.QIotx;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.DustService;
@@ -80,16 +79,13 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	public void checkSign(@RequestParam(value = "sign") String sign) {
 		String[] signs = sign.split("_");
 		try {
-			if (!iotxService.exists(QIotx.iotx.serialNo.eq(signs[0]))) {
+			if (!Objects.equals(signs[0], "anosi")) {
 				throw new CustomRunTimeException("sign illegal");
 			}
-			if (!Objects.equals(signs[1], "anosi")) {
+			if (!Objects.equals(signs[1], "hehe")) {
 				throw new CustomRunTimeException("sign illegal");
 			}
-			if (!Objects.equals(signs[2], "hehe")) {
-				throw new CustomRunTimeException("sign illegal");
-			}
-			if (Long.parseLong(signs[3]) > System.currentTimeMillis()) {
+			if (Long.parseLong(signs[2]) > System.currentTimeMillis()) {
 				throw new CustomRunTimeException("sign illegal");
 			}
 		} catch (Exception e) {

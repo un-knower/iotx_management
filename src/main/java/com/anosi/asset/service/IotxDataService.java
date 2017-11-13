@@ -42,4 +42,13 @@ public interface IotxDataService extends BaseMongoService<IotxData>{
 	 */
 	Page<IotxData> findDynamicData(Predicate predicate, Double frequency, Integer timeUnit, Sort sort) throws Exception;
 
+	/***
+	 * 根据sensorSN查询
+	 * 
+	 * @param sensorSN
+	 * @param pageable
+	 * @return
+	 */
+	public Page<IotxData> findBySensorSN(String sensorSN,Pageable pageable);
+	
 }

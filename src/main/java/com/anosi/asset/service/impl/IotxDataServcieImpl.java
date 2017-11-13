@@ -122,4 +122,9 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 		return iotxDataDao.findOne(id);
 	}
 
+	@Override
+	public Page<IotxData> findBySensorSN(String sensorSN, Pageable pageable) {
+		return iotxDataDao.findBySensorSN(sensorSN, pageable);
+	}
+
 }

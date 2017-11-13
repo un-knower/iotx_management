@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Formula;
+import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
@@ -36,7 +37,7 @@ public class Dust extends BaseEntity {
 	@Content
 	private String name;
 
-	@Field
+	@Field(analyze = Analyze.NO)
 	@Content
 	private String serialNo;
 
