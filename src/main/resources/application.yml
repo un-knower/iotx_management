@@ -33,7 +33,7 @@ spring:
   #hibernate
   jpa:
     database: MYSQL
-    show-sql: true
+    show-sql: false
     hibernate:
       # Hibernate ddl auto (create, create-drop, update)
       ddl-auto: update
@@ -65,14 +65,16 @@ spring:
     bootstrap-servers:
     - 10.2.1.223:9092
     consumer:
-      group-id: myGroup
+      group-id: local40
+      auto-offset-reset: earliest
+      enable-auto-commit: false
     template:
-      default-topic: testIotx
+      default-topic: iotx40
     listener:
-      concurrency: 3
+      concurrency: 10
     producer:
       batch-size: 1000
-
+    
   #mail
   mail:
     host: smtp.qq.com

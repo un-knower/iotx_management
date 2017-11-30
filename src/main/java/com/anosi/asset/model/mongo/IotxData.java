@@ -23,6 +23,17 @@ public class IotxData extends AbstractDocument {
 	private Date collectTime;
 
 	private String message;
+	
+	public IotxData() {
+		super();
+	}
+
+	public IotxData(String sensorSN, Double val, Date collectTime) {
+		super();
+		this.sensorSN = sensorSN;
+		this.val = val;
+		this.collectTime = collectTime;
+	}
 
 	public String getSensorSN() {
 		return sensorSN;

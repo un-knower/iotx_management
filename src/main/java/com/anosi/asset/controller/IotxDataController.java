@@ -126,5 +126,7 @@ public class IotxDataController extends BaseController<IotxData> {
 						sensorService.findBySerialNo(sensorSN).getDust().getFrequency(), timeUnit, sort),
 				"id", showAttributes, ShowType.REMOTE);
 	}
+	
+	
 
 }

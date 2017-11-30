@@ -25,6 +25,18 @@ public class AlarmData extends BaseEntity {
 	private Date closeTime;
 
 	private Level level;
+	
+	public AlarmData() {
+		super();
+	}
+	
+	public AlarmData(Sensor sensor, Double val, Date collectTime, Level level) {
+		super();
+		this.sensor = sensor;
+		this.val = val;
+		this.collectTime = collectTime;
+		this.level = level;
+	}
 
 	// 内部枚举类
 	public static enum Level {
