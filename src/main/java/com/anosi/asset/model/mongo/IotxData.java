@@ -2,12 +2,15 @@ package com.anosi.asset.model.mongo;
 
 import java.util.Date;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
 @Document
+@CompoundIndexes({ @CompoundIndex(name = "sensor_time", def = "{'sensorSN' : 1, 'collectTime': 1}", unique = true) })
 public class IotxData extends AbstractDocument {
 
 	/**
@@ -23,7 +26,7 @@ public class IotxData extends AbstractDocument {
 	private Date collectTime;
 
 	private String message;
-	
+
 	public IotxData() {
 		super();
 	}
@@ -68,4 +71,35 @@ public class IotxData extends AbstractDocument {
 		this.collectTime = collectTime;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((collectTime == null) ? 0 : collectTime.hashCode());
+		result = prime * result + ((sensorSN == null) ? 0 : sensorSN.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		IotxData other = (IotxData) obj;
+		if (collectTime == null) {
+			if (other.collectTime != null)
+				return false;
+		} else if (!collectTime.equals(other.collectTime))
+			return false;
+		if (sensorSN == null) {
+			if (other.sensorSN != null)
+				return false;
+		} else if (!sensorSN.equals(other.sensorSN))
+			return false;
+		return true;
+	}
+	
 }

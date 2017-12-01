@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
@@ -24,6 +25,7 @@ import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorService;
+import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -90,7 +92,8 @@ public class IotxDataController extends BaseController<IotxData> {
 	@RequestMapping(value = "/iotxData/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findIotxDataManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
+			@ModelAttribute Predicate predicate,
+			@RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
 		logger.info("find iotxData");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
@@ -117,7 +120,8 @@ public class IotxDataController extends BaseController<IotxData> {
 	public JSONObject dynamicData(
 			@RequestParam(value = "timeUnit", required = false, defaultValue = "360") Integer timeUnit,
 			@SortDefault(value = "collectTime", direction = Direction.DESC) Sort sort,
-			@ModelAttribute Predicate predicate, @RequestParam(value = "showAttributes", required = false) String showAttributes,
+			@ModelAttribute Predicate predicate,
+			@RequestParam(value = "showAttributes", required = false) String showAttributes,
 			@RequestParam(value = "sensorSN") String sensorSN) throws Exception {
 		logger.info("find dynamicData");
 
@@ -126,7 +130,24 @@ public class IotxDataController extends BaseController<IotxData> {
 						sensorService.findBySerialNo(sensorSN).getDust().getFrequency(), timeUnit, sort),
 				"id", showAttributes, ShowType.REMOTE);
 	}
-	
-	
+
+	/***
+	 * 上传iotxData文件
+	 * 
+	 * @param multipartFiles
+	 * @param identification
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/iotxData/file", method = RequestMethod.POST)
+	public JSONObject fileUpload(@RequestParam("file_upload") MultipartFile multipartFile) throws Exception {
+		logger.info("iotx file upload");
+		if (multipartFile != null) {
+			iotxDataService.parse(multipartFile.getInputStream());
+		} else {
+			return new JSONObject(ImmutableMap.of("result", "error", "message", "file is null"));
+		}
+		return new JSONObject(ImmutableMap.of("result", "success"));
+	}
 
 }
