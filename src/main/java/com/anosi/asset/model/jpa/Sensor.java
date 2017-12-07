@@ -213,7 +213,6 @@ public class Sensor extends BaseEntity {
 		return serialNo.split("_")[1];
 	}
 
-	@Transient
 	public Double getActualValue() {
 		return actualValue;
 	}

@@ -122,9 +122,13 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 			}
 		}
 
-		// 请求高澜项目,为设备设置坐标
-		URLConncetUtil.sendPost(remoteComponent.getFullPath("/device/setDistrict"),
-				"deviceSN=" + serialNo + "&longitude=" + iotx.getLongitude() + "&latitude=" + iotx.getLatitude());
+		try {
+			// 请求高澜项目,为设备设置坐标
+			URLConncetUtil.sendPost(remoteComponent.getFullPath("/device/setDistrict"),
+					"deviceSN=" + serialNo + "&longitude=" + iotx.getLongitude() + "&latitude=" + iotx.getLatitude());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		return iotx;
 	}
 

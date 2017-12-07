@@ -1,6 +1,7 @@
 package com.anosi.asset.dao.jpa;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -11,6 +12,7 @@ import org.hibernate.search.query.dsl.MustJunction;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
 
@@ -23,13 +25,26 @@ public interface SensorDao extends BaseJPADao<Sensor>, QuerydslBinderCustomizer<
 
 	@EntityGraph(attributePaths = { "sensorCategory", "dust" })
 	public Sensor findBySerialNoEquals(String serialNo);
+	
+	public List<Sensor> findByDust_device_serialNo(String serialNo);
+	
+	@Query(value="SELECT serialNo FROM Sensor WHERE dust.device.serialNo = ?1")
+	public List<String> findSNByDevice(String deviceSN);
 
 	@Override
 	default public void customize(QuerydslBindings bindings, QSensor qSensor) {
 		bindings.bind(qSensor.serialNo).first((path, value) -> {
 			if (value.startsWith("like$")) {
 				value = value.replace("like$", "");
-				return path.startsWithIgnoreCase(value);
+				return path.likeIgnoreCase(value);
+			} else {
+				return path.eq(value);
+			}
+		});
+		bindings.bind(qSensor.name).first((path, value) -> {
+			if (value.startsWith("like$")) {
+				value = value.replace("like$", "");
+				return path.likeIgnoreCase(value);
 			} else {
 				return path.eq(value);
 			}

@@ -313,7 +313,10 @@ public class Iotx extends BaseEntity {
 
 	@Transient
 	public Long getContinueTime() {
-		return System.currentTimeMillis() - openTime.getTime();
+		if (openTime != null) {
+			return System.currentTimeMillis() - openTime.getTime();
+		}
+		return null;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Company.class)

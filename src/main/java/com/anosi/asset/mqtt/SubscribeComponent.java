@@ -128,7 +128,7 @@ public class SubscribeComponent {
 	 */
 	enum WillSubscrides {
 		CONFIGURECALLBACK("configure/callBack", 2), IOTXSTATUS("configure/status",
-				2), CONFIGURESENSOR("configure/sensor", 2);
+				2), CONFIGURESENSOR("configure/sensor", 2), IOTXUSEDPERCENT("iotx/usedPercent", 2);
 
 		private String topic;
 

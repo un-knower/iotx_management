@@ -143,9 +143,9 @@ public class SensorController extends BaseController<Sensor> {
 		} else {
 			sensors = sensorService.findAll(predicate, pageable);
 		}
-		if (actual) {
+		/*if (actual) {
 			sensors = sensorService.setActualValue(sensors);
-		}
+		}*/
 
 		return parseToJson(sensors, rowId, showAttributes, showType);
 	}

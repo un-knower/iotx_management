@@ -1,9 +1,15 @@
 package com.anosi.asset.service;
 
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.model.mongo.Message;
 
 public interface SensorService extends BaseJPAService<Sensor> {
 
@@ -26,7 +32,37 @@ public interface SensorService extends BaseJPAService<Sensor> {
 	 * 
 	 * @param sensors
 	 * @return
+	 * @deprecated 在插入iotxdata时会设置这个值
 	 */
+	@Deprecated
 	public Page<Sensor> setActualValue(Page<Sensor> sensors);
 
+	/***
+	 * 解析传感器元数据
+	 * 
+	 * @param inputStream
+	 * @throws Exception 
+	 */
+	public void parse(InputStream inputStream) throws Exception;
+	
+	/***
+	 * 解析传感器元数据
+	 * 
+	 * @param payLoad
+	 * @param values
+	 */
+	public Sensor convertSensor(Message payLoad);
+
+	/***
+	 * 解析传感器元数据
+	 * 
+	 * @param payLoad
+	 * @param values
+	 */
+	public Sensor convertSensor(Message payLoad, Map<String, Object> values);
+	
+	public List<Sensor> findByDeviceSN(String deviceSN);
+	
+	public List<String> findSerialNoByDevice(String deviceSN);
+	
 }

@@ -1,4 +1,4 @@
-package com.anosi.asset.cache.annotation;
+package com.anosi.asset.cache.annotation.sensor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

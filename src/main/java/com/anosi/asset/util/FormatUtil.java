@@ -8,7 +8,7 @@ public class FormatUtil {
 	 * @param fileSize
 	 * @return
 	 */
-	public String getFileSizeH(Long fileSize) {
+	public static String getFileSizeH(Long fileSize) {
 		// 如果字节数少于1024，则直接以B为单位，否则先除于1024，后3位因太少无意义
 		if (fileSize < 1024) {
 			return String.valueOf(fileSize) + "B";
@@ -34,5 +34,16 @@ public class FormatUtil {
 			return String.valueOf((fileSize / 100)) + "." + String.valueOf((fileSize % 100)) + "GB";
 		}
 	}
+	
+	/***
+	 * 百分比转换为小数
+	 * 
+	 * @param percent
+	 * @return
+	 */
+	public static double convertPerCent2Double(String percent) {
+		return Double.parseDouble(percent.replace("%", "")) / 100;
+	}
 
+	
 }

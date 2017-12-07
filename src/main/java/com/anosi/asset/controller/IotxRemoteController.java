@@ -33,6 +33,7 @@ import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.DustService;
+import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.service.SensorService;
@@ -50,7 +51,6 @@ import com.google.common.collect.ImmutableMap;
  *
  */
 @RestController
-@RequestMapping("/iotxRemote")
 public class IotxRemoteController extends BaseController<Iotx> {
 
 	private static final Logger logger = LoggerFactory.getLogger(IotxRemoteController.class);
@@ -65,6 +65,8 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	private IotxRemoteService iotxRemoteService;
 	@Autowired
 	private FileUpDownLoadController fileUpDownLoadController;
+	@Autowired
+	private IotxDataService iotxDataService;
 
 	/***
 	 * 检查签名,签名不通过会抛出异常
@@ -85,9 +87,6 @@ public class IotxRemoteController extends BaseController<Iotx> {
 			if (!Objects.equals(signs[1], "hehe")) {
 				throw new CustomRunTimeException("sign illegal");
 			}
-			if (Long.parseLong(signs[2]) > System.currentTimeMillis()) {
-				throw new CustomRunTimeException("sign illegal");
-			}
 		} catch (Exception e) {
 			throw new CustomRunTimeException("sign illegal");
 		}
@@ -101,7 +100,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/iotx/save", method = RequestMethod.POST)
+	@RequestMapping(value = "/iotxRemote/iotx/save", method = RequestMethod.POST)
 	public JSONObject saveIotx(@Valid @ModelAttribute("iotx") Iotx iotx, BindingResult result) throws Exception {
 		logger.debug("saveOrUpdate iotx");
 		JSONObject jsonObject = new JSONObject();
@@ -143,7 +142,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/dust/save", method = RequestMethod.POST)
+	@RequestMapping(value = "/iotxRemote/dust/save", method = RequestMethod.POST)
 	public JSONObject saveDust(@Valid @ModelAttribute("dust") Dust dust, BindingResult result) throws Exception {
 		logger.debug("saveOrUpdate dust");
 		JSONObject jsonObject = new JSONObject();
@@ -185,7 +184,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/sensor/save", method = RequestMethod.POST)
+	@RequestMapping(value = "/iotxRemote/sensor/save", method = RequestMethod.POST)
 	public JSONObject saveSensor(@Valid @ModelAttribute("sensor") Sensor sensor, BindingResult result)
 			throws Exception {
 		logger.debug("saveOrUpdate sensor");
@@ -229,7 +228,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/fileUpload/multipartFiles/{identification}", method = RequestMethod.POST)
+	@RequestMapping(value = "/iotxRemote/fileUpload/multipartFiles/{identification}", method = RequestMethod.POST)
 	public String fileUpload(@RequestParam("file_upload") MultipartFile multipartFile,
 			@PathVariable String identification) throws Exception {
 		if(multipartFile==null){
@@ -244,7 +243,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @param identification
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/fileDownload/list/group/{identification}", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotxRemote/fileDownload/list/group/{identification}", method = RequestMethod.GET)
 	public Page<FileMetaData> fileDownloadListGroup(@PathVariable String identification,
 			@PageableDefault(sort = {
 					"uploadTime" }, direction = Sort.Direction.DESC, page = 0, value = 20) Pageable pageable)
@@ -259,9 +258,47 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "/fileDownload/{objectId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/iotxRemote/fileDownload/{objectId}", method = RequestMethod.GET)
 	public String fileDownload(@PathVariable BigInteger objectId, HttpServletResponse response) throws Exception {
 		return fileUpDownLoadController.fileDownload(objectId, response);
+	}
+	
+	/***
+	 * 上传iotxData文件
+	 * 
+	 * @param multipartFiles
+	 * @param identification
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/iotxData/file", method = RequestMethod.POST)
+	public JSONObject iotxDataFileUpload(@RequestParam("file_upload") MultipartFile multipartFile) throws Exception {
+		logger.info("iotx file upload");
+		if (multipartFile != null) {
+			iotxDataService.parse(multipartFile.getInputStream());
+		} else {
+			return new JSONObject(ImmutableMap.of("result", "error", "message", "file is null"));
+		}
+		return new JSONObject(ImmutableMap.of("result", "success"));
+	}
+	
+	/***
+	 * 传感器元数据
+	 * 
+	 * @param multipartFiles
+	 * @param identification
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value = "/iotxRemote/sensor/metaData/file", method = RequestMethod.POST)
+	public JSONObject sensorMetaDataUpload(@RequestParam("file_upload") MultipartFile multipartFile) throws Exception {
+		logger.info("sensor metaData file upload");
+		if (multipartFile != null) {
+			sensorService.parse(multipartFile.getInputStream());
+		} else {
+			return new JSONObject(ImmutableMap.of("result", "error", "message", "file is null"));
+		}
+		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
 }

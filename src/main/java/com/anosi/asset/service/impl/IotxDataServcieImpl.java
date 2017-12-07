@@ -21,7 +21,6 @@ import org.springframework.data.mongodb.core.BulkOperations;
 import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.anosi.asset.component.SessionComponent;
 import com.anosi.asset.dao.mongo.BaseMongoDao;
@@ -29,10 +28,12 @@ import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.IotxDataContent;
 import com.anosi.asset.model.jpa.Account;
+import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.QIotxData;
 import com.anosi.asset.service.IotxDataContentService;
 import com.anosi.asset.service.IotxDataService;
+import com.anosi.asset.service.SensorService;
 import com.google.common.collect.Lists;
 import com.querydsl.core.types.Predicate;
 
@@ -49,6 +50,8 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 	private SessionComponent sessionComponent;
 	@Autowired
 	private MongoTemplate mongoTemplate;
+	@Autowired
+	private SensorService sensorService;
 
 	@Override
 	public BaseMongoDao<IotxData> getRepository() {
@@ -136,7 +139,6 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 	}
 
 	@Override
-	@Transactional
 	public void parse(InputStream inputStream) throws Exception {
 		List<String> lines = IOUtils.readLines(inputStream, Charset.forName("utf-8"));
 		List<IotxData> iotxDatas = lines.parallelStream().map(line -> {
@@ -159,6 +161,14 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+
+		List<Sensor> sensors = iotxDatas.parallelStream()
+				.sorted((d1, d2) -> -(d1.getCollectTime().compareTo(d2.getCollectTime()))).map(iotxData -> {
+					Sensor sensor = sensorService.findBySerialNo(iotxData.getSensorSN());
+					sensor.setActualValue(iotxData.getVal());
+					return sensor;
+				}).distinct().collect(Collectors.toList());
+		sensorService.save(sensors);
 	}
 
 }

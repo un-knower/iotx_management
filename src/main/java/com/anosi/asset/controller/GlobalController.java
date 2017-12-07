@@ -28,6 +28,7 @@ public class GlobalController<T> {
 	@ExceptionHandler(Exception.class)
 	public ModelAndView handleAllException(HttpServletRequest request, Exception ex) throws IOException {
 		ex.printStackTrace();
+		logger.error("", ex);
 
 		String servletPath = request.getServletPath();
 

@@ -1,5 +1,6 @@
 package com.anosi.asset.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.mongo.IotxData;
+import com.anosi.asset.model.mongo.QIotxData;
 import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.SensorService;
-import com.google.common.collect.ImmutableMap;
 import com.querydsl.core.types.Predicate;
 
 @RestController
@@ -37,7 +37,7 @@ public class IotxDataController extends BaseController<IotxData> {
 	private IotxDataService iotxDataService;
 	@Autowired
 	private SensorService sensorService;
-
+	
 	/***
 	 * 在所有关于查询的请求之前，为查询条件中添加公司
 	 * 
@@ -94,11 +94,15 @@ public class IotxDataController extends BaseController<IotxData> {
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
 			@ModelAttribute Predicate predicate,
 			@RequestParam(value = "showAttributes", required = false) String showAttributes,
-			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId) throws Exception {
+			@RequestParam(value = "rowId", required = false, defaultValue = "id") String rowId,
+			@RequestParam(value = "deviceSN", required = false) String deviceSN) throws Exception {
 		logger.info("find iotxData");
 		logger.debug("page:{},size{},sort{}", pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
 		logger.debug("rowId:{},showAttributes:{}", rowId, showAttributes);
 
+		if(StringUtils.isNoneBlank(deviceSN)){
+			predicate = QIotxData.iotxData.sensorSN.in(sensorService.findSerialNoByDevice(deviceSN)).and(predicate);
+		}
 		return parseToJson(iotxDataService.findAll(predicate, pageable), rowId, showAttributes, showType);
 	}
 
@@ -129,25 +133,6 @@ public class IotxDataController extends BaseController<IotxData> {
 				iotxDataService.findDynamicData(predicate,
 						sensorService.findBySerialNo(sensorSN).getDust().getFrequency(), timeUnit, sort),
 				"id", showAttributes, ShowType.REMOTE);
-	}
-
-	/***
-	 * 上传iotxData文件
-	 * 
-	 * @param multipartFiles
-	 * @param identification
-	 * @return
-	 * @throws Exception
-	 */
-	@RequestMapping(value = "/iotxData/file", method = RequestMethod.POST)
-	public JSONObject fileUpload(@RequestParam("file_upload") MultipartFile multipartFile) throws Exception {
-		logger.info("iotx file upload");
-		if (multipartFile != null) {
-			iotxDataService.parse(multipartFile.getInputStream());
-		} else {
-			return new JSONObject(ImmutableMap.of("result", "error", "message", "file is null"));
-		}
-		return new JSONObject(ImmutableMap.of("result", "success"));
 	}
 
 }

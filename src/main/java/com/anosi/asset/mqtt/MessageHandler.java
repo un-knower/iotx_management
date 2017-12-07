@@ -3,7 +3,6 @@ package com.anosi.asset.mqtt;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -14,21 +13,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.fastjson.JSON;
-import com.anosi.asset.component.I18nComponent;
-import com.anosi.asset.exception.CustomRunTimeException;
+import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Iotx.Status;
 import com.anosi.asset.model.mongo.Message;
 import com.anosi.asset.model.mongo.Message.Type;
 import com.anosi.asset.model.jpa.Sensor;
-import com.anosi.asset.model.jpa.Sensor.DataType;
 import com.anosi.asset.service.DustService;
 import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.service.MessageService;
 import com.anosi.asset.service.SensorService;
-import com.anosi.asset.util.BeanRefUtil;
+import com.anosi.asset.util.FormatUtil;
 
 /***
  * 消息的处理类
@@ -50,8 +47,6 @@ public class MessageHandler {
 	@Autowired
 	private IotxRemoteService iotxRemoteService;
 	@Autowired
-	private I18nComponent i18nComponent;
-	@Autowired
 	private MessageService messageService;
 
 	/***
@@ -63,10 +58,10 @@ public class MessageHandler {
 	@Transactional
 	public void handleMessage(String topic, MqttMessage message) {
 		try {
+			logger.debug("reveice mqtt message,topic:{},message:{}", topic, message.getPayload());
 			handle(topic, message);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new CustomRunTimeException(i18nComponent.getMessage("mqtt.message.handle.fail"));
 		}
 	}
 
@@ -88,6 +83,9 @@ public class MessageHandler {
 			break;
 		case "configure/sensor":
 			handleConfigureSensor(topic, message);
+			break;
+		case "iotx/usedPercent":
+			handleUIotxUsedPercent(topic, message);
 			break;
 		default:
 			break;
@@ -180,7 +178,7 @@ public class MessageHandler {
 	 */
 	private void handleConfigureSensor(String topic, MqttMessage message) throws Exception {
 		List<Message> payLoads = JSON.parseArray(new String(message.getPayload()), Message.class);
-		List<Sensor> sensors = payLoads.stream().map(payLoad -> {
+		List<Sensor> sensors = payLoads.parallelStream().map(payLoad -> {
 			payLoad.setType(Type.RECEIVE);
 			payLoad.setTopic(topic);
 			// 将message中body部分的meta转换成map
@@ -199,34 +197,31 @@ public class MessageHandler {
 	 * @return
 	 */
 	private Sensor convertSensor(Message payLoad, Map<String, Object> values) {
+		return sensorService.convertSensor(payLoad, values);
+	}
+
+	/***
+	 * 解析iotx内存CPU硬盘的使用百分比
+	 * 
+	 * @param topic
+	 * @param message
+	 *            内容格式:{header:{serialNo:xxx},body:{type:xxx,val:{usedMemoryPer:
+	 *            0.5,usedHardDiskPer:0.5,usedCpuPer:0.5}}}
+	 */
+	private void handleUIotxUsedPercent(String topic, MqttMessage message) {
+		// 将接收的消息持久化到mongodb
+		Message payLoad = JSON.parseObject(new String(message.getPayload()), Message.class);
+		payLoad.setType(Type.RECEIVE);
+		payLoad.setTopic(topic);
+		messageService.save(payLoad);
+
 		String serialNo = payLoad.getHeader().getSerialNo();
-		Sensor sensor = sensorService.findBySerialNo(serialNo);
-		if (sensor == null) {
-			sensor = new Sensor();
-			// 为sensor创建虚拟的dust
-			Dust inventedDust = new Dust();
-			// serialNo规定为iotxSN_sensor地址
-			Iotx singleIotx = iotxService.findBySerialNo(serialNo.split("_")[0]);
-			inventedDust.setSerialNo(UUID.randomUUID().toString());
-			inventedDust.setIotx(singleIotx);
-			logger.debug("deviceSN:{}", singleIotx.getDevice().getSerialNo());
-			inventedDust.setDevice(singleIotx.getDevice());
-			inventedDust = dustService.save(inventedDust);
-			sensor.setDust(inventedDust);
-		}
-		try {
-			BeanRefUtil.setValue(sensor, values);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new CustomRunTimeException(e.getMessage());
-		}
-		if (values.containsKey("job_time")) {
-			sensor.getDust().setFrequency(((Number) values.get("job_time")).doubleValue());
-		}
-		if (values.containsKey("type")) {
-			sensor.setDataType(DataType.valueOf(values.get("type").toString().toUpperCase()));
-		}
-		return sensor;
+		Iotx iotx = iotxService.findBySerialNo(serialNo);
+		JSONObject json = JSON.parseObject(JSON.toJSONString(payLoad.getBody().getVal()));
+		iotx.setUsedCpuPer(FormatUtil.convertPerCent2Double(json.getString("usedCpuPer")));
+		iotx.setUsedHardDiskPer(FormatUtil.convertPerCent2Double(json.getString("usedHardDiskPer")));
+		iotx.setUsedMemoryPer(FormatUtil.convertPerCent2Double(json.getString("usedMemoryPer")));
+		iotxService.save(iotx);
 	}
 
 }
