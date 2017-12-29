@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Sensor;
@@ -44,6 +45,22 @@ public interface IotxRemoteService {
 	 * @param identification
 	 * @return
 	 */
-	String fileUpload(MultipartFile multipartFile, String identification);
+	JSONObject fileUpload(MultipartFile multipartFile, String identification);
+	
+	/***
+	 * 解析文件
+	 * 
+	 * @param inputStream
+	 * @throws Exception 
+	 */
+	public void parseIotxData(InputStream inputStream) throws Exception;
+	
+	/***
+	 * 解析传感器元数据
+	 * 
+	 * @param inputStream
+	 * @throws Exception 
+	 */
+	public void parseSensor(InputStream inputStream) throws Exception;
 
 }

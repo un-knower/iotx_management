@@ -75,11 +75,11 @@ public class Sensor extends BaseEntity {
 
 	@Content
 	@ExtraName(name = "max_limit")
-	private Double maxVal;
+	private Double maxVal = 0.0;
 
 	@Content
 	@ExtraName(name = "min_limit")
-	private Double minVal;
+	private Double minVal = 0.0;
 
 	private String unit;
 

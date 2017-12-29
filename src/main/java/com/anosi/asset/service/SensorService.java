@@ -1,7 +1,5 @@
 package com.anosi.asset.service;
 
-
-import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -37,14 +35,6 @@ public interface SensorService extends BaseJPAService<Sensor> {
 	@Deprecated
 	public Page<Sensor> setActualValue(Page<Sensor> sensors);
 
-	/***
-	 * 解析传感器元数据
-	 * 
-	 * @param inputStream
-	 * @throws Exception 
-	 */
-	public void parse(InputStream inputStream) throws Exception;
-	
 	/***
 	 * 解析传感器元数据
 	 * 

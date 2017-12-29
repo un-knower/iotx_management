@@ -1,14 +1,10 @@
 package com.anosi.asset.service.impl;
 
-import java.io.InputStream;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +13,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.BulkOperations;
-import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import com.anosi.asset.component.SessionComponent;
@@ -28,12 +21,10 @@ import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.exception.CustomRunTimeException;
 import com.anosi.asset.model.elasticsearch.IotxDataContent;
 import com.anosi.asset.model.jpa.Account;
-import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.QIotxData;
 import com.anosi.asset.service.IotxDataContentService;
 import com.anosi.asset.service.IotxDataService;
-import com.anosi.asset.service.SensorService;
 import com.google.common.collect.Lists;
 import com.querydsl.core.types.Predicate;
 
@@ -48,10 +39,6 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 	private IotxDataContentService iotxDataContentService;
 	@Autowired
 	private SessionComponent sessionComponent;
-	@Autowired
-	private MongoTemplate mongoTemplate;
-	@Autowired
-	private SensorService sensorService;
 
 	@Override
 	public BaseMongoDao<IotxData> getRepository() {
@@ -136,39 +123,6 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
 	@Override
 	public Page<IotxData> findBySensorSN(String sensorSN, Pageable pageable) {
 		return iotxDataDao.findBySensorSN(sensorSN, pageable);
-	}
-
-	@Override
-	public void parse(InputStream inputStream) throws Exception {
-		List<String> lines = IOUtils.readLines(inputStream, Charset.forName("utf-8"));
-		List<IotxData> iotxDatas = lines.parallelStream().map(line -> {
-			String[] vals = line.split("\t");
-			if (vals.length == 3) {
-				return vals;
-			} else {
-				return null;
-			}
-		}).filter(vals -> vals != null).map(vals -> {
-			Double date = Double.parseDouble(vals[0]) * 1000;
-			return new IotxData(vals[1], Double.parseDouble(vals[2]), new Date(((Number) date).longValue()));
-		}).distinct().collect(Collectors.toList());
-
-		try {
-			// 跳过重复错误
-			BulkOperations bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, IotxData.class);
-			bulkOps.insert(iotxDatas);
-			bulkOps.execute();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		List<Sensor> sensors = iotxDatas.parallelStream()
-				.sorted((d1, d2) -> -(d1.getCollectTime().compareTo(d2.getCollectTime()))).map(iotxData -> {
-					Sensor sensor = sensorService.findBySerialNo(iotxData.getSensorSN());
-					sensor.setActualValue(iotxData.getVal());
-					return sensor;
-				}).distinct().collect(Collectors.toList());
-		sensorService.save(sensors);
 	}
 
 }

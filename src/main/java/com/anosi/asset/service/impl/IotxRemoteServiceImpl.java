@@ -2,20 +2,28 @@ package com.anosi.asset.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.ini4j.Ini;
 import org.ini4j.Profile.Section;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.BulkOperations;
+import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.component.I18nComponent;
 import com.anosi.asset.component.RemoteComponent;
@@ -24,6 +32,8 @@ import com.anosi.asset.model.jpa.Device;
 import com.anosi.asset.model.jpa.Dust;
 import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.model.mongo.IotxData;
+import com.anosi.asset.model.mongo.Message;
 import com.anosi.asset.service.CompanyService;
 import com.anosi.asset.service.DeviceService;
 import com.anosi.asset.service.DustService;
@@ -55,6 +65,8 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	private I18nComponent i18nComponent;
 	@Autowired
 	private RemoteComponent remoteComponent;
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	/***
 	 * 将上传的ini文件处理成map
@@ -144,7 +156,7 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	}
 
 	@Override
-	public String fileUpload(MultipartFile multipartFile, String identification) {
+	public JSONObject fileUpload(MultipartFile multipartFile, String identification) {
 		try {
 			save(iotxService.findBySerialNo(identification) != null ? iotxService.findBySerialNo(identification)
 					: new Iotx(), new ByteArrayInputStream(IOUtils.toByteArray(multipartFile.getInputStream())));// 流复用
@@ -154,7 +166,55 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 			e.printStackTrace();
 			throw new CustomRunTimeException("upload fail");
 		}
-		return new JSONObject(ImmutableMap.of("result", "success")).toString();
+		return new JSONObject(ImmutableMap.of("result", "success"));
+	}
+
+	@Override
+	public void parseIotxData(InputStream inputStream) throws Exception {
+		List<String> lines = IOUtils.readLines(inputStream, Charset.forName("utf-8"));
+		List<IotxData> iotxDatas = lines.parallelStream().map(line -> {
+			String[] vals = line.split("\t");
+			if (vals.length == 3) {
+				return vals;
+			} else {
+				return null;
+			}
+		}).filter(vals -> vals != null).map(vals -> {
+			// 传过来的时间是秒,带有小数
+			Double date = Double.parseDouble(vals[0]) * 1000;
+			return new IotxData(vals[1], Double.parseDouble(vals[2]), new Date(((Number) date).longValue()));
+		}).distinct().collect(Collectors.toList());
+
+		try {
+			// 跳过重复错误
+			BulkOperations bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, IotxData.class);
+			bulkOps.insert(iotxDatas);
+			bulkOps.execute();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		List<Sensor> sensors = iotxDatas.parallelStream()
+				.sorted((d1, d2) -> -(d1.getCollectTime().compareTo(d2.getCollectTime()))).map(iotxData -> {
+					Sensor sensor = sensorService.findBySerialNo(iotxData.getSensorSN());
+					sensor.setActualValue(iotxData.getVal());
+					return sensor;
+				}).distinct().collect(Collectors.toList());
+		sensorService.save(sensors);
+	}
+
+	@Override
+	public void parseSensor(InputStream inputStream) throws Exception {
+		List<String> lines = IOUtils.readLines(inputStream, Charset.forName("utf-8"));
+		List<Sensor> sensors = lines.stream().map(line -> {
+			try {
+				return JSON.parseObject(line, Message.class);
+			} catch (JSONException e) {
+				return null;
+			}
+		}).filter(message -> message != null).map(message -> sensorService.convertSensor(message))
+				.collect(Collectors.toList());
+		sensorService.save(sensors);
 	}
 
 }

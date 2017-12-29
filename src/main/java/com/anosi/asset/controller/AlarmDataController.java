@@ -2,7 +2,6 @@ package com.anosi.asset.controller;
 
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +89,6 @@ public class AlarmDataController extends BaseController<AlarmData> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequiresPermissions({ "iotxAlarmData:view" })
 	@RequestMapping(value = "/alarmData/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findAlarmDataManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,

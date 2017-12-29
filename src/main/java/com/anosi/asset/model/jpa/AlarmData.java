@@ -39,8 +39,9 @@ public class AlarmData extends BaseEntity {
 	}
 
 	// 内部枚举类
+	// 跳闸 报警 提示
 	public static enum Level {
-		NORMAL, ALARM_1, ALARM_2, ALARM_3
+		NORMAL, TRIP, ALARM, REMIND
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Sensor.class)

@@ -24,7 +24,6 @@ import com.anosi.asset.dao.jpa.RoleFunctionDao;
 import com.anosi.asset.dao.mongo.IotxDataDao;
 import com.anosi.asset.model.jpa.Account;
 import com.anosi.asset.model.jpa.AlarmData;
-import com.anosi.asset.model.jpa.AlarmData.Level;
 import com.anosi.asset.model.jpa.Company;
 import com.anosi.asset.model.jpa.Device;
 import com.anosi.asset.model.jpa.Dust;
@@ -236,7 +235,6 @@ public class InitTestData {
 		alarmData.setSensor(sensor);
 		alarmData.setVal(iotxData2.getVal());
 		alarmData.setCollectTime(iotxData2.getCollectTime());
-		alarmData.setLevel(Level.ALARM_1);
 		alarmDataService.save(alarmData);
 
 		IotxData iotxData3 = new IotxData();
@@ -249,7 +247,6 @@ public class InitTestData {
 		alarmData2.setSensor(sensor);
 		alarmData2.setVal(iotxData3.getVal());
 		alarmData2.setCollectTime(iotxData3.getCollectTime());
-		alarmData2.setLevel(Level.ALARM_2);
 		alarmDataService.save(alarmData2);
 	}
 

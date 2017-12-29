@@ -33,7 +33,6 @@ import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.FileMetaData;
 import com.anosi.asset.service.DustService;
-import com.anosi.asset.service.IotxDataService;
 import com.anosi.asset.service.IotxRemoteService;
 import com.anosi.asset.service.IotxService;
 import com.anosi.asset.service.SensorService;
@@ -65,8 +64,6 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	private IotxRemoteService iotxRemoteService;
 	@Autowired
 	private FileUpDownLoadController fileUpDownLoadController;
-	@Autowired
-	private IotxDataService iotxDataService;
 
 	/***
 	 * 检查签名,签名不通过会抛出异常
@@ -229,10 +226,10 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/iotxRemote/fileUpload/multipartFiles/{identification}", method = RequestMethod.POST)
-	public String fileUpload(@RequestParam("file_upload") MultipartFile multipartFile,
+	public JSONObject fileUpload(@RequestParam("file_upload") MultipartFile multipartFile,
 			@PathVariable String identification) throws Exception {
 		if(multipartFile==null){
-			return new JSONObject(ImmutableMap.of("result", "error","message", "file is null")).toString();
+			return new JSONObject(ImmutableMap.of("result", "error","message", "file is null"));
 		}
 		return iotxRemoteService.fileUpload(multipartFile, identification);
 	}
@@ -259,7 +256,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/iotxRemote/fileDownload/{objectId}", method = RequestMethod.GET)
-	public String fileDownload(@PathVariable BigInteger objectId, HttpServletResponse response) throws Exception {
+	public JSONObject fileDownload(@PathVariable BigInteger objectId, HttpServletResponse response) throws Exception {
 		return fileUpDownLoadController.fileDownload(objectId, response);
 	}
 	
@@ -275,7 +272,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	public JSONObject iotxDataFileUpload(@RequestParam("file_upload") MultipartFile multipartFile) throws Exception {
 		logger.info("iotx file upload");
 		if (multipartFile != null) {
-			iotxDataService.parse(multipartFile.getInputStream());
+			iotxRemoteService.parseIotxData(multipartFile.getInputStream());
 		} else {
 			return new JSONObject(ImmutableMap.of("result", "error", "message", "file is null"));
 		}
@@ -294,7 +291,7 @@ public class IotxRemoteController extends BaseController<Iotx> {
 	public JSONObject sensorMetaDataUpload(@RequestParam("file_upload") MultipartFile multipartFile) throws Exception {
 		logger.info("sensor metaData file upload");
 		if (multipartFile != null) {
-			sensorService.parse(multipartFile.getInputStream());
+			iotxRemoteService.parseSensor(multipartFile.getInputStream());
 		} else {
 			return new JSONObject(ImmutableMap.of("result", "error", "message", "file is null"));
 		}

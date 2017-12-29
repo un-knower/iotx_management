@@ -1,5 +1,6 @@
 package com.anosi.asset.model.jpa;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,13 +16,13 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Formula;
-import org.springframework.util.CollectionUtils;
 import org.hibernate.search.annotations.Analyze;
 import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.ContainedIn;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
+import org.springframework.util.CollectionUtils;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.anosi.asset.model.elasticsearch.Content;
@@ -95,6 +96,8 @@ public class Iotx extends BaseEntity {
 	@IndexedEmbedded
 	@Content(extractFields = { "district.name", "district.city.name", "district.city.province.name" })
 	private District district;// 所属区县
+	
+	DecimalFormat df=new DecimalFormat(".##");
 
 	// 内部枚举类
 	public static enum NetworkCategory {
@@ -188,7 +191,7 @@ public class Iotx extends BaseEntity {
 	public String getFreeMemory() {
 		double fullMemory = Double.parseDouble(CharMatcher.digit().retainFrom(memory));// 返回总量
 		String unit = CharMatcher.javaLetter().retainFrom(memory);// 返回单位
-		return fullMemory * (1 - usedMemoryPer) + unit;
+		return df.format(fullMemory * (1 - usedMemoryPer)) + unit;
 	}
 
 	/***
@@ -200,7 +203,7 @@ public class Iotx extends BaseEntity {
 	public String getUsedMemory() {
 		double fullMemory = Double.parseDouble(CharMatcher.digit().retainFrom(memory));// 返回总量
 		String unit = CharMatcher.javaLetter().retainFrom(memory);// 返回单位
-		return fullMemory * usedMemoryPer + unit;
+		return df.format(fullMemory * usedMemoryPer) + unit;
 	}
 
 	public String getHardDisk() {
@@ -220,7 +223,7 @@ public class Iotx extends BaseEntity {
 	public String getFreeHardDisk() {
 		double fullHardDisk = Double.parseDouble(CharMatcher.digit().retainFrom(hardDisk));// 返回总量
 		String unit = CharMatcher.javaLetter().retainFrom(hardDisk);// 返回单位
-		return fullHardDisk * (1 - usedHardDiskPer) + unit;
+		return df.format(fullHardDisk * (1 - usedHardDiskPer)) + unit;
 	}
 
 	/***
@@ -232,7 +235,7 @@ public class Iotx extends BaseEntity {
 	public String getUsedHardDisk() {
 		double fullHardDisk = Double.parseDouble(CharMatcher.digit().retainFrom(hardDisk));// 返回总量
 		String unit = CharMatcher.javaLetter().retainFrom(hardDisk);// 返回单位
-		return fullHardDisk * usedHardDiskPer + unit;
+		return df.format(fullHardDisk * usedHardDiskPer) + unit;
 	}
 
 	public Double getUsedCpuPer() {

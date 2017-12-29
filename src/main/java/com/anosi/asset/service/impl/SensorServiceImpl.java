@@ -1,17 +1,13 @@
 package com.anosi.asset.service.impl;
 
-import java.io.InputStream;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.slf4j.Logger;
@@ -24,12 +20,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.anosi.asset.cache.annotation.sensor.SensorEvictCache;
 import com.anosi.asset.cache.annotation.sensor.SensorSaveCache;
@@ -74,6 +70,8 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	private IotxDataService iotxDataService;
 	@Autowired
 	private DustService dustService;
+	@Autowired
+	private SensorCacheComponent sensorCacheComponent;
 
 	@Override
 	public Page<Sensor> findAll(Predicate predicate, Pageable pageable) {
@@ -98,7 +96,10 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	@Override
 	@Transactional
 	public <S extends Sensor> Iterable<S> save(Iterable<S> sensors) {
-		return super.save(sensors);
+		// 需要挨个清理缓存
+		sensors = super.save(sensors);
+		sensors.forEach(sensor -> sensorCacheComponent.refresh(sensor));
+		return sensors;
 	}
 
 	@Override
@@ -181,20 +182,6 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 
 	@Override
 	@Transactional
-	public void parse(InputStream inputStream) throws Exception {
-		List<String> lines = IOUtils.readLines(inputStream, Charset.forName("utf-8"));
-		List<Sensor> sensors = lines.parallelStream().map(line -> {
-			try {
-				return JSON.parseObject(line, Message.class);
-			} catch (JSONException e) {
-				return null;
-			}
-		}).filter(message -> message != null).map(message-> convertSensor(message)).collect(Collectors.toList());
-		sensorDao.save(sensors);
-	}
-
-	@Override
-	@Transactional
 	public Sensor convertSensor(Message payLoad, Map<String, Object> values) {
 		String serialNo = payLoad.getHeader().getSerialNo();
 		Sensor sensor = sensorDao.findBySerialNoEquals(serialNo);
@@ -240,6 +227,24 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 	@Override
 	public List<String> findSerialNoByDevice(String deviceSN) {
 		return sensorDao.findSNByDevice(deviceSN);
+	}
+
+	/**
+	 * 清理sensor缓存的辅助类,专门开一个类是为了aop
+	 * 
+	 * @author jinyao
+	 *
+	 */
+	@Component
+	public static class SensorCacheComponent {
+
+		@SensorEvictCache // 清理缓存
+		@SensorSaveCache
+		@Transactional
+		public Sensor refresh(Sensor sensor) {
+			return sensor;
+		}
+
 	}
 
 }

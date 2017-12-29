@@ -3,7 +3,6 @@ package com.anosi.asset.controller;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +68,6 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequiresPermissions({ "iotxManagement:view"})
 	@RequestMapping(value = "/iotx/management/data/one", method = RequestMethod.GET)
 	public JSONObject findIotxManageDataOne(@QuerydslPredicate(root = Iotx.class) Predicate predicate,
 			@RequestParam(value = "showAttributes", required = false) String showAttributes) throws Exception {
@@ -84,7 +82,6 @@ public class IotxController extends BaseController<Iotx> {
 	 * 
 	 * @return
 	 */
-	@RequiresPermissions({ "iotxManagement:view" })
 	@RequestMapping(value = "/iotx/management/map/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageMap() {
 		logger.info("view iotx management map");
@@ -96,7 +93,6 @@ public class IotxController extends BaseController<Iotx> {
 	 * 
 	 * @return
 	 */
-	@RequiresPermissions({ "iotxManagement:view" })
 	@RequestMapping(value = "/iotx/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable() {
 		logger.info("view iotx management table");
@@ -117,7 +113,6 @@ public class IotxController extends BaseController<Iotx> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequiresPermissions({ "iotxManagement:view" })
 	@RequestMapping(value = "/iotx/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findIotxManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
@@ -152,7 +147,6 @@ public class IotxController extends BaseController<Iotx> {
 	 * @param iotxId
 	 * @return
 	 */
-	@RequiresPermissions({ "iotxManagement:view", "dustManagement:view" })
 	@RequestMapping(value = "/iotx/management/detail/{iotxId}/view", method = RequestMethod.GET)
 	public ModelAndView toViewIotxManageTable(@PathVariable Long iotxId) throws Exception {
 		logger.info("view iotx management detail");

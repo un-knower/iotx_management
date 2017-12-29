@@ -1,7 +1,5 @@
 package com.anosi.asset.service;
 
-import java.io.InputStream;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -52,13 +50,5 @@ public interface IotxDataService extends BaseMongoService<IotxData>{
 	 * @return
 	 */
 	public Page<IotxData> findBySensorSN(String sensorSN,Pageable pageable);
-
-	/***
-	 * 解析文件
-	 * 
-	 * @param inputStream
-	 * @throws Exception 
-	 */
-	public void parse(InputStream inputStream) throws Exception;
 	
 }

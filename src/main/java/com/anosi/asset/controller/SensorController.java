@@ -3,7 +3,6 @@ package com.anosi.asset.controller;
 import static com.querydsl.core.types.PathMetadataFactory.forVariable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +90,6 @@ public class SensorController extends BaseController<Sensor> {
 	 * 
 	 * @return
 	 */
-	@RequiresPermissions({ "sensorManagement:view" })
 	@RequestMapping(value = "/sensor/management/map/view", method = RequestMethod.GET)
 	public ModelAndView toViewSensorManageMap() {
 		logger.info("view sensor management map");
@@ -103,7 +101,6 @@ public class SensorController extends BaseController<Sensor> {
 	 * 
 	 * @return
 	 */
-	@RequiresPermissions({ "sensorManagement:view" })
 	@RequestMapping(value = "/sensor/management/table/view", method = RequestMethod.GET)
 	public ModelAndView toViewsensorManage() {
 		logger.info("view sensorManage table");
@@ -123,7 +120,6 @@ public class SensorController extends BaseController<Sensor> {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequiresPermissions({ "sensorManagement:view" })
 	@RequestMapping(value = "/sensor/management/data/{showType}", method = RequestMethod.GET)
 	public JSONObject findSensorManageData(@PathVariable ShowType showType,
 			@PageableDefault(sort = { "id" }, direction = Sort.Direction.DESC, page = 0, size = 20) Pageable pageable,
@@ -156,7 +152,6 @@ public class SensorController extends BaseController<Sensor> {
 	 * @param sensorId
 	 * @return
 	 */
-	@RequiresPermissions({ "sensorManagement:view", "iotxAlarmData:view" })
 	@RequestMapping(value = "/sensor/management/detail/{sensorId}/view", method = RequestMethod.GET)
 	public ModelAndView toViewSensorManageTable(@PathVariable Long sensorId) {
 		logger.info("view sensor management detail");
