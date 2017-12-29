@@ -49,7 +49,7 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/fileUpload/multipartFiles/{identification}", method = RequestMethod.POST)
-	public String fileUpload(@RequestParam("file_upload") MultipartFile[] multipartFiles,
+	public JSONObject fileUpload(@RequestParam("file_upload") MultipartFile[] multipartFiles,
 			@PathVariable String identification) throws Exception {
 		logger.info("file upload");
 		logger.debug("identification:{}", identification);
@@ -72,7 +72,7 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 			jsonObject.put("result", "file is null");
 		}
 		logger.info(jsonObject.toString());
-		return jsonObject.toString();
+		return jsonObject;
 	}
 
 	/***
@@ -136,7 +136,7 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 	 * @throws Exception
 	 */
 	@RequestMapping(value = "/fileDownload/{objectId}", method = RequestMethod.GET)
-	public String fileDownload(@PathVariable BigInteger objectId, HttpServletResponse response) throws Exception {
+	public JSONObject fileDownload(@PathVariable BigInteger objectId, HttpServletResponse response) throws Exception {
 		logger.info("file download");
 		FileMetaData fileMetaData = fileMetaDataService.findByObjectId(objectId);
 
@@ -162,7 +162,7 @@ public class FileUpDownLoadController extends BaseController<FileMetaData> {
 			jsonObject.put("result", objectId + "	该文件不存在");
 		}
 		logger.info(jsonObject.toString());
-		return jsonObject.toString();
+		return jsonObject;
 	}
 
 }
