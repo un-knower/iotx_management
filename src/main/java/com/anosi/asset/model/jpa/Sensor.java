@@ -74,11 +74,9 @@ public class Sensor extends BaseEntity {
 	private Long unConfirmAlarmQuantity;
 
 	@Content
-	@ExtraName(name = "max_limit")
 	private Double maxVal = 0.0;
 
 	@Content
-	@ExtraName(name = "min_limit")
 	private Double minVal = 0.0;
 
 	private String unit;
