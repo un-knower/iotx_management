@@ -122,4 +122,4 @@ remote:
 
 log:
   level: info
-  path: d:/goalandLog/logback.log
+  path: d:/iotxLog/logback.log

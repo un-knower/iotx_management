@@ -122,4 +122,4 @@ remote:
 
 log:
   level: debug
-  path: g:/goalandLog/logback.log
+  path: g:/iotxLog/logback.log
