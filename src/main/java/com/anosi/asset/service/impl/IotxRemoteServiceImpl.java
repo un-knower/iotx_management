@@ -1,27 +1,5 @@
 package com.anosi.asset.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.ini4j.Ini;
-import org.ini4j.Profile.Section;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.BulkOperations;
-import org.springframework.data.mongodb.core.BulkOperations.BulkMode;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -34,16 +12,27 @@ import com.anosi.asset.model.jpa.Iotx;
 import com.anosi.asset.model.jpa.Sensor;
 import com.anosi.asset.model.mongo.IotxData;
 import com.anosi.asset.model.mongo.Message;
-import com.anosi.asset.service.CompanyService;
-import com.anosi.asset.service.DeviceService;
-import com.anosi.asset.service.DustService;
-import com.anosi.asset.service.FileMetaDataService;
-import com.anosi.asset.service.IotxRemoteService;
-import com.anosi.asset.service.IotxService;
-import com.anosi.asset.service.SensorService;
+import com.anosi.asset.service.*;
 import com.anosi.asset.util.BeanRefUtil;
 import com.anosi.asset.util.URLConncetUtil;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.io.IOUtils;
+import org.ini4j.Ini;
+import org.ini4j.Profile.Section;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("iotxRemoteService")
 @Transactional
@@ -66,7 +55,7 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	@Autowired
 	private RemoteComponent remoteComponent;
 	@Autowired
-	private MongoTemplate mongoTemplate;
+	private IotxDataService iotxDataService;
 
 	/***
 	 * 将上传的ini文件处理成map
@@ -172,27 +161,7 @@ public class IotxRemoteServiceImpl implements IotxRemoteService {
 	@Override
 	public void parseIotxData(InputStream inputStream) throws Exception {
 		List<String> lines = IOUtils.readLines(inputStream, Charset.forName("utf-8"));
-		List<IotxData> iotxDatas = lines.parallelStream().map(line -> {
-			String[] vals = line.split("\t");
-			if (vals.length == 3) {
-				return vals;
-			} else {
-				return null;
-			}
-		}).filter(vals -> vals != null).map(vals -> {
-			// 传过来的时间是秒,带有小数
-			Double date = Double.parseDouble(vals[0]) * 1000;
-			return new IotxData(vals[1], Double.parseDouble(vals[2]), new Date(((Number) date).longValue()));
-		}).distinct().collect(Collectors.toList());
-
-		try {
-			// 跳过重复错误
-			BulkOperations bulkOps = mongoTemplate.bulkOps(BulkMode.UNORDERED, IotxData.class);
-			bulkOps.insert(iotxDatas);
-			bulkOps.execute();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
+		List<IotxData> iotxDatas = iotxDataService.parseIotxData(lines);
 
 		List<Sensor> sensors = iotxDatas.parallelStream()
 				.sorted((d1, d2) -> -(d1.getCollectTime().compareTo(d2.getCollectTime()))).map(iotxData -> {

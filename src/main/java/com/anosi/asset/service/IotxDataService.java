@@ -7,6 +7,8 @@ import org.springframework.data.domain.Sort;
 import com.anosi.asset.model.mongo.IotxData;
 import com.querydsl.core.types.Predicate;
 
+import java.util.List;
+
 public interface IotxDataService extends BaseMongoService<IotxData>{
 
 	/***
@@ -50,5 +52,12 @@ public interface IotxDataService extends BaseMongoService<IotxData>{
 	 * @return
 	 */
 	public Page<IotxData> findBySensorSN(String sensorSN,Pageable pageable);
+
+	/***
+	 * 解析iotx数据
+	 * @param lines 每行格式time\tSN\tValue
+	 * @return
+	 */
+	public List<IotxData> parseIotxData(List<String> lines);
 	
 }

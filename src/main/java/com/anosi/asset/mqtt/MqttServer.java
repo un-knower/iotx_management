@@ -8,7 +8,6 @@ import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
-import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,7 @@ public class MqttServer {
 
 	private MqttClient client;
 
-	public void connect() throws MqttSecurityException, MqttException {
+	public void connect() throws MqttException {
 		if (client != null && client.isConnected()) {
 			return;
 		}
@@ -91,7 +90,13 @@ public class MqttServer {
 			}
 
 			public void connectionLost(Throwable cause) {
-				// 连接丢失后
+				logger.debug("connection lost");
+				try {
+					logger.debug("try to reconnection");
+					connect();
+				} catch (MqttException e) {
+					e.printStackTrace();
+				}
 			}
 
 		});
@@ -120,7 +125,7 @@ public class MqttServer {
 			payLoad.setType(Type.SEND);
 			messageService.save(payLoad);
 		} catch (JSONException e) {
-			e.printStackTrace();
+
 		}
 	}
 

@@ -207,9 +207,9 @@ public class SensorServiceImpl extends BaseJPAServiceImpl<Sensor> implements Sen
 		if (values.containsKey("job_time")) {
 			sensor.getDust().setFrequency(((Number) values.get("job_time")).doubleValue());
 		}
-		if (values.containsKey("type")) {
+		/*if (values.containsKey("type")) {
 			sensor.setDataType(DataType.valueOf(values.get("type").toString().toUpperCase()));
-		}
+		}*/
 		return sensor;
 	}
 
