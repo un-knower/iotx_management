@@ -6,6 +6,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSON;
+import com.anosi.asset.component.WebSocketComponent;
+import com.anosi.asset.model.jpa.Sensor;
+import com.anosi.asset.service.SensorService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +35,7 @@ import com.anosi.asset.service.IotxDataContentService;
 import com.anosi.asset.service.IotxDataService;
 import com.google.common.collect.Lists;
 import com.querydsl.core.types.Predicate;
+import org.springframework.util.CollectionUtils;
 
 @Service("iotxDataService")
 public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implements IotxDataService {
@@ -44,6 +50,10 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
     private SessionComponent sessionComponent;
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private WebSocketComponent webSocketComponent;
+    @Autowired
+    private SensorService sensorService;
 
     @Override
     public BaseMongoDao<IotxData> getRepository() {
@@ -151,7 +161,22 @@ public class IotxDataServcieImpl extends BaseMongoServiceImpl<IotxData> implemen
             bulkOps.insert(iotxDatas);
             bulkOps.execute();
         } catch (Exception e) {
-            e.printStackTrace();
+
+        }
+        if (!CollectionUtils.isEmpty(iotxDatas)) {
+            String sensorSN = iotxDatas.get(0).getSensorSN();
+            Sensor sensor = sensorService.findBySerialNo(sensorSN);
+            if (sensor != null) {
+                String deviceSN = sensor.getDust().getDevice().getSerialNo();
+                try {
+                    webSocketComponent.sendByBroadcast(
+                            "/topic/broadcast/iotx/data/" + deviceSN,
+                            JSON.toJSON(iotxDatas).toString()
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return iotxDatas;
     }

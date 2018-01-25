@@ -21,7 +21,7 @@ public class QMessage_Body extends BeanPath<Message.Body> {
 
     public final StringPath type = createString("type");
 
-    public final SimplePath<Object> value = createSimple("value", Object.class);
+    public final SimplePath<Object> val = createSimple("val", Object.class);
 
     public QMessage_Body(String variable) {
         super(Message.Body.class, forVariable(variable));

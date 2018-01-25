@@ -36,6 +36,8 @@ public class QMessage extends EntityPathBase<Message> {
     //inherited
     public final StringPath stringId = _super.stringId;
 
+    public final StringPath topic = createString("topic");
+
     public final EnumPath<Message.Type> type = createEnum("type", Message.Type.class);
 
     public QMessage(String variable) {

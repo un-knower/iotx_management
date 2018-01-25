@@ -24,6 +24,8 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     public final QBaseEntity _super = new QBaseEntity(this);
 
+    public final NumberPath<Double> actualValue = createNumber("actualValue", Double.class);
+
     public final ListPath<AlarmData, QAlarmData> alarmDataList = this.<AlarmData, QAlarmData>createList("alarmDataList", AlarmData.class, QAlarmData.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> alarmQuantity = createNumber("alarmQuantity", Long.class);
@@ -33,6 +35,8 @@ public class QSensor extends EntityPathBase<Sensor> {
 
     //inherited
     public final DateTimePath<java.util.Date> createdDate = _super.createdDate;
+
+    public final EnumPath<Sensor.DataType> dataType = createEnum("dataType", Sensor.DataType.class);
 
     public final QDust dust;
 

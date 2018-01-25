@@ -1,11 +1,9 @@
 package com.anosi.asset.mqtt;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.anosi.asset.model.mongo.AllData;
 import com.anosi.asset.service.*;
 import com.google.common.collect.Lists;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -48,6 +46,8 @@ public class MessageHandler {
     private MessageService messageService;
     @Autowired
     private IotxDataService iotxDataService;
+    @Autowired
+    private AllDataService allDataService;
 
     /***
      * 进行消息是否处理过的校验
@@ -89,6 +89,9 @@ public class MessageHandler {
                 break;
             case "iotx/data":
                 handleIotxData(topic, message);
+                break;
+            case "iotx/allData":
+                handleAllData(topic, message);
                 break;
             default:
                 break;
@@ -236,6 +239,18 @@ public class MessageHandler {
         String stringMessage = new String(message.getPayload());
         String[] stringMessages = stringMessage.split("\n");
         iotxDataService.parseIotxData(Arrays.asList(stringMessages));
+    }
+
+    /***
+     * 解析所有采集的数据
+     * @param topic
+     * @param message
+     */
+    private void handleAllData(String topic, MqttMessage message) {
+        String stringMessage = new String(message.getPayload());
+        String[] stringMessages = stringMessage.split("\t");
+        Long date = Long.parseLong(stringMessages[0]) * 1000;
+        allDataService.save(new AllData(stringMessages[1], new Date(date)));
     }
 
 }
